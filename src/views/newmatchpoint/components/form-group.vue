@@ -35,13 +35,13 @@
         <Mradio :radioarr="fightRoundList" :defaultvalue="fightRoundList[formPoint.fightRound]" :types="2" @change-radio="changeRadio" />
       </a-form-item>
       <a-form-item field="signupDate" label="报名时间：">
-        <DatePicker :starttime="formPoint.signTime" :finishtime="formPoint.signFinTime" :types="0" @change-date="changeDate"/>
+        <DatePicker :starttime="formPoint.signTime" :finishtime="formPoint.signFinTime" :types="0" :interval="true" @change-date="changeDate"/>
       </a-form-item>
       <a-form-item field="signinDate" label="签到时间：">
-        <DatePicker :starttime="formPoint.checkInTime" :finishtime="formPoint.checkInFinTime" :types="1" @change-date="changeDate"/>
+        <DatePicker :starttime="formPoint.checkInTime" :finishtime="formPoint.checkInFinTime" :types="1" :interval="true" @change-date="changeDate"/>
       </a-form-item>
       <a-form-item field="matchDate" label="比赛时间：">
-        <DatePicker :starttime="formPoint.fightTime" :finishtime="formPoint.fightFinTime" :types="2" @change-date="changeDate"/>
+        <DatePicker :starttime="formPoint.fightTime" :finishtime="formPoint.fightFinTime" :types="2" :interval="true" @change-date="changeDate"/>
       </a-form-item>
       <div v-if="showMore" class="item-group group2 flex">
         <a-form-item field="teamNum" label="报名队伍数量限制：">
@@ -181,7 +181,7 @@ const handleSubmit = async ({errors, values,}: {
     // 默认数据处理
     if( !formPoint.detail.banner ){ formPoint.detail.banner = '默认banner链接' }
     if( !formPoint.detail.logo ){ formPoint.detail.logo = '默认游戏logo链接' }
-    if( !formPoint.fightFinTime ) formPoint.fightFinTime = formPoint.fightTime + 86400 // 比赛结束时间默认为开始时间24小时后
+    if( formPoint.fightTime && !formPoint.fightFinTime ) formPoint.fightFinTime = formPoint.fightTime + 86400 // 比赛结束时间默认为开始时间24小时后
     if( !formPoint.detail.steps.length ){ // 默认报名、签到、比赛阶段
       formPoint.detail.steps = [
         {name: '报名阶段',startTime: formPoint.signTime },
@@ -194,7 +194,7 @@ const handleSubmit = async ({errors, values,}: {
     if( !errors && formPoint.fightRound >= 0 && formPoint.signTime && formPoint.signFinTime && formPoint.checkInTime && formPoint.checkInFinTime && formPoint.fightTime ){
       if( formPoint.checkInTime <= formPoint.signTime || formPoint.checkInTime >= formPoint.fightTime ){
         Message.error({
-          content: '开始时间不能早于报名时间的开始时间，不能晚于比赛开始时间',
+          content: '签到开始时间不能早于报名时间的开始时间，不能晚于比赛开始时间',
           duration: 5000
         })
         return
@@ -230,7 +230,7 @@ const handleSubmit = async ({errors, values,}: {
         }
       }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
 
-      if( !formPoint.detail.logo && !formPoint.detail.logo ) axiosCreate()
+      if( !formPoint.detail.banner && !formPoint.detail.logo ) axiosCreate()
       
     }else{
       let message = ''

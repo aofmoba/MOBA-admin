@@ -45,7 +45,11 @@ const emit = defineEmits(['change-date'])
 const props = defineProps({
   starttime: Number,
   finishtime: Number,
-  types: Number
+  types: Number,
+  interval: { // true: 不设置24小时限制，默认设置
+    type: Boolean,
+    default: false
+  }
 })
 interface dateType {
   start: number;
@@ -71,10 +75,16 @@ const range = (start: number, end: number) => {
 }
 const startDisabledDate = (date: Date) =>{
   const newDate = new Date()
+  if( props.interval ){ // 无24小时间隔
+    return dataDuration.end ? !(date.getTime() <= dataDuration.end && (date.getTime()+86340000 > newDate.getTime())) : !(date.getTime()+86400000 > newDate.getTime())
+  }
   return dataDuration.end ? !(date.getTime() <= (dataDuration.end - 86340000) && (date.getTime()+86340000 > newDate.getTime())) : !(date.getTime()+86400000 > newDate.getTime())
 }
 const endDisabledDate = (date: Date) =>{
   const newDate = new Date()
+  if( props.interval ){ // 无24小时间隔
+    return dataDuration.start ? !(date.getTime()+86400000 >= dataDuration.start) : !(date.getTime()+86400000 >= newDate.getTime())
+  }
   return dataDuration.start ? !(date.getTime() >= dataDuration.start) : !(date.getTime() >= newDate.getTime())
 }
 
@@ -89,23 +99,32 @@ const startDisabledTime = (date: Date) =>{
     tempH = newDate.getHours()
     tempM = newDate.getMinutes()+1
   }
-  if( 
-      (dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear() && date.getMonth() === new Date(dataDuration.end).getMonth() && date.getDate() === new Date(dataDuration.end).getDate()-1) || // 同年同月前后两天
-      (dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear() && date.getMonth() === new Date(dataDuration.end).getMonth()-1 && new Date(dataDuration.end).getDate() === 1 && date.getDate() === new Date(date.getFullYear(), date.getMonth()+1, 0).getDate()) || // 同年不同月上月底和下月初两天
-      (dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear()-1 && date.getMonth() === 11 && new Date(dataDuration.end).getMonth() === 0 && new Date(dataDuration.end).getDate() === 1 && date.getDate() === new Date(date.getFullYear(), date.getMonth()+1, 0).getDate()) // 同年不同月上月底和下月初两天
-  ){
+  if( props.interval ){ // 无24小时间隔
+    if( dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear() && date.getMonth() === new Date(dataDuration.end).getMonth() && date.getDate() === new Date(dataDuration.end).getDate() ){
       curH = new Date(dataDuration.end).getHours()+1
-      curM = new Date(dataDuration.end).getMinutes()+1
+      curM = new Date(dataDuration.end).getMinutes()
+    }
+  }else{
+    // eslint-disable-next-line no-lonely-if
+    if( 
+        (dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear() && date.getMonth() === new Date(dataDuration.end).getMonth() && date.getDate() === new Date(dataDuration.end).getDate()-1) || // 同年同月前后两天
+        (dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear() && date.getMonth() === new Date(dataDuration.end).getMonth()-1 && new Date(dataDuration.end).getDate() === 1 && date.getDate() === new Date(date.getFullYear(), date.getMonth()+1, 0).getDate()) || // 同年不同月上月底和下月初两天
+        (dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear()-1 && date.getMonth() === 11 && new Date(dataDuration.end).getMonth() === 0 && new Date(dataDuration.end).getDate() === 1 && date.getDate() === new Date(date.getFullYear(), date.getMonth()+1, 0).getDate()) // 同年不同月上月底和下月初两天
+    ){
+        curH = new Date(dataDuration.end).getHours()+1
+        curM = new Date(dataDuration.end).getMinutes()+1
+    }
   }
   // 确定在当前的小时后的分钟为可选
   if( (date.getHours() > newDate.getHours()) ){
     tempM = 0
   }
   // 确定在开始时间的小时后的分钟为可选
-  if( dataDuration.end && date.getHours()<new Date(dataDuration.end).getHours() && date.getHours()>newDate.getHours() ){
+  if( dataDuration.end && date.getHours()<new Date(dataDuration.end).getHours() && (date.getDate()===newDate.getDate() ? date.getHours()>newDate.getHours() : true) ){
     tempM = 0
     curM = 60
   }
+
   return !dataDuration.end ? 
   {
     disabledHours: () => range(0, tempH),
@@ -120,24 +139,35 @@ const endDisabledTime = (date: Date) =>{
   const newDate = new Date()
   let curH = 0
   let curM = 0
-  if( dataDuration.start ){
-    if( 
-      (date.getFullYear() === new Date(dataDuration.start).getFullYear() && date.getMonth() === new Date(dataDuration.start).getMonth() && date.getDate() === new Date(dataDuration.start).getDate()+1) || // 同年同月前后两天
-      (date.getFullYear() === new Date(dataDuration.start).getFullYear() && date.getMonth() === new Date(dataDuration.start).getMonth()+1 && date.getDate() === 1 && new Date(dataDuration.start).getDate() === new Date(new Date(dataDuration.start).getFullYear(), new Date(dataDuration.start).getMonth()+1, 0).getDate()) || // 同年不同月上月底和下月初两天
-      (date.getFullYear() === new Date(dataDuration.start).getFullYear()+1 && date.getMonth() === 0 && new Date(dataDuration.start).getMonth() === 11 && date.getDate() === 1 && new Date(dataDuration.start).getDate() === new Date(new Date(dataDuration.start).getFullYear(), new Date(dataDuration.start).getMonth()+1, 0).getDate()) // 不同年不同月上年最后一月最后一天和下年第一月第一天两天
-    ){
+  if( props.interval ){ // 无24小时间隔
+    if( dataDuration.start && date.getFullYear() === new Date(dataDuration.start).getFullYear() && date.getMonth() === new Date(dataDuration.start).getMonth() && date.getDate() === new Date(dataDuration.start).getDate()){
       curH = new Date(dataDuration.start).getHours()
-      curM = new Date(dataDuration.start).getMinutes()
+      curM = new Date(dataDuration.start).getMinutes()+1
+    }else if( !dataDuration.start && date.getFullYear() === new Date(dataDuration.start).getFullYear() && date.getMonth() === new Date(dataDuration.start).getMonth() && date.getDate() === new Date(dataDuration.start).getDate()){
+      curH = newDate.getHours()
+      curM = newDate.getMinutes()+1
     }
   }else{
     // eslint-disable-next-line no-lonely-if
-    if( 
-      (date.getFullYear() === newDate.getFullYear() && date.getMonth() === newDate.getMonth() && date.getDate() === newDate.getDate()+1) || // 同年同月当前天的后一天
-      (date.getFullYear() === newDate.getFullYear() && date.getMonth() === newDate.getMonth()+1 && date.getDate() === 1 && newDate.getDate() === new Date(newDate.getFullYear(), newDate.getMonth()+1, 0).getDate()) || // 同年不同月当前月最后一天的后一天
-      (date.getFullYear() === newDate.getFullYear()+1 && date.getMonth() === 0 && newDate.getMonth() === 11 && date.getDate() === 1 && newDate.getDate() === new Date(newDate.getFullYear(), newDate.getMonth()+1, 0).getDate()) // 不同年不同月当前年最后一月最后一天的后一天
-    ){
-      curH = newDate.getHours()
-      curM = newDate.getMinutes()+1
+    if( dataDuration.start ){
+      if( 
+        (date.getFullYear() === new Date(dataDuration.start).getFullYear() && date.getMonth() === new Date(dataDuration.start).getMonth() && date.getDate() === new Date(dataDuration.start).getDate()+1) || // 同年同月前后两天
+        (date.getFullYear() === new Date(dataDuration.start).getFullYear() && date.getMonth() === new Date(dataDuration.start).getMonth()+1 && date.getDate() === 1 && new Date(dataDuration.start).getDate() === new Date(new Date(dataDuration.start).getFullYear(), new Date(dataDuration.start).getMonth()+1, 0).getDate()) || // 同年不同月上月底和下月初两天
+        (date.getFullYear() === new Date(dataDuration.start).getFullYear()+1 && date.getMonth() === 0 && new Date(dataDuration.start).getMonth() === 11 && date.getDate() === 1 && new Date(dataDuration.start).getDate() === new Date(new Date(dataDuration.start).getFullYear(), new Date(dataDuration.start).getMonth()+1, 0).getDate()) // 不同年不同月上年最后一月最后一天和下年第一月第一天两天
+      ){
+        curH = new Date(dataDuration.start).getHours()
+        curM = new Date(dataDuration.start).getMinutes()
+      }
+    }else{
+      // eslint-disable-next-line no-lonely-if
+      if( 
+        (date.getFullYear() === newDate.getFullYear() && date.getMonth() === newDate.getMonth() && date.getDate() === newDate.getDate()+1) || // 同年同月当前天的后一天
+        (date.getFullYear() === newDate.getFullYear() && date.getMonth() === newDate.getMonth()+1 && date.getDate() === 1 && newDate.getDate() === new Date(newDate.getFullYear(), newDate.getMonth()+1, 0).getDate()) || // 同年不同月当前月最后一天的后一天
+        (date.getFullYear() === newDate.getFullYear()+1 && date.getMonth() === 0 && newDate.getMonth() === 11 && date.getDate() === 1 && newDate.getDate() === new Date(newDate.getFullYear(), newDate.getMonth()+1, 0).getDate()) // 不同年不同月当前年最后一月最后一天的后一天
+      ){
+        curH = newDate.getHours()
+        curM = newDate.getMinutes()+1
+      }
     }
   }
   // 确定在当前或者开始时间后的小时的分钟为可选

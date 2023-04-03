@@ -279,6 +279,7 @@ const getLocation = async (address: string) => {
         console.log(response);
         if( response.features.length ){
             formCity.arenaName = response.features[0].matching_text || response.features[0].text
+            formCity.arenaName = formCity.arenaName.replace(/[^\u4e00-\u9fa5]/gi, "") || formCity.arenaName
             center = response.features[0].center
             formCity.latitude = Math.floor(Number(center[1])*1000000)
             formCity.longitude = Math.floor(Number(center[0])*1000000)

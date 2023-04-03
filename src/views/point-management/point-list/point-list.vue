@@ -89,9 +89,9 @@ let tableHeight: number = $ref(0)
 let useDate:any = $ref([]);
 const pagination: any = $ref({
   type: 'pagination',
-  page: 50,
+  page: 1,
   current: 1,
-  pageSize: 4,
+  pageSize: 10,
 })
 
 // pagination
@@ -100,14 +100,16 @@ const onPageChange = async (current: number) => {
 };
 const initData = () => {
   setLoading(false)
-  useDate = reactive(Array(10).fill(null).map((_, index) => ({
-    id: String(1234578+index),
-    name: '赛事名称最多18个字',
-    datetime: '2023.1.02-2023.4.02',
-    intoNumber: 10,
-    signNumber: 10,
-    status: String(index+1),
-  })));
+  setTimeout(()=>{
+    useDate = reactive(Array(10).fill(null).map((_, index) => ({
+      id: String(1234578+index),
+      name: '赛事名称最多18个字',
+      datetime: '2023.1.02-2023.4.02',
+      intoNumber: 10,
+      signNumber: 10,
+      status: String(index+1),
+    })));
+  },10)
 }
 const toRaceOperation = (name: string) => {
   router.push({path: '/operation',query:{ match: name }})

@@ -9,7 +9,7 @@
         column-resizable
         :bordered="{ cell: false }"
         :scroll="{y:tableHeight}"
-        :data="useDate"
+        :data="useData"
         :loading="loading"
         :pagination="pagination" 
         @page-change="onPageChange"
@@ -36,7 +36,7 @@
           />
           <a-table-column
             title="时间"
-            data-index="datetime"
+            data-index="validtime"
             :width="210"
           />
           <a-table-column
@@ -74,33 +74,74 @@
 import { onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { vertTime } from '@/utils/computed'
+import {  
+  queryCompetitionList,
+  comListRes,
+  competitionInfo
+} from '@/api/competition';
 
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
 let tableHeight: number = $ref(0)
-let useDate:any = $ref([]);
+let useData:any = $ref([]);
 const pagination: any = $ref({
   type: 'pagination',
-  page: 50,
+  total: 1,
   current: 1,
-  pageSize: 4,
+  pageSize: 10,
 })
 
+// eslint-disable-next-line consistent-return
+const computedStatus = (start: number,end: number) => {
+  const now = Math.floor(new Date().getTime() / 1000)
+  if( now < start ) return 1
+  if( now >= start && now < end ) return 2
+  if( now >= end ) return 0
+}
+
+// eslint-disable-next-line consistent-return
+const getData = async () => {
+  const result = await queryCompetitionList({pageno: pagination.current,pagesize: pagination.pageSize})
+  if( result.data.list ){
+    pagination.total = result.data.total
+    const temp: competitionInfo[] = result.data.list.map((item: any) => ({
+      ...item,
+      // validtime: `${vertTime(item.startTime)}-${vertTime(item.finTime)}`,
+      // status: computedStatus(item.startTime,item.finTime)
+    }))
+    return {total: result.data.total,list: temp}
+  }
+}
 // pagination
 const onPageChange = async (current: number) => {
   pagination.current = current;
-};
-const initData = () => {
+  setLoading(true)
+  // eslint-disable-next-line no-nested-ternary
+  const tempData: comListRes = await getData() || {total: 0,list:[]}
+  useData = tempData.list
+  pagination.total = tempData.total
   setLoading(false)
-  useDate = reactive(Array(10).fill(null).map((_, index) => ({
-    id: String(1234578+index),
-    name: '赛事名称最多18个字',
-    datetime: '2023.1.02-2023.4.02',
-    pointNumber: 10,
-    signNumber: 10,
-    status: String(index+1),
-  })));
+};
+const initData = async () => {
+  setLoading(false)
+  setTimeout(()=>{
+    useData = reactive(Array(10).fill(null).map((_, index) => ({
+      id: String(1234578+index),
+      name: '赛事名称最多18个字',
+      validtime: '2023.1.02-2023.4.02',
+      pointNumber: 10,
+      signNumber: 10,
+      status: String(index+1),
+    })));
+  },10)
+  // pagination.current = 1
+  // pagination.pageSize = 10
+  // const tempData:comListRes = await getData() || {total: 0,list:[]}
+  // useData = tempData.list
+  // pagination.total = tempData.total
+  // setLoading(false)
 }
 const toPointList = (name: string) => {
   router.push({path: '/pointlist',query:{ match: name }})
