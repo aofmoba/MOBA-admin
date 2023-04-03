@@ -66,7 +66,7 @@
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
                 <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="toRaceOperation(record.name)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
-                <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;"><div style="width: 100px;font-size: 14px;line-height: 28px;">导出报名</div></a-button>
+                <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="exportXLSX(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;" >导出报名</div></a-button>
                 <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
               </a-space>
             </template>
@@ -81,6 +81,7 @@
 import { onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import * as XLSX from "xlsx"
 
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
@@ -93,6 +94,12 @@ const pagination: any = $ref({
   current: 1,
   pageSize: 10,
 })
+const exportXLSX = (teamdata: any) => {
+  const data = XLSX.utils.json_to_sheet(useDate)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, data, teamdata.name) // test-data 为自定义的sheet表名
+  XLSX.writeFile(wb,`${teamdata.id }.xlsx`) // test.xlsx 为自定义的文件名
+}
 
 // pagination
 const onPageChange = async (current: number) => {
@@ -121,7 +128,6 @@ onMounted(() => {
   matchName = String(router.currentRoute.value.query.match)
   initData()
 })
-
 </script>
 
 <style scoped lang="less">
