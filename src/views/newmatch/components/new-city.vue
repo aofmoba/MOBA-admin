@@ -309,9 +309,13 @@ const handleSubmit = async ({errors, values,}: {
     if( !errors && formCity.rewards.length && formCity.startTime && formCity.finishTime && formCity.arenaName ){
         if( formCity.startTime > Math.floor(new Date().getTime()/1000) ){
             subLoading = true
-            await createArena( formCity ).then((res: any) => {
-                Message.success('success')
-            }).finally(()=>{subLoading = false})
+            try {
+                await createArena( formCity ).then((res: any) => {
+                    Message.success('success')
+                }).finally(()=>{subLoading = false})
+            } catch (error) {
+                subLoading = false
+            }
         }else{ Message.error('擂台已开始！') }
     }else{
         let message = ''

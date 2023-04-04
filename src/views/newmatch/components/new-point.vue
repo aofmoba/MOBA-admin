@@ -96,11 +96,11 @@ const changeReward = (data: any) => {
     name: item.name,
     startRank: item.startRank,
     finishRank: item.endRank,
-    itemList: {itemId:item.props[0]?.id,itemCount:item.props[0]?.count}
+    itemList: item.props.map((list: any)=>({ itemId: list.id,itemCount: list.count }))
   }))
 }
 
-let compId: string = $ref('123')
+let compId: string = $ref('')
 const axiosCreate = () => {
   console.log(form);
   createCompetition(form).then(({data}) => {
@@ -120,23 +120,26 @@ const handleSubmit = ({errors, values}: {
     // console.log('values:', values, '\nerrors:', errors)
     if( !errors && form.banner && form.rewards.length && (form.rule || form.rulePic) ){
       setLoading(true)
+      try {
+          uploadComRef.uploadRequest(banneFile.file).then((result: any) => { // banner图片上传之后
+            form.banner = result;
+            countUpload +=1
+            if( !form.rulePic || (form.rulePic && countUpload === 2) ) {
+              axiosCreate()
+            }
+          }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
 
-      uploadComRef.uploadRequest(banneFile.file).then((result: any) => { // banner图片上传之后
-        form.banner = result;
-        countUpload +=1
-        if( !form.rulePic || (form.rulePic && countUpload === 2) ) {
-          axiosCreate()
+          if( form.rulePic ) uploadComRef2.uploadRequest(rulePicFile.file).then((result: any) => { // 规则图片上传之后
+            form.rulePic = result;
+            countUpload +=1
+            if( countUpload === 2 ){
+              axiosCreate()
+            }
+          }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
+
+        } catch (error) {
+          setLoading(false)
         }
-      }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
-
-      if( form.rulePic ) uploadComRef2.uploadRequest(rulePicFile.file).then((result: any) => { // 规则图片上传之后
-        form.rulePic = result;
-        countUpload +=1
-        if( countUpload === 2 ){
-          axiosCreate()
-        }
-      }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
-
     }else{
       let message = ''
       if( !form.rule && !form.rulePic ) message = '赛事规则'
@@ -178,7 +181,7 @@ const getINfo = async (id: number) => {
 
 const toPoint = () => {
   if( compId ){
-    router.push({ path: '/newpoint', query: { compId,name: form.name } });
+    router.push({ path: '/newpoint', query: { compId,name: form.name,url:form.banner } });
   }else{
     Message.info('请先创建赛事')
   }

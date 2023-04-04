@@ -8,7 +8,7 @@ export interface singleComRewardRes{
     startRank: number;
     finishRank: number;
     name: string;
-    itemList: iconType;
+    itemList: Array<iconType>;
 }
 
 export interface createCompetitionData {
@@ -25,16 +25,21 @@ export interface comListData {
     pagesize: number; // 10, 20, 30，最多100
 }
 
-
+export interface detailInfoObject {
+    banner: string;
+    rewards: Array<singleComRewardRes>;
+    rule: string;
+    rulePicUrl: string;
+}
 export interface competitionInfo {
     id: string; 
     type: number;
     name: number;
-    detail: object;
-    banne: string; 
-    rule: string;
-    rulePicUrl: string; 
-    rewards: Array<singleComRewardRes>;
+    startTime: number;
+    finishTime: number;
+    pointNum: number; // 赛点数量
+    signNum: number; // 报名队伍数
+    detailInfo: Array<detailInfoObject>;
 }
 
 export interface comListRes {
@@ -63,18 +68,18 @@ export interface detailData {
 export interface createCompetitionPointData {
     compId: string; 
     name: string; 
-    fightNum: number;  // 对战人数1：1v1,3v3, 5v5
+    fightNum: number;  // 对战人数1,3,5：1v1,3v3, 5v5
     fightMode: number; // 0:淘汰赛 1:积分赛
-    fightRound: number; // BO1, BO3, BO5
+    fightRound: number; // 1,3,5: BO1, BO3, BO5
     signTime: number; 
     signFinTime: number; 
     checkInTime: number;
     checkInFinTime: number;
     fightTime: number;
     fightFinTime: number;
-    teamNumLimit: number; // 报名队伍数
-    teamMemberLimit: number; // 队伍人数
-    detail: detailData
+    teamNumLimit: number; // 报名队伍数 默认不限制传0
+    teamMemberLimit: number; // 队伍人数 
+    detail: detailData;
 }
 
 export interface comPointListData extends comListData{
@@ -83,7 +88,9 @@ export interface comPointListData extends comListData{
 
 export interface competitionPointInfo extends createCompetitionPointData {
     id: number;
-    detailInfo: object;
+    joinNum: number; // 报名人数
+    signNum: number; // 参赛人数
+    detailInfo: detailData;
 }
 
 export interface comPointListRes {

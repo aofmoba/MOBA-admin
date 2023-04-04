@@ -26,13 +26,13 @@
         </a-form-item>
       </div>
       <a-form-item field="victoryMode" label="对战方式：">
-        <Mradio :radioarr="fightNumList" :defaultvalue="fightNumList[formPoint.fightNum]" :types="0" @change-radio="changeRadio" />
+        <Mradio :radioarr="fightNumList" :defaultvalue="fightNumList[fightNumView]" :types="0" @change-radio="changeRadio" />
       </a-form-item>
       <a-form-item field="matchMode" label="比赛模式：">
         <Mradio :radioarr="fightModeList" :defaultvalue="fightModeList[formPoint.fightMode]" :types="1" @change-radio="changeRadio" />
       </a-form-item>
       <a-form-item field="winMode" label="获胜方式：">
-        <Mradio :radioarr="fightRoundList" :defaultvalue="fightRoundList[formPoint.fightRound]" :types="2" @change-radio="changeRadio" />
+        <Mradio :radioarr="fightRoundList" :defaultvalue="fightRoundList[fightRoundView]" :types="2" @change-radio="changeRadio" />
       </a-form-item>
       <a-form-item field="signupDate" label="报名时间：">
         <DatePicker :starttime="formPoint.signTime" :finishtime="formPoint.signFinTime" :types="0" :interval="true" @change-date="changeDate"/>
@@ -96,6 +96,8 @@ const { loading, setLoading } = useLoading(false);
 const fightNumList = ['5 V 5','3 V 3','1 V 1']
 const fightModeList = ['淘汰赛','循环积分赛(暂未开放)']
 const fightRoundList = ['BO1(一局胜负)','BO3(三局两胜)','BO5(五局三胜)','BO7(七局四胜)']
+let fightNumView: number = $ref(0)
+let fightRoundView: number = $ref(-1)
 let showMore: boolean = $ref(false)
 let banneFile: FileItem | any = $ref()
 let logoFile: FileItem | any = $ref()
@@ -108,16 +110,16 @@ const formPoint:createCompetitionPointData | any = $ref({
       logo: '',
       steps: []
     },
-    fightNum: 0,
-    fightMode: 0,
-    fightRound: -1,
+    fightNum: 0, // 对战人数1,3,5：1v1,3v3, 5v5
+    fightMode: 0, // 0:淘汰赛 1:积分赛
+    fightRound: -1, // 1,3,5: BO1, BO3, BO5
     signTime: 0,
     signFinTime: 0, 
     checkInTime: 0,
     checkInFinTime: 0,
     fightTime: 0,
     fightFinTime: 0,
-    teamNumLimit: null, // 报名队伍数
+    teamNumLimit: 0, // 报名队伍数 默认不限制传0
     teamMemberLimit: null, // 队伍人数
 });
 
@@ -138,9 +140,9 @@ const changeLogo = (file: any) => {
   formPoint.detail.logo = logoFile = file
 }
 const changeRadio = (radio: string, types: number) => {
-  if( types === 0 ) formPoint.fightNum = fightNumList.findIndex(item=> item === radio)
+  if( types === 0 ) fightNumView = fightNumList.findIndex(item=> item === radio)
   if( types === 1 ) formPoint.fightMode = fightModeList.findIndex(item=> item === radio)
-  if( types === 2 ) formPoint.fightRound = fightRoundList.findIndex(item=> item === radio)
+  if( types === 2 ) fightRoundView = fightRoundList.findIndex(item=> item === radio)
 }
 
 const changeDate = (date: dateType, types: number) => {
@@ -162,6 +164,24 @@ const changeStage = (data: stepsData[]) => {
   formPoint.detail.steps = data
 }
 
+
+const willCreate = () => {
+  if( !formPoint.detail.banner ){ formPoint.detail.banner = router.currentRoute.value.query.url }
+  if( !formPoint.detail.logo ){ formPoint.detail.logo = 'https://moba-project.s3-accelerate.amazonaws.com/admin/LOGO.png' }
+  if( formPoint.fightTime && !formPoint.fightFinTime ) formPoint.fightFinTime = formPoint.fightTime + 86400 // 比赛结束时间默认为开始时间24小时后
+  if( !formPoint.detail.steps.length ){ // 默认报名、签到、比赛阶段
+    formPoint.detail.steps = [
+      {name: '报名阶段',startTime: formPoint.signTime },
+      {name: '签到阶段',startTime: formPoint.checkInTime },
+      {name: '比赛阶段',startTime: formPoint.fightTime },
+    ]
+  }
+  // eslint-disable-next-line no-nested-ternary
+  formPoint.fightNum = fightNumView === 0 ? 1 : ( formPoint.fightNum === 1 ? 3 : 5 )
+  // eslint-disable-next-line no-nested-ternary
+  formPoint.fightRound = fightRoundView === 0 ? 1 : ( formPoint.fightRound === 1 ? 3 : 5 )
+}
+
 const axiosCreate = () => {
   createCompetitionPoint(formPoint).then(({data}) => {
     formPoint.compId = data
@@ -178,20 +198,9 @@ const handleSubmit = async ({errors, values,}: {
     errors: Record<string, ValidatedError> | undefined
   }) => {
     countUpload = 0
-    // 默认数据处理
-    if( !formPoint.detail.banner ){ formPoint.detail.banner = '默认banner链接' }
-    if( !formPoint.detail.logo ){ formPoint.detail.logo = '默认游戏logo链接' }
-    if( formPoint.fightTime && !formPoint.fightFinTime ) formPoint.fightFinTime = formPoint.fightTime + 86400 // 比赛结束时间默认为开始时间24小时后
-    if( !formPoint.detail.steps.length ){ // 默认报名、签到、比赛阶段
-      formPoint.detail.steps = [
-        {name: '报名阶段',startTime: formPoint.signTime },
-        {name: '签到阶段',startTime: formPoint.checkInTime },
-        {name: '比赛阶段',startTime: formPoint.fightTime },
-      ]
-    }
-    
     console.log('values:', values, '\nerrors:', errors)
-    if( !errors && formPoint.fightRound >= 0 && formPoint.signTime && formPoint.signFinTime && formPoint.checkInTime && formPoint.checkInFinTime && formPoint.fightTime ){
+    if( !errors && fightRoundView >= 0 && formPoint.signTime && formPoint.signFinTime && formPoint.checkInTime && formPoint.checkInFinTime && formPoint.fightTime ){
+      willCreate() // 默认数据处理
       if( formPoint.checkInTime <= formPoint.signTime || formPoint.checkInTime >= formPoint.fightTime ){
         Message.error({
           content: '签到开始时间不能早于报名时间的开始时间，不能晚于比赛开始时间',
@@ -214,30 +223,36 @@ const handleSubmit = async ({errors, values,}: {
         return
       }
       setLoading(true)
-      if( formPoint.detail.banner ) uploadBannerRef.uploadRequest(banneFile.file).then((result: any) => { // banner图片上传之后
-        formPoint.detail.banner = result;
-        countUpload +=1
-        if( countUpload === 2 ) {
-          axiosCreate()
-        }
-      }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
+      try {
 
-      if( formPoint.detail.logo ) uploadLogoRef.uploadRequest(logoFile.file).then((result: any) => { // logo图片上传之后
-        formPoint.detail.logo = result;
-        countUpload +=1
-        if( countUpload === 2 ){
-          axiosCreate()
-        }
-      }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
+        if( banneFile !== undefined ) uploadBannerRef.uploadRequest(banneFile.file).then((result: any) => { // banner图片上传之后
+          formPoint.detail.banner = result;
+          countUpload +=1
+          if( logoFile === undefined || (logoFile !== undefined && countUpload === 2) ) {
+            axiosCreate()
+          }
+        }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
 
-      if( !formPoint.detail.banner && !formPoint.detail.logo ) axiosCreate()
+        if( logoFile !== undefined ) uploadLogoRef.uploadRequest(logoFile.file).then((result: any) => { // logo图片上传之后
+          formPoint.detail.logo = result;
+          countUpload +=1
+          if( banneFile === undefined || (banneFile !== undefined && countUpload === 2) ) {
+            axiosCreate()
+          }
+        }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
+
+        if( banneFile === undefined && logoFile === undefined ) axiosCreate()
+
+      } catch (error) {
+        setLoading(false)
+      }
       
     }else{
       let message = ''
       if( !formPoint.fightTime ) message = '比赛开始时间'
       if( !formPoint.checkInTime || !formPoint.checkInFinTime ) message = '签到时间'
       if( !formPoint.signTime || !formPoint.signFinTime ) message = '报名时间'
-      if( formPoint.fightRound < 0 ) message = '获胜方式'
+      if( fightRoundView < 0 ) message = '获胜方式'
       if( formPoint.name.length > 10 ) message = '赛点名称最多可填写10个字'
       if( !formPoint.name ) message = '赛点名称'
       if( formPoint.name.length <= 10 ){message += '不能为空'}

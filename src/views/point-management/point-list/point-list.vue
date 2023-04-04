@@ -15,7 +15,7 @@
         column-resizable
         :bordered="{ cell: false }"
         :scroll="{y:tableHeight}"
-        :data="useDate"
+        :data="useData"
         :loading="loading"
         :pagination="pagination" 
         @page-change="onPageChange"
@@ -42,17 +42,17 @@
           />
           <a-table-column
             title="时间"
-            data-index="datetime"
+            data-index="validtime"
             :width="210"
           />
           <a-table-column
             title="报名人数"
-            data-index="signNumber"
+            data-index="joinNum"
             :width="129"
           />
           <a-table-column
             title="参赛人数"
-            data-index="intoNumber"
+            data-index="signNum"
             :width="117"
           />
           <a-table-column title="状态" :width="114">
@@ -81,51 +81,86 @@
 import { onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { vertTime } from '@/utils/computed'
 import * as XLSX from "xlsx"
+import {  
+  queryCompetitionPointList,
+  comPointListRes,
+  competitionPointInfo
+} from '@/api/competition';
 
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
 let tableHeight: number = $ref(0)
-let useDate:any = $ref([]);
+let useData:any = $ref([]);
+let matchName: string = $ref('')
+let compId: string = $ref('')
 const pagination: any = $ref({
   type: 'pagination',
-  page: 1,
+  total: 1,
   current: 1,
   pageSize: 10,
 })
 const exportXLSX = (teamdata: any) => {
-  const data = XLSX.utils.json_to_sheet(useDate)
+  const data = XLSX.utils.json_to_sheet(useData)
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, data, teamdata.name) // test-data 为自定义的sheet表名
   XLSX.writeFile(wb,`${teamdata.id }.xlsx`) // test.xlsx 为自定义的文件名
 }
 
+// eslint-disable-next-line consistent-return
+const computedStatus = (start: number,end: number) => {
+  const now = Math.floor(new Date().getTime() / 1000)
+  if( !start && !end ) return -1
+  if( now < start ) return 1
+  if( now >= start && now < end ) return 2
+  if( now >= end ) return 0
+}
+
+// eslint-disable-next-line consistent-return
+const getData = async () => {
+  const result = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize,compId})
+  if( result.data.list ){
+    pagination.total = result.data.total
+    const temp: competitionPointInfo[] = result.data.list.map((item: any) => ({
+      ...item,
+      validtime: `${vertTime(item.signTime)}-${vertTime(item.fightFinTime)}`,
+      status: computedStatus(item.signTime,item.fightFinTime)
+    }))
+    return {total: result.data.total,list: temp}
+  }
+}
+
 // pagination
 const onPageChange = async (current: number) => {
   pagination.current = current;
-};
-const initData = () => {
+  setLoading(true)
+  // eslint-disable-next-line no-nested-ternary
+  const tempData: comPointListRes = await getData() || {total: 0,list:[]}
+  useData = tempData.list
+  pagination.total = tempData.total
   setLoading(false)
-  setTimeout(()=>{
-    useDate = reactive(Array(10).fill(null).map((_, index) => ({
-      id: String(1234578+index),
-      name: '赛事名称最多18个字',
-      datetime: '2023.1.02-2023.4.02',
-      intoNumber: 10,
-      signNumber: 10,
-      status: String(index+1),
-    })));
-  },10)
+};
+
+
+const initData = async() => {
+  pagination.current = 1
+  pagination.pageSize = 10
+  const tempData:comPointListRes = await getData() || {total: 0,list:[]}
+  useData = tempData.list
+  pagination.total = tempData.total
+  setLoading(false)
 }
 const toRaceOperation = (name: string) => {
   router.push({path: '/operation',query:{ match: name }})
 }
 
-let matchName: string = $ref('')
+
 onMounted(() => {
   setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
   matchName = String(router.currentRoute.value.query.match)
+  compId = String(router.currentRoute.value.query.compId)
   initData()
 })
 </script>
