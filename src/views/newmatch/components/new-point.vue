@@ -127,7 +127,7 @@ const handleSubmit = ({errors, values}: {
             if( !form.rulePic || (form.rulePic && countUpload === 2) ) {
               axiosCreate()
             }
-          }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
+          }).catch(()=>{ Message.error('图片上传失败,请重试');setLoading(false)})
 
           if( form.rulePic ) uploadComRef2.uploadRequest(rulePicFile.file).then((result: any) => { // 规则图片上传之后
             form.rulePic = result;
@@ -135,7 +135,7 @@ const handleSubmit = ({errors, values}: {
             if( countUpload === 2 ){
               axiosCreate()
             }
-          }).catch((err: any)=>{ Message.error('图片上传失败,请重试');setLoading(false)})
+          }).catch(()=>{ Message.error('图片上传失败,请重试');setLoading(false)})
 
         } catch (error) {
           setLoading(false)

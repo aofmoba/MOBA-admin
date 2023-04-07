@@ -91,17 +91,22 @@ const beforeUpload = (files: File) => {
       const img = new Image()
       const isJPG = files.type === "image/jpg"
       const isPng = files.type ==="image/png"
+      const isLt3M = files.size / 1024 / 1024 < 3 // M
+      if( !isJPG && !isPng ) Message.error('图片仅限JPG和PNG格式')
+      if( !isLt3M ) Message.error('图片大小不能超过3MB')
       // eslint-disable-next-line no-underscore-dangle
       const _URL = window.URL || window.webkitURL
       img.onload = () => {
         if( !props.uheight ){
           const status = img.width === props.uwidth
+          if( !status ) Message.error(`图片宽度尺寸不符合${props.uwidth}px`)
           // eslint-disable-next-line no-unused-expressions
-          status && (isJPG || isPng) ? resolve(true) : reject();
+          status && (isJPG || isPng) && isLt3M ? resolve(true) : reject();
         }else{
           const status = img.width === props.uwidth && img.height === props.uheight
+          if( !status ) Message.error(`图片尺寸不符合（${props.uwidth}*${props.uheight}）px`)
           // eslint-disable-next-line no-unused-expressions
-          status && (isJPG || isPng) ? resolve(true) : reject();
+          status && (isJPG || isPng) && isLt3M ? resolve(true) : reject();
         }
       }
       img.src = _URL.createObjectURL(files);
@@ -110,8 +115,6 @@ const beforeUpload = (files: File) => {
       console.log('success');
       return true
   }).catch(()=>{
-      // 上传文件的图片大小不合符标准,尺寸为240×240。当前上传图片的尺寸为：
-      Message.error('图片尺寸不合符标准')
       return false
   })
 }
@@ -121,7 +124,7 @@ const uploadRequest = (fileItem: any) => {
     const formData = new FormData();
     formData.append("file", fileItem as File);
     // eslint-disable-next-line no-use-before-define
-    axios.post("/localhost/pinFileToIPFS", formData, {
+    axios.post("/testnode/pinFileToIPFS", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

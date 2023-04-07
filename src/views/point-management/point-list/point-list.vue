@@ -120,7 +120,7 @@ const computedStatus = (start: number,end: number) => {
 
 // eslint-disable-next-line consistent-return
 const getData = async () => {
-  const result = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize,compId})
+  const result: comPointListRes | any = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize,compId}).catch(()=>setLoading(false))
   if( result.data.list ){
     pagination.total = result.data.total
     const temp: competitionPointInfo[] = result.data.list.map((item: any) => ({

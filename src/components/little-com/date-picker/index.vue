@@ -55,17 +55,21 @@ interface dateType {
   start: number;
   end: number;
 }
-let backStart: number = $ref()
-let backFinish: number = $ref()
-watch(()=>props, (newV)=>{
-  backStart = Number(newV.starttime)*1000
-  backFinish = Number(newV.finishtime)*1000
-},{immediate: true,deep: true})
-
 const dataDuration: dateType = $ref({
   start: 0,
   end: 0
 })
+
+let backStart: number = $ref()
+let backFinish: number = $ref()
+watch(()=>props, (newV)=>{
+  // eslint-disable-next-line no-multi-assign
+  dataDuration.start = backStart = Number(newV.starttime)*1000
+  // eslint-disable-next-line no-multi-assign
+  dataDuration.end = backFinish = Number(newV.finishtime)*1000
+},{immediate: true,deep: true})
+
+
 const range = (start: number, end: number) => {
   const result: any = []
   for (let i = start; i < end; i+=1) {

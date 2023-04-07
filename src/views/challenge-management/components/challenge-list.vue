@@ -108,7 +108,8 @@ import { Message,Modal } from '@arco-design/web-vue';
 import {  
   queryArenaList,
   ArenaLists,
-  deleteArena
+  deleteArena,
+  ArenaListsRes
 } from '@/api/challenge';
 import Ranking from './rangking.vue'
 
@@ -152,7 +153,7 @@ const computedStatus = (start: number,end: number) => {
 
 // eslint-disable-next-line consistent-return
 const getData = async (type: number) => {
-  const result = await queryArenaList({arena_type: type,pageno: pagination.current,pagesize: pagination.pageSize})
+  const result: ArenaListsRes | any = await queryArenaList({arena_type: type,pageno: pagination.current,pagesize: pagination.pageSize}).catch(()=>setLoading(false))
   if( result.data.list ){
     pagination.total = result.data.total
     const temp: ArenaLists[] = result.data.list.map((item: any) => ({

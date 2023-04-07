@@ -15,21 +15,21 @@ export default mergeConfig(
         '/api': {
           // target: 'https://gamepool.cyberpop.online:5679/api/', 
           // target: 'http://192.168.0.109:5679/api/',
-          // target: 'http://161.189.70.95:5679/api/', // main
+          target: 'http://161.189.70.95:5679/api/', // main
           // target: 'http://192.168.0.134/api/', // han  
-          target: 'http://192.168.130.13/api/', // han2  
+          // target: 'http://192.168.130.13/api/', // han2  
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
         '/localhost': {
-          target: 'http://localhost:7001/', 
+          target: 'http://localhost:7001/', // https://testnode.cyberpop.online/
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/localhost/, '')
         },
-        '/test': {
+        '/testnode': {
           target: 'https://testnode.cyberpop.online/', 
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/test/, '')
+          rewrite: (path) => path.replace(/^\/testnode/, '')
         },
       },
     },

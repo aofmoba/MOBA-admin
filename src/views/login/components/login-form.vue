@@ -23,7 +23,7 @@
         />
       </a-form-item>
       <a-form-item>
-          <a-button class="active large" html-type="submit" style="margin-left: 4px;"><div>登录</div></a-button>
+          <a-button class="active large btn-loading" html-type="submit" style="margin-left: 4px;" :disabled="loading"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -41,7 +41,7 @@
 
   const userStore = useUserStore();
   const router = useRouter();
-  const { loading, setLoading } = useLoading();
+  const { loading, setLoading } = useLoading(false);
   const comStore = staticData();
   const { isAssetsAllow } = storeToRefs(comStore);
   const formLogin = reactive({
@@ -61,6 +61,7 @@
         const { redirect } = router.currentRoute.value.query;
         router.push({name: (redirect as string) || 'newmatch'});
         Message.success('success')
+        setLoading(false);
       } catch (err) {
         console.log(err);
       } finally {
