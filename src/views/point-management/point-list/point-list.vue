@@ -67,7 +67,7 @@
               <a-space style="display: flex; flex-direction: column;">
                 <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="toRaceOperation(record.name)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
                 <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="exportXLSX(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;" >导出报名</div></a-button>
-                <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
+                <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;" @click="deletePointFun(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -75,6 +75,26 @@
       </a-table>
     </div>
   </div>
+  <a-modal 
+    v-model:visible="sureDelete" 
+    modal-class="del-lots"
+  >
+    <template #title>
+      <div style="font-size: 20px;line-height: 28px;color: #3A3F63;font-weight: bold;">确认信息</div>
+      <img class="close-btn" style="width: 32px;height: 32px;" :src="closeImg" alt="" @click="sureDelete = false">
+    </template>
+    <div class="flex-center font-md mcolor-1">
+      <div>您确定要删除此擂台吗？</div>
+    </div>
+    <template #footer>
+      <a-space>
+        <a-button class="active noboxshadow btn-loading" :disabled="delLoading" style="width:128px; height: 40px;" @click="deleteHandler">
+          <div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="delLoading"/> 确认</div>
+        </a-button>
+      </a-space>
+      <div class="blue-1 cursor-pointer" @click="sureDelete = false">取消</div>
+    </template>
+  </a-modal>
 </template>
 
 <script lang="ts" setup>
@@ -86,9 +106,10 @@ import * as XLSX from "xlsx"
 import {  
   queryCompetitionPointList,
   comPointListRes,
-  competitionPointInfo
+  competitionPointInfo 
 } from '@/api/competition';
 
+const closeImg = new URL('../../../assets/images/icons/close.svg', import.meta.url).href
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
@@ -154,6 +175,30 @@ const initData = async() => {
 }
 const toRaceOperation = (name: string) => {
   router.push({path: '/operation',query:{ match: name }})
+}
+
+interface allPointLists extends competitionPointInfo {
+  validtime: string
+  status: number,
+}
+let sureDelete: boolean = $ref(false)
+let delNum: number = $ref()
+const deletePointFun = (record: allPointLists) => {
+  if( record.status === 1 ){
+    delNum = record.id
+    sureDelete = true
+  }
+}
+const delLoading: boolean = $ref(false)
+const deleteHandler = () => {
+  // delLoading = true
+  // deleteArena(delNum).then((res:any)=>{
+  //   if( res.error_code === 0) {
+  //     onPageChange(1)
+  //     sureDelete = false
+  //     Message.success('success')
+  //   }
+  // }).finally(()=>{delLoading = false})
 }
 
 

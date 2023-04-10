@@ -298,3 +298,40 @@ textarea:-ms-input-placeholder {
   background-color: #4458FE;
   box-shadow: 0px 5px 16px 0px rgba(65, 70, 109, 0.1);
 }
+.del-lots.arco-modal {
+  width: 466px;
+  border-radius: 8px;
+}
+.del-lots.arco-modal .arco-modal-header {
+  height: 28px;
+  margin-top: 19px;
+  border-bottom: none;
+}
+.del-lots.arco-modal .arco-modal-header .close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+}
+.del-lots.arco-modal .arco-modal-header .arco-modal-close-btn {
+  display: none;
+}
+.del-lots.arco-modal .arco-modal-body {
+  padding: 30px 0 0 0;
+}
+.del-lots.arco-modal .arco-modal-footer {
+  display: flex;
+  justify-content: center;
+  border-top: none;
+  padding: 40px 0 18px;
+  text-align: center;
+}
+.del-lots.arco-modal .arco-modal-footer > div:last-child {
+  width: 128px;
+  font-size: 16px;
+  line-height: 40px;
+  font-weight: bold;
+}
+.del-lots.arco-modal .arco-modal-footer > div:last-child:hover {
+  opacity: 0.8;
+}

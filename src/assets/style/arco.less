@@ -267,3 +267,38 @@ textarea:-ms-input-placeholder {  /* Internet Explorer 10-11 */
     }
   }
 }
+
+// delete dialog
+.del-lots.arco-modal{
+  width: 466px;
+  // height: 276px;
+  border-radius: 8px;
+  .arco-modal-header{
+    height: 28px;
+    margin-top: 19px;
+    border-bottom: none;
+    .close-btn{
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      cursor: pointer;
+    }
+    .arco-modal-close-btn{
+      display: none;
+    }
+  }
+  .arco-modal-body{
+    padding: 30px 0 0 0;
+  }
+  .arco-modal-footer{
+    display: flex;
+    justify-content: center;
+    border-top: none;
+    padding: 40px 0 18px;
+    text-align: center;
+    &>div:last-child{
+      width:128px;font-size: 16px;line-height: 40px;font-weight: bold;
+      &:hover{opacity: .8;}
+    }
+  }
+}
