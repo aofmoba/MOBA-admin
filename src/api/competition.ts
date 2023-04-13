@@ -113,7 +113,7 @@ export interface comPointCheckinListRes {
 }
 
 // 获取赛点签到列表
-export function queryCompetitionPointCheckinList(id: string) {
+export function queryComPointCheckinList(id: string) {
     return axios.post<comPointCheckinListRes>('/api/competition_point/checkin_list',{point_id: id});
 }
 

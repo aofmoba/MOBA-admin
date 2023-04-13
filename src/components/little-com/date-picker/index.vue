@@ -9,6 +9,7 @@
       :unmount-on-close="true"
       :disabled-date="startDisabledDate"
       :disabled-time="startDisabledTime"
+      @clear="clearStart"
       @ok="onStart"
       >
       <!-- :disabled-time="getDisabledTime1" -->
@@ -26,6 +27,7 @@
       :unmount-on-close="true"
       :disabled-date="endDisabledDate"
       :disabled-time="endDisabledTime"
+      @clear="clearEnd"
       @ok="onEnd"
       >
       <!-- :disabled-time="getDisabledTime2" -->
@@ -189,9 +191,18 @@ const onStart = (dateString: string, date: Date) => {
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('change-date',dataDuration,props.types)
 }
-
 const onEnd = (dateString: string, date: Date) => {
   dataDuration.end = date.getTime()
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('change-date',dataDuration, props.types)
+}
+const clearStart = () => {
+  dataDuration.start = 0
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('change-date',dataDuration, props.types)
+}
+const clearEnd = () => {
+  dataDuration.end = 0
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('change-date',dataDuration, props.types)
 }

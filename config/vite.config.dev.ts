@@ -15,10 +15,10 @@ export default mergeConfig(
         '/api': {
           // target: 'https://gamepool.cyberpop.online:5679/api/', 
           // target: 'http://192.168.0.109:5679/api/',
-          // target: 'http://161.189.70.95:5679/api/', // main
+          target: 'http://161.189.70.95:5679/api/', // main
           // target: 'http://192.168.0.134/api/', // han  
           // target: 'http://192.168.130.13/api/', // han2  
-          target: 'http://192.168.119.1:81/api/',// han3
+          // target: 'http://192.168.119.1:81/api/',// han3
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },

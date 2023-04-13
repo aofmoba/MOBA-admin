@@ -20,7 +20,7 @@
             </template>
           </a-step>
         </a-steps>
-        <DatePicker v-if="currentStep === 1" style="margin-top: 40px;" @change-date="changeDate"/>
+        <DatePicker v-if="currentStep === 1" :key="signTime.startTime" :starttime="signTime.startTime" :interval="true" :finishtime="signTime.finishTime" style="margin-top: 40px;" @change-date="changeDate"/>
       </div>
     </div>
     <StepOne v-if="currentStep === 1" @on-next="onNext"/>
@@ -30,32 +30,45 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onActivated, onMounted } from "vue"
 import { useRouter } from 'vue-router'
+import { dateType } from "@/types/global"
 import StepOne from './components/stepOne.vue'
 import StepTwo from './components/stepTwo.vue'
 import stepThree from './components/stepThree.vue'
 
 const router = useRouter()
 let currentStep: number = $ref(1)
+const signTime = $ref({
+  startTime: 0,
+  finishTime: 0
+})
 const setCurrent = (current: number) => {
   currentStep = current
 }
 const onPrev = () => {
   currentStep = Math.max(1, currentStep - 1)
+  localStorage.setItem('currentStep',String(currentStep))
 }
 const onNext = () => {
   currentStep = Math.min(3, currentStep + 1)
+  localStorage.setItem('currentStep',String(currentStep))
 }
-const changeDate = (date: Date) => {
-  // formCom.viewTime = date
+const changeDate = (date: dateType) => {
+  signTime.startTime = Math.floor(Number(date.start) / 1000)
+  signTime.finishTime = Math.floor(Number(date.end) / 1000)
 }
 
-const cancelSign = (id: number) => {
-  
-}
+onActivated(()=>{
+  if( !localStorage.getItem('currentStep') ) currentStep = 1
+})
 
 onMounted(() => {
+  currentStep = 1
+  currentStep = Number(localStorage.getItem('currentStep')) || 1
+  const queryInfo: any = router.currentRoute.value.query.matchinfo
+  signTime.startTime = Number(JSON.parse(queryInfo).start) || 0
+  signTime.finishTime = Number(JSON.parse(queryInfo).end) || 0
 })
 
 </script>

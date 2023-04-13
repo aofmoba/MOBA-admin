@@ -32,7 +32,7 @@
                     <div id="map" class="mt-20" style="width: 269px;height: 151px;background: #eee;"></div>
                 </div>
             </a-form-item>
-            <a-form-item :key="new Date().getTime()" field="viewTime" label="比赛时间：">
+            <a-form-item :key="formCity.startTime" field="viewTime" label="比赛时间：">
                 <DatePicker :starttime="formCity.startTime" :finishtime="formCity.finishTime" @change-date="changeDate"/>
             </a-form-item>
             <a-form-item field="reward">

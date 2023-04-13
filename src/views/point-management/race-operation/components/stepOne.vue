@@ -18,7 +18,7 @@
       <a-table
         column-resizable
         :bordered="{ cell: false }"
-        :data="useDate"
+        :data="useData"
         :loading="loading"
         row-key="id"
         :expanded-keys="expands"
@@ -75,7 +75,7 @@
             <template #cell="{ record }">
               <a-space class="flex-content" style="padding-left: 106px;">
                 <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="cancelSign(record.id)"><div style="font-size: 14px;line-height: 32px;">取消报名</div></a-button>
-                <a-button class="default" style="width: 103px; height: 32px;margin-left: 10px;"><div style="width: 100px;font-size: 14px;line-height: 29px;">签到</div></a-button>
+                <a-button class="default btn-loading" style="width: 103px; height: 32px;margin-left: 10px;" :disabled="signloading" @click="teamCheckin(record.id)"><div style="width: 100px;font-size: 14px;line-height: 29px;"><a-spin v-if="signloading"/>签到</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -96,8 +96,8 @@
     </div>
     <div class="flex-items between">
         <div>
-          <span class="font-md mcolor-1">已确认签到：0 / 10</span>
-          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满5人且可签到的队伍数 5支</span>
+          <span class="font-md mcolor-1">已确认签到：0 / {{ totalTeam }}</span>
+          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数 5支</span>
         </div>
         <a-space>
           <a-button class="active submit" style="width: 284px; height: 54px;" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">完成，下一步</div></a-button>
@@ -110,60 +110,89 @@
 import { onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
-import { TableData } from "@arco-design/web-vue"
+import { Message, TableData } from "@arco-design/web-vue"
 import {  
-  queryCompetitionPointCheckinList,
-  queryPointTeamInfo
+  queryComPointCheckinList,
+  queryPointTeamInfo,
+  queryPointTeamCheckin
 } from '@/api/competition';
+import type { comPointCheckinListRes } from '@/api/competition';
 
 const searchImg = new URL('../../../../assets/images/icons/search.svg', import.meta.url).href
 const emit = defineEmits(['on-next'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
-let useDate: TableData[] = $ref([]);
-let expandData: any = $ref([]);
+let queryData: any = $ref()
+let useData: TableData[] = $ref([])
 
-let expands:any = $ref([])
+let expandData: any = $ref([]) // 队伍选手
+let expands:any = $ref([]) // 队伍id
 const expandRow = (id: any) => {
     if (expands.indexOf(id) < 0) {
         expands = []
         expands.push(id)
-        expandData = useDate.filter((item: TableData)=> item.id === id)[0].info
+        expandData = useData.filter((item: TableData)=> item.id === id)[0].info
     } else {
         expands = [];
     }
 }
 
-
-const initData = () => {
-    setLoading(false)
-    useDate = reactive(Array(4).fill(null).map((_, index) => ({
-      id: String(12345+index),
-      name: '超级无敌战队',
-      person: 5,
-      info:[{
-          playerID: 12345678,
-          playerNickname: '嘻嘻哈哈嘻皮狗',
-          mainPlay: '发育路'
-      },{
-          playerID: 12345679,
-          playerNickname: '嘻嘻哈哈嘻皮狗',
-          mainPlay: '发育路'
-      }]
-    })));
+const querySingalTeam = (date: object[]) =>{
+  date.forEach((item: any )=>{
+    queryPointTeamInfo(item.id).then((res: any)=>{
+      setLoading(false)
+      if( res.error_code === 0 ){
+        const temp = useData.findIndex((ele: any) => ele.id === res.data.id)
+        if( temp > -1 ){
+          useData[temp] = {
+            ...item,
+            id: item.id,
+            name: item.name,
+            person: item.person,
+            info: item.info
+          }
+        }
+      }
+    })
+  })
 }
+
+let totalTeam: number = $ref(0)
+const initData = async (id: string) => {
+    queryComPointCheckinList(id).then((res: any) => {
+      if( res.error_code === 0 ) {
+        if( !res.data.checkins.length ) setLoading(false)
+        totalTeam = res?.checkins.length + res?.noncheckins.length
+        const allTeamData = [...res.checkins.length,...res.noncheckins.length]
+        useData = res.data.checkins
+        // eslint-disable-next-line no-use-before-define
+        querySingalTeam( res.data.checkins )
+      }
+    }).catch(()=>{setLoading(false)})
+}
+
+let signloading: boolean = $ref(false)
+const teamCheckin = async (teamId: string) => {
+  signloading = true
+  await queryPointTeamCheckin(teamId).finally(()=>{signloading = false})
+  Message.success('Successfully signed in!')
+}
+
 
 const cancelSign = (id: number) => {
 }
 
 const nextStep = () => {
+  // 完成签到过程，同时签到结束时间修改为点击【完成下一步】按钮的时间
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('on-next')
 }
 
 onMounted(() => {
-    initData()
+    const queryInfo: any = router.currentRoute.value.query.matchinfo
+    queryData = JSON.parse(queryInfo)
+    initData(queryData.id)
 })
 
 </script>

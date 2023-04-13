@@ -65,7 +65,7 @@
           <a-table-column title="操作" :width="191">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="toRaceOperation(record.name)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
                 <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="exportXLSX(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;" >导出报名</div></a-button>
                 <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;" @click="deletePointFun(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
               </a-space>
@@ -123,6 +123,10 @@ const pagination: any = $ref({
   current: 1,
   pageSize: 10,
 })
+interface allPointLists extends competitionPointInfo {
+  validtime: string
+  status: number,
+}
 const exportXLSX = (teamdata: any) => {
   const data = XLSX.utils.json_to_sheet(useData)
   const wb = XLSX.utils.book_new()
@@ -144,7 +148,7 @@ const getData = async () => {
   const result: comPointListRes | any = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize,compId}).catch(()=>setLoading(false))
   if( result.data.list ){
     pagination.total = result.data.total
-    const temp: competitionPointInfo[] = result.data.list.map((item: any) => ({
+    const temp: allPointLists[] = result.data.list.map((item: any) => ({
       ...item,
       validtime: `${vertTime(item.signTime)}-${vertTime(item.fightFinTime)}`,
       status: computedStatus(item.signTime,item.fightFinTime)
@@ -173,14 +177,20 @@ const initData = async() => {
   pagination.total = tempData.total
   setLoading(false)
 }
-const toRaceOperation = (name: string) => {
-  router.push({path: '/operation',query:{ match: name }})
+const toRaceOperation = (record: allPointLists) => {
+  router.push({path: '/operation',query:{ matchinfo: JSON.stringify({
+    id: record.id,
+    match: record.name,
+    compId,
+    fightRound: record.fightRound,
+    start: record.signTime,
+    end: record.signFinTime,
+    signTime: record.signTime,
+    fightTime: record.fightTime
+  })}})
 }
 
-interface allPointLists extends competitionPointInfo {
-  validtime: string
-  status: number,
-}
+
 let sureDelete: boolean = $ref(false)
 let delNum: number = $ref()
 const deletePointFun = (record: allPointLists) => {

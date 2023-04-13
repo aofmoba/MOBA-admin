@@ -10,68 +10,54 @@
           </a-space>
       </div>
     </div>
-    <div v-else class="first-full">
-      <a-tabs default-active-key="1" lazy-load>
-        <a-tab-pane key="1">
-          <template #title>
-            <div class="flex-items">128晋64 <span>64强</span></div>
-          </template>
-          <div class="flex">
-            <div v-for="sum,d in sumData" :key="d" :class="['col-wrap',{'marTop2': d == 1},{'marTop3': d == 2 || d == 3},{'second-line': d == sumData.length-2}]">
-              <div v-for="data,index in sum" :key="index" class="battle-col">
-                <div v-if="data.groupA" class="battle-top flex flex-col items-end">
-                  <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
-                    <a-button>更多操作 <icon-down/></a-button>
-                    <template #content>
-                      <a-doption>改判</a-doption>
-                      <a-doption>重赛</a-doption>
-                      <a-doption>切换红蓝方</a-doption>
-                    </template>
-                  </a-dropdown>
-                  <ul>
-                    <li v-for="item,i in data.groupA" :key="i" class="flex"><div class="d1">{{ item.score }}</div><div class="d2 flex-items between white-nowrap"><div>{{ item.name }}</div><span>{{ item.num }}</span></div></li>
-                  </ul>
-                  <div class="status">{{ '未开始' || '进行中' || '已结束' || '2023-01-30 14:00 已结束'}}</div>
-                </div>
-                <div v-if="data.groupB" class="battle-bot flex flex-col items-end mt-20">
-                  <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
-                    <a-button>更多操作 <icon-down/></a-button>
-                    <template #content>
-                      <a-doption>改判</a-doption>
-                      <a-doption>重赛</a-doption>
-                      <a-doption>切换红蓝方</a-doption>
-                    </template>
-                  </a-dropdown>
-                  <ul>
-                    <li v-for="item,i in data.groupB" :key="i" class="flex"><div class="d1">{{ item.score }}</div><div class="d2 flex-items between white-nowrap"><div>{{ item.name }}</div> <span>{{ item.num }}</span></div></li>
-                  </ul>
-                  <div class="status">{{ '未开始' || '进行中' || '已结束' || '2023-01-30 14:00 已结束'}}</div>
-                </div>
+    <div v-else class="tabs-container">
+      <ul class="tabs-nav-list">
+        <li class="flex-center tab-active">128晋64 <span>64强</span></li>
+        <li class="flex-center">64晋32 <span>32强</span></li>
+        <li class="flex-center">4晋2 <span>冠亚</span></li>
+        <li class="flex-center">季殿争夺 <span>季殿</span></li>
+      </ul>
+      <div class="tabs-content">
+        <div v-if="contentloading" class="pre100 flex-center">
+          <a-spin :size="38" />
+        </div>
+        <div v-else class="flex">
+          <div v-for="sum,d in sumData" :key="d" :class="['col-wrap',{'marTop2': d == 1},{'marTop3': d == 2 || d == 3},{'second-line': d == sumData.length-2}]">
+            <div v-for="data,index in sum" :key="index" class="battle-col">
+              <div v-if="data.groupA" class="battle-top flex flex-col items-end">
+                <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
+                  <a-button>更多操作 <icon-down/></a-button>
+                  <template #content>
+                    <a-doption>改判</a-doption>
+                    <a-doption>重赛</a-doption>
+                    <a-doption>切换红蓝方</a-doption>
+                  </template>
+                </a-dropdown>
+                <ul>
+                  <li v-for="item,i in data.groupA" :key="i" class="flex"><div class="d1">{{ item.score }}</div><div class="d2 flex-items between white-nowrap"><div>{{ item.name }}</div><span>{{ item.num }}</span></div></li>
+                </ul>
+                <div class="status">{{ '未开始' || '进行中' || '已结束' || '2023-01-30 14:00 已结束'}}</div>
+              </div>
+              <div v-if="data.groupB" class="battle-bot flex flex-col items-end mt-20">
+                <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
+                  <a-button>更多操作 <icon-down/></a-button>
+                  <template #content>
+                    <a-doption>改判</a-doption>
+                    <a-doption>重赛</a-doption>
+                    <a-doption>切换红蓝方</a-doption>
+                  </template>
+                </a-dropdown>
+                <ul>
+                  <li v-for="item,i in data.groupB" :key="i" class="flex"><div class="d1">{{ item.score }}</div><div class="d2 flex-items between white-nowrap"><div>{{ item.name }}</div> <span>{{ item.num }}</span></div></li>
+                </ul>
+                <div class="status">{{ '未开始' || '进行中' || '已结束' || '2023-01-30 14:00 已结束'}}</div>
               </div>
             </div>
           </div>
-        </a-tab-pane>
-        <a-tab-pane key="2">
-          <template #title>
-            <div class="flex-items">64晋32 <span>32强</span></div>
-          </template>
-          <div></div>
-        </a-tab-pane>
-        <a-tab-pane key="3">
-          <template #title>
-            <div class="flex-items">4晋2 <span>冠亚</span></div>
-          </template>
-          <div></div>
-        </a-tab-pane>
-        <a-tab-pane key="4">
-          <template #title>
-            <div class="flex-items">季殿争夺 <span>季殿</span></div>
-          </template>
-          <div></div>
-        </a-tab-pane>
-      </a-tabs>
+        </div>
+      </div>
       <a-space class="flex-items justify-end mt-20">
-        <a-button class="default mr-20" style="width:180px; height: 54px;" @click="prevStep"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">重新抽签</div></a-button>
+        <a-button class="default mr-20" style="width:180px; height: 54px;" @click="getPointFightDataFun"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">重新抽签</div></a-button>
         <a-button class="default mr-20" style="width:180px; height: 54px;" @click="prevStep"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">返回上一步</div></a-button>
         <a-button class="active" style="width: 180px; height: 54px;" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">完成，下一步</div></a-button>
       </a-space>
@@ -88,12 +74,12 @@
     <div class="flex-center font-md mcolor-1">
       <div>您必须需打出第：</div>
       <a-select v-model="rewardNum" :unmount-on-close="true" placeholder="选择路径" :style="{width:'168px',height: '40px',margin:'0 10px'}">
-        <a-option v-for="value,i of 7" :key="i">{{Number(value)+1}}</a-option>
+        <a-option v-for="value of 8" :key="value">{{ value }}</a-option>
       </a-select>
       名
     </div>
     <template #footer>
-      <a-space><a-button class="active" style="width:128px; height: 40px;" @click="handleBeforeOk"><div style="font-size: 16px;line-height: 40px;font-weight: bold;">确认抽签</div></a-button></a-space>
+      <a-space><a-button class="active btn-loading" style="width:128px; height: 40px;" :disabled="loading" @click="handleBeforeOk"><div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="loading" />确认抽签</div></a-button></a-space>
       <div class="blue-1 cursor-pointer" style="font-size: 16px;line-height: 40px;font-weight: bold;" @click="handleCancel">取消</div>
     </template>
   </a-modal>
@@ -102,11 +88,19 @@
 <script lang="ts" setup>
 import { onMounted, reactive } from "vue"
 import { useRouter } from 'vue-router'
+import useLoading from '@/hooks/loading'
+import {  
+  resetPointDrawSlots,
+  getPointFightData
+} from '@/api/competition';
+import type { resetPointDrawSlotsData } from '@/api/competition';
 
 const closeImg = new URL('../../../../assets/images/icons/close.svg', import.meta.url).href
+const { loading, setLoading } = useLoading(false);
 const emit = defineEmits(['on-next','on-prev'])
 const router = useRouter()
-const rewardNum: number = $ref(0)
+let pointId: string = $ref('')
+const rewardNum: string = $ref('1')
 let visible = $ref(false);
 const tree1: any = reactive([
     {
@@ -247,11 +241,8 @@ const treeData: any = reactive({
   children: [{name:'队伍名称在此c',num:73,score:1}]
 })
 
-
 const getFlatArr = (arr:any) => {
   return arr.reduce((a: any, item: any) => {
-    console.log(a,item);
-    
     let flatArr = [...a, item];
     if (item.children) {
       flatArr = [...flatArr, ...getFlatArr(item.children)];
@@ -260,24 +251,42 @@ const getFlatArr = (arr:any) => {
   }, []);
 }
 
-const getNameByIdFromArr = (arr: any, id: any) => {
-  console.log(getFlatArr(arr));
-  return []
+// const getNameByIdFromArr = (arr: any, id: any) => {
+  // return []
   // return getFlatArr(arr).find((item: any) => item.id === id).name;
-}
-let showOne: boolean = $ref(true)
-const handleBeforeOk = () => {
-  window.setTimeout(() => {
-    showOne = false
-    visible = false
-    // eslint-disable-next-line vue/custom-event-name-casing
-    // emit('on-next')
-  }, 1000)
-}
+// }
+
+
+
+
+
 const handleCancel = () => {
   visible = false;
 }
+let showOne: boolean = $ref(true)
+const handleBeforeOk = () => {
+  setLoading(true)
+  resetPointDrawSlots({point_id: pointId, max_rank: Number(rewardNum)}).then((res: any) => {
+    if( res.error_code === 0 ){
+      // eslint-disable-next-line no-use-before-define
+      getPointFightDataFun()
+      showOne = false
+      visible = false
+    } 
+  }).finally(()=>{setLoading(false)})
+}
 
+let contentloading: boolean = $ref(false)
+const getPointFightDataFun = () => {
+  contentloading = true
+  getPointFightData(pointId).then((res: any) => {}).finally(()=>{contentloading = false})
+}
+
+
+
+const handleSelect = () => {
+
+}
 const prevStep = () => {
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('on-prev')
@@ -286,72 +295,65 @@ const nextStep = () => {
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('on-next')
 }
-const handleSelect = () => {
-
-}
 
 onMounted(() => {
-  console.log(getNameByIdFromArr(treeData.group,2));
-  
+  const queryInfo: any = router.currentRoute.value.query.matchinfo
+  pointId = JSON.parse(queryInfo).id
+  // console.log(getNameByIdFromArr(treeData.group,2));
 })
 
 </script>
 
 <style lang="less" scoped>
-:deep(.arco-tabs){
-  .arco-tabs-nav{
+.tabs-container{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all .1s ease;
+  .tabs-nav-list{
+    display: flex;
     height: 86px;
     border: 1px solid #DAE0F2;
-    .arco-tabs-nav-tab{
-      display: block;
-      height: 100%;
-      .arco-tabs-nav-tab-list{
-        display: flex;
-        height: 100%;
-        .arco-tabs-tab{
-          flex: 1;
-          display: flex;
-          justify-content: center;
-          position: relative;
-          z-index: 2;
-          margin: 0;
-          font-size: 20px;
-          color: #3A3F63;
-          transition: all .1s ease;
-          .arco-tabs-tab-title{
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            line-height: 44px;
-            border-left: 1px solid #DAE0F2;
-            &::before{display: none;}
-            span{
-              display: inline-block;
-              width: 50px;
-              margin-left: 20px;
-              line-height: 22px;
-              font-size: 16px;
-              font-weight: 500;
-              color: #71A0FE;
-              background: #F4F7FF;
-              border-radius: 4px;
-              text-align: center;
-            }
-          }
-          &:first-child .arco-tabs-tab-title{border-left: none;}
-          &:hover{ background-color: rgba(68, 88, 254, .1);}
-          &.arco-tabs-tab-active{
-            color: #fff;
-            font-weight: bold;
-            .arco-tabs-tab-title{border-left: none;}
-          }
-        }
-        .arco-tabs-nav-ink{ height: 100%; }
+    li{
+      position: relative;
+      flex: 1;
+      font-size: 20px;
+      color: #3A3F63;
+      span{
+        display: inline-block;
+        width: 50px;
+        margin-left: 20px;
+        line-height: 22px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #71A0FE;
+        background: #F4F7FF;
+        border-radius: 4px;
+        text-align: center;
+      }
+      &:not(:last-child)::after{
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 0;
+        width: 1px;
+        height: 44px;
+        margin-top: -22px;
+        border-left: 1px solid #DAE0F2;
+      }
+      &.tab-active{
+        color: #fff;
+        font-weight: bold;
+        background-color: #4458FE;
+        &::after{border-left: none;}
+      }
+      &:not(.tab-active):hover{
+        background: rgba(68, 88, 254, .1);
       }
     }
-    &::before{ display: none;}
-  } 
-  .arco-tabs-content{
+  }
+  .tabs-content{
+    flex: 1;
     padding: 30px;
     background: rgba(218,224,242,0.1);
   }
