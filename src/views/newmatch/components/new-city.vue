@@ -149,6 +149,7 @@ let formCity: createArenaData = $ref({
     rule: '暂无',
     arenaName: '',
     rewards: [],
+    cityName: ''
 });
 watch(level1, (newV,oldV) => {level2.value = null;})
 watch(level2, (newV,oldV) => {level3.value = null;})
@@ -193,7 +194,8 @@ const getINfo = async (id: number) => {
         rule: data.rules,
         arenaName: data.arenaName,
         rewards: tempRewards,
-        arenaId: data.arenaId
+        arenaId: data.arenaId,
+        cityName: '',
     }
     backRewards = tempRewards
     // eslint-disable-next-line no-use-before-define
@@ -213,6 +215,18 @@ const getTypesFilters = () => {
     // if( formCity.arenaType === 1 && level3.value === '新北市' ) {return 'region'}
     if( formCity.arenaType === 1 ) {return 'region,place'}
     return ''
+}
+
+const getCityName = (features: object | any, countrystr = 'country',placestr = 'place') => {
+    const { context = [] } = features
+    if( !context.length ) return features.text
+    let cityNameRes = ''
+    const countryObj: any = context.filter((item: any)=> (item.id).includes(countrystr) )
+    const placeObj: any = context.filter((item: any)=> (item.id).includes(placestr) )
+    if( countryObj[0]?.text === '中华人民共和国' ) countryObj[0].text = '中国'
+    if( !placeObj.length ) placeObj[0] = {text:features.text}
+    cityNameRes = (countryObj[0].text || '' ) + ( placeObj[0].text || '')
+    return cityNameRes
 }
 
 let center = $ref([104.07274,30.57899])
@@ -274,12 +288,13 @@ const getLocation = async (address: string) => {
         loading = true;
         const response: any = await axios.get(
             // `${baseUrl}/${center[0]},${center[1]}.json?access_token=${mapboxgl.accessToken}`
-            `${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&access_token=${mapboxgl.accessToken}`
+            `${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&language=zh-Hans&access_token=${mapboxgl.accessToken}`
         );
         console.log(response);
         if( response.features.length ){
             formCity.arenaName = response.features[0].matching_text || response.features[0].text
             formCity.arenaName = formCity.arenaName.replace(/[^\u4e00-\u9fa5]/gi, "") || formCity.arenaName
+            formCity.cityName = getCityName(response.features[0]) || ''
             center = response.features[0].center
             formCity.latitude = Math.floor(Number(center[1])*1000000)
             formCity.longitude = Math.floor(Number(center[0])*1000000)

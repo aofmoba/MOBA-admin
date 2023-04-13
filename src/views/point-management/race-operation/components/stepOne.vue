@@ -111,6 +111,10 @@ import { onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { TableData } from "@arco-design/web-vue"
+import {  
+  queryCompetitionPointCheckinList,
+  queryPointTeamInfo
+} from '@/api/competition';
 
 const searchImg = new URL('../../../../assets/images/icons/search.svg', import.meta.url).href
 const emit = defineEmits(['on-next'])

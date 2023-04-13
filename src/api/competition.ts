@@ -46,11 +46,11 @@ export interface comListRes {
     total: number;
     list: Array<competitionInfo>;
 }
-
+// 创建赛事
 export function createCompetition(data: createCompetitionData) {
     return axios.post('/api/competition/create',data);
 }
-
+// 赛事列表
 export function queryCompetitionList(data: comListData) {
     return axios.post<comListRes>('/api/competition/list',data);
 }
@@ -98,11 +98,94 @@ export interface comPointListRes {
     list: Array<competitionPointInfo>;
 }
 
-
+// 创建赛点
 export function createCompetitionPoint(data: createCompetitionPointData) {
     return axios.post('/api/competition_point/create',data);
 }
-
+// 赛点列表
 export function queryCompetitionPointList(data: comPointListData) {
     return axios.post<comPointListRes>('/api/competition_point/list',data);
+}
+
+export interface comPointCheckinListRes {
+    checkins: Array<string>;
+    noncheckins: Array<string>;
+}
+
+// 获取赛点签到列表
+export function queryCompetitionPointCheckinList(id: string) {
+    return axios.post<comPointCheckinListRes>('/api/competition_point/checkin_list',{point_id: id});
+}
+
+export interface resetPointDrawSlotsData {
+    // eslint-disable-next-line camelcase
+    point_id: string;
+    // eslint-disable-next-line camelcase
+    max_rank: number; // 1-8
+}
+
+// 重新抽签
+export function resetPointDrawSlots(data: resetPointDrawSlotsData) {
+    return axios.post('/api/competition_point/draw_slots',data);
+}
+
+
+export interface getPointFightRes {
+    pointId: string;
+    roundNum: number;
+    redTeamId: string;
+    blueTeamId: string;
+    redScore: number;
+    blueScore: number;
+    winTeamId: string;
+    startTime: number;
+    finishTime: number;
+    maxRound: number;
+}
+
+// 获取抽签对战信息
+export function getPointFightData(id: string) {
+    return axios.post<Array<getPointFightRes>>('/api/competition_point/get_fight_data',{point_id: id});
+}
+
+// 队伍单个成就
+export interface achivementsObject {
+    name: string;
+    timestamp: number;
+    icon: string;
+}
+
+// 队伍战绩 统计定义
+export interface teamResult {
+    fightCount: number; // 参战次数
+    championCount: number; // 夺冠次数
+    continusWinCount: number; // 连赢次数
+    killCount: number; // 击杀
+}
+
+export interface queryPointTeamInfoRes {
+    teamId: string;
+    leader: number;
+    createTime: number;
+    isClub: number;
+    name: string;
+    logo: string;
+    signature: string; // 队伍签名
+    leaderIcon: string; 
+    fightCount: number; // 出战次数
+    winCount: number; // 战胜次数
+    achivements: Array<achivementsObject>; // 成就
+    members: Array<object>; // 队伍成员
+    applyList: Array<object>; // 申请者列表
+    stats: object;
+}
+
+// 查看赛事队伍详情
+export function queryPointTeamInfo(id: string) {
+    return axios.post<queryPointTeamInfoRes>('/api/competition_team/info',{team_id: id});
+}
+
+// 替队伍抽签
+export function queryPointTeamCheckin(id: string) {
+    return axios.post('/api/competition_team/checkin',{team_id: id});
 }

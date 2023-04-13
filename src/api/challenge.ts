@@ -51,7 +51,8 @@ export interface createArenaData {
     rule: string;
     arenaName: string;
     rewards: Array<singleReward>;
-    arenaId?: number
+    cityName: string;
+    arenaId?: number;
 }
 
 export function createArena(data: createArenaData) {
