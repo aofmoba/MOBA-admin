@@ -20,7 +20,7 @@
           <a-input v-model="item.name" class="card-name" placeholder="请输入阶段名称" style="width: 188px;margin-right: 20px;"/>
         </a-space>
         <div v-if="( i !== 0 && stageList.length < 10 && stageList.length > 1) || ( stageList.length <= 1 )" class="cursor-pointer" style="margin-right: 20px;" @click="addStage(i)"><icon-plus style="font-size: 24px; color: #858EBD;" /></div>
-        <div class="cursor-pointer" @click="delStage(i)"><icon-minus style="font-size: 24px; color: #858EBD;" /></div>
+        <div v-if="stageList.length > 1" class="cursor-pointer" @click="delStage(i)"><icon-minus style="font-size: 24px; color: #858EBD;" /></div>
       </div>
     </div>
   </div>
@@ -32,10 +32,6 @@ import { stepsData } from '@/api/competition'
 
 const emit = defineEmits(['change-stage'])
 const stageList = $ref<stepsData[]>([
-  {
-    name: '',
-    startTime: 0,
-  },
   {
     name: '',
     startTime: 0,
