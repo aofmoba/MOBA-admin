@@ -97,13 +97,14 @@ const onPageChange = async (current: number) => {
 };
 const initData = () => {
   setLoading(false)
-  useDate = reactive(Array(10).fill(null).map((_, index) => ({
-    order: String(index+1),
-    type: '图文',
-    title: '社区内容管理标题在这社区内容管理标题在这',
-    image: new URL('../../../assets/images/demo.jpg', import.meta.url).href,
-    duration: '2023-01-30 15:30-2023-01-30 16:30',
-  })));
+  useDate = []
+  // useDate = reactive(Array(10).fill(null).map((_, index) => ({
+  //   order: String(index+1),
+  //   type: '图文',
+  //   title: '社区内容管理标题在这社区内容管理标题在这',
+  //   image: new URL('../../../assets/images/demo.jpg', import.meta.url).href,
+  //   duration: '2023-01-30 15:30-2023-01-30 16:30',
+  // })));
 }
 
 onMounted(() => {

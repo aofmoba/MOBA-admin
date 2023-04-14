@@ -86,13 +86,14 @@ const onPageChange = async (current: number) => {
 };
 const initData = () => {
   setLoading(false)
-  useDate = reactive(Array(10).fill(null).map((_, index) => ({
-    type: '地区推广商',
-    remarks: '超级无敌备注',
-    gameID: String(1234578+index),
-    place: '中国-四川-成都',
-    validtime: '2023-01-30 15:30-2023-01-30 16:30',
-  })));
+  useDate = []
+  // useDate = reactive(Array(10).fill(null).map((_, index) => ({
+  //   type: '地区推广商',
+  //   remarks: '超级无敌备注',
+  //   gameID: String(1234578+index),
+  //   place: '中国-四川-成都',
+  //   validtime: '2023-01-30 15:30-2023-01-30 16:30',
+  // })));
 }
 const editInfo = (record: any) => {
 }

@@ -119,7 +119,7 @@ const formPoint:createCompetitionPointData | any = $ref({
     checkInFinTime: 0,
     fightTime: 0,
     fightFinTime: 0,
-    teamNumLimit: 0, // 报名队伍数 默认不限制传0
+    teamNumLimit: undefined, // 报名队伍数 默认不限制传0
     teamMemberLimit: null, // 队伍人数
 });
 
@@ -169,6 +169,7 @@ const willCreate = () => {
   if( !formPoint.detail.banner ){ formPoint.detail.banner = router.currentRoute.value.query.url }
   if( !formPoint.detail.logo ){ formPoint.detail.logo = 'https://moba-project.s3-accelerate.amazonaws.com/admin/LOGO.png' }
   if( formPoint.fightTime && !formPoint.fightFinTime ) formPoint.fightFinTime = formPoint.fightTime + 86400 // 比赛结束时间默认为开始时间24小时后
+  if( formPoint.teamNumLimit === undefined ) formPoint.teamNumLimit = 0
   if( !formPoint.detail.steps.length ){ // 默认报名、签到、比赛阶段
     formPoint.detail.steps = [
       {name: '报名阶段',startTime: formPoint.signTime },
@@ -198,7 +199,6 @@ const handleSubmit = async ({errors, values,}: {
     errors: Record<string, ValidatedError> | undefined
   }) => {
     countUpload = 0
-    console.log('values:', values, '\nerrors:', errors)
     if( !errors && fightRoundView >= 0 && formPoint.signTime && formPoint.signFinTime && formPoint.checkInTime && formPoint.checkInFinTime && formPoint.fightTime ){
       willCreate() // 默认数据处理
       if( formPoint.checkInTime <= formPoint.signTime || formPoint.checkInTime >= formPoint.fightTime ){

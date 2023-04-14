@@ -128,10 +128,10 @@ interface allPointLists extends competitionPointInfo {
   status: number,
 }
 const exportXLSX = (teamdata: any) => {
-  const data = XLSX.utils.json_to_sheet(useData)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, data, teamdata.name) // test-data 为自定义的sheet表名
-  XLSX.writeFile(wb,`${teamdata.id }.xlsx`) // test.xlsx 为自定义的文件名
+  // const data = XLSX.utils.json_to_sheet(useData)
+  // const wb = XLSX.utils.book_new()
+  // XLSX.utils.book_append_sheet(wb, data, teamdata.name) // test-data 为自定义的sheet表名
+  // XLSX.writeFile(wb,`${teamdata.id }.xlsx`) // test.xlsx 为自定义的文件名
 }
 
 // eslint-disable-next-line consistent-return

@@ -87,12 +87,13 @@ const toPointList = (data: any) => {
 
 const initData = () => {
   setLoading(false)
-  useDate = reactive(Array(10).fill(null).map((_, index) => ({
-    order: String(index+1),
-    banner: new URL('../../../assets/images/demo.jpg', import.meta.url).href,
-    target: 'https://pvp.qq.com',
-    duration: '2023-01-30 15:30-2023-01-30 16:30',
-  })));
+  useDate = []
+  // useDate = reactive(Array(10).fill(null).map((_, index) => ({
+  //   order: String(index+1),
+  //   banner: new URL('../../../assets/images/demo.jpg', import.meta.url).href,
+  //   target: 'https://pvp.qq.com',
+  //   duration: '2023-01-30 15:30-2023-01-30 16:30',
+  // })));
 }
 onMounted(() => {
   setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
