@@ -123,7 +123,7 @@ const formPoint:createCompetitionPointData | any = $ref({
     teamMemberLimit: null, // 队伍人数
 });
 
-watch(()=>formPoint.fightNum,(newN,oldN)=>{
+watch(()=>fightNumView,(newN,oldN)=>{
   if( newN === 0 ) formPoint.teamMemberLimit = 5
   else if( newN === 1 ) formPoint.teamMemberLimit = 3
   else if( newN === 2 ) formPoint.teamMemberLimit = 1
@@ -178,9 +178,9 @@ const willCreate = () => {
     ]
   }
   // eslint-disable-next-line no-nested-ternary
-  formPoint.fightNum = fightNumView === 0 ? 1 : ( formPoint.fightNum === 1 ? 3 : 5 )
+  formPoint.fightNum = fightNumView === 0 ? 5 : ( fightNumView === 1 ? 3 : 1 )
   // eslint-disable-next-line no-nested-ternary
-  formPoint.fightRound = fightRoundView === 0 ? 1 : ( formPoint.fightRound === 1 ? 3 : 5 )
+  formPoint.fightRound = fightRoundView === 0 ? 1 : ( fightRoundView === 1 ? 3 : 5 )
 }
 
 const axiosCreate = () => {
