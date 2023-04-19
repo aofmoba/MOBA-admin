@@ -190,6 +190,9 @@ const axiosCreate = () => {
   }).finally(()=>{setLoading(false)})
 }
 
+const getNameLeng = (str: string) => {
+  return str.replace(/[\u0391-\uFFE5]/g, 'aa').length;
+}
 
 const uploadBannerRef: any = $ref()
 const uploadLogoRef: any = $ref()
@@ -199,6 +202,7 @@ const handleSubmit = async ({errors, values,}: {
     errors: Record<string, ValidatedError> | undefined
   }) => {
     countUpload = 0
+    console.log(formPoint.name,formPoint.name.length);
     if( !errors && fightRoundView >= 0 && formPoint.signTime && formPoint.signFinTime && formPoint.checkInTime && formPoint.checkInFinTime && formPoint.fightTime ){
       willCreate() // 默认数据处理
       if( formPoint.checkInTime <= formPoint.signTime || formPoint.checkInTime >= formPoint.fightTime ){
@@ -206,6 +210,7 @@ const handleSubmit = async ({errors, values,}: {
           content: '签到开始时间不能早于报名时间的开始时间，不能晚于比赛开始时间',
           duration: 5000
         })
+        formPoint.fightFinTime = 0
         return
       }
       if( formPoint.checkInFinTime <= formPoint.checkInTime || formPoint.checkInFinTime >= formPoint.fightTime ){ // 默认签到开始时间 小于签到结束时间
@@ -213,6 +218,7 @@ const handleSubmit = async ({errors, values,}: {
           content: '签到结束时间不能早于签到开始时间，不能晚于比赛开始时间',
           duration: 5000
         })
+        formPoint.fightFinTime = 0
         return
       }
       if( formPoint.fightTime <= formPoint.signFinTime ){ // 默认比赛开始时间 小于比赛结束时间
@@ -220,6 +226,7 @@ const handleSubmit = async ({errors, values,}: {
           content: '比赛开始时间不能早于报名结束时间，不能晚于比赛结束时间',
           duration: 5000
         })
+        formPoint.fightFinTime = 0
         return
       }
       setLoading(true)
@@ -249,13 +256,14 @@ const handleSubmit = async ({errors, values,}: {
       
     }else{
       let message = ''
+      const nameLen = getNameLeng(formPoint.name)
       if( !formPoint.fightTime ) message = '比赛开始时间'
       if( !formPoint.checkInTime || !formPoint.checkInFinTime ) message = '签到时间'
       if( !formPoint.signTime || !formPoint.signFinTime ) message = '报名时间'
       if( fightRoundView < 0 ) message = '获胜方式'
-      if( formPoint.name.length > 10 ) message = '赛点名称最多可填写10个字'
+      if( nameLen < 4 || nameLen > 20 ) message = '赛点名称最少填写2个字，最多可填写10个字'
       if( !formPoint.name ) message = '赛点名称'
-      if( formPoint.name.length <= 10 ){message += '不能为空'}
+      if( nameLen >= 4 && nameLen <= 20 ){message += '不能为空'}
       Message.error(message)
     }
 }

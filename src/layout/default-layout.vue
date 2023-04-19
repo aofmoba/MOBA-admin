@@ -95,9 +95,9 @@
     appStore.updateSettings({ menuCollapse: val });
   };
   watch(
-    () => userStore.role,
+    () => userStore.permissions,
     (roleValue) => {
-      if (roleValue && !permission.accessRouter(route))
+      if (roleValue[0] && !permission.accessRouter(route))
         router.push({ name: 'notFound' });
     }
   );

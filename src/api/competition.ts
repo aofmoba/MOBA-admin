@@ -185,7 +185,7 @@ export function queryPointTeamInfo(id: string) {
     return axios.post<queryPointTeamInfoRes>('/api/competition_team/info',{team_id: id});
 }
 
-// 替队伍抽签
+// 替队伍签到
 export function queryPointTeamCheckin(id: string) {
     return axios.post('/api/competition_team/checkin',{team_id: id});
 }

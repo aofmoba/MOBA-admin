@@ -96,7 +96,7 @@
     </div>
     <div class="flex-items between">
         <div>
-          <span class="font-md mcolor-1">已确认签到：0 / {{ totalTeam }}</span>
+          <span class="font-md mcolor-1">已确认签到：{{ useData.length }} / {{ allTeamData.length }}</span>
           <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数 5支</span>
         </div>
         <a-space>
@@ -138,8 +138,8 @@ const expandRow = (id: any) => {
     }
 }
 
-const querySingalTeam = (date: object[]) =>{
-  date.forEach((item: any )=>{
+const querySingalTeam = (data: object[]) =>{
+  data.forEach((item: any )=>{
     queryPointTeamInfo(item.id).then((res: any)=>{
       setLoading(false)
       if( res.error_code === 0 ){
@@ -158,13 +158,12 @@ const querySingalTeam = (date: object[]) =>{
   })
 }
 
-let totalTeam: number = $ref(0)
+let allTeamData: any = $ref([])
 const initData = async (id: string) => {
     queryComPointCheckinList(id).then((res: any) => {
       if( res.error_code === 0 ) {
         if( !res.data.checkins.length ) setLoading(false)
-        totalTeam = res?.checkins.length + res?.noncheckins.length
-        const allTeamData = [...res.checkins.length,...res.noncheckins.length]
+        allTeamData = [...res.checkins.length,...res.noncheckins.length]
         useData = res.data.checkins
         // eslint-disable-next-line no-use-before-define
         querySingalTeam( res.data.checkins )

@@ -11,7 +11,7 @@
     </div>
     <ul class="right-side">
       <li>
-        <div style="font-size: 16px; color: #3A3F63; font-weight: bold;">游戏昵称XX个字</div>
+        <div style="font-size: 16px; color: #3A3F63; font-weight: bold;">{{ username }}</div>
         <a-avatar :size="38" :style="{ marginRight: '8px' ,marginLeft: '10px' }">
           <img
             src="//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png"
@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, inject, ref } from 'vue';
+  import { computed, defineComponent, inject, onMounted, ref } from 'vue';
   import { Message } from '@arco-design/web-vue';
   import { useDark, useToggle } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
@@ -59,13 +59,9 @@
       const { logout } = useUser();
       const { changeLocale } = useLocale();
       const locales = [...LOCALE_OPTIONS];
-      const avatar = computed(() => {
-        // return userStore.$state.data.avatar;
-        return userStore;
-      });
-      const theme = computed(() => {
-        return appStore.theme;
-      });
+      const avatar = computed(() =>  userStore );
+      const username = computed(() => userStore.$state.username );
+      const theme = computed(() => appStore.theme );
       const isDark: any = useDark({
         selector: 'body',
         attribute: 'arco-theme',
@@ -112,6 +108,7 @@
         locales,
         theme,
         avatar,
+        username,
         exitImg,
         changeLocale,
         toggleTheme,

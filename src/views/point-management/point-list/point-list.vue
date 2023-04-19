@@ -178,16 +178,18 @@ const initData = async() => {
   setLoading(false)
 }
 const toRaceOperation = (record: allPointLists) => {
-  router.push({path: '/operation',query:{ matchinfo: JSON.stringify({
-    id: record.id,
-    match: record.name,
-    compId,
-    fightRound: record.fightRound,
-    start: record.signTime,
-    end: record.signFinTime,
-    signTime: record.signTime,
-    fightTime: record.fightTime
-  })}})
+  if( record.status === 1 || record.status === 2 ){
+    router.push({path: '/operation',query:{ matchinfo: JSON.stringify({
+      id: record.id,
+      match: record.name,
+      compId,
+      fightRound: record.fightRound,
+      start: record.signTime,
+      end: record.signFinTime,
+      signTime: record.signTime,
+      fightTime: record.fightTime
+    })}})
+  }
 }
 
 
