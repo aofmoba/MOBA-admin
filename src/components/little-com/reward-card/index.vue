@@ -68,7 +68,7 @@ watch(()=>props.backrew,(newV: any,oldV: any)=>{
 },{immediate: true,deep:true})
 watch(()=> rewardList,(newV:any)=>{
   if( newV ){
-    let reault = newV.filter((item:any) => item.name && ![null,undefined].includes(item.startRank) && ![null,undefined].includes(item.endRank))
+    let reault = newV.filter((item:any) => item.name && ![null,undefined].includes(item.startRank) && ![null,undefined].includes(item.endRank) && item.props.length > 0 )
     if( !props.rewardType ){
       reault = reault.map((item: any) => ({name:item.name, startRank:item.startRank, endRank:item.endRank,props: item.props}))
     }
