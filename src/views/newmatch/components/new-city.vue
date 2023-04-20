@@ -68,6 +68,7 @@ import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
 import MapboxLanguage from '@mapbox/mapbox-gl-language'
 import axios from 'axios';
 import type { dateType } from '@/types/global'
+import getCurrentPosition from '@/utils/map'
 
 const setplaceImg = new URL('../../../assets/images/icons/setplace.svg', import.meta.url).href
 const router = useRouter();
@@ -212,7 +213,6 @@ const getFilters = (value: any) => {
 }
 
 const getTypesFilters = () => {
-    // if( formCity.arenaType === 1 && level3.value === '新北市' ) {return 'region'}
     if( formCity.arenaType === 1 ) {return 'region,place'}
     return ''
 }
@@ -287,8 +287,8 @@ const getLocation = async (address: string) => {
     try {
         loading = true;
         const response: any = await axios.get(
-            // `${baseUrl}/${center[0]},${center[1]}.json?access_token=${mapboxgl.accessToken}`
-            `${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&language=zh-Hans&access_token=${mapboxgl.accessToken}`
+            // `${baseUrl}/${center[0]},${center[1]}.json?access_token=${mapboxgl.accessToken}`&language=zh-Hans
+            `${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&access_token=${mapboxgl.accessToken}`
         );
         console.log(response);
         if( response.features.length ){
@@ -348,6 +348,8 @@ watch(() => router.currentRoute.value.query,(newQ) => {
 },{immediate: true,deep: true})
 
 onMounted(() => {
+    // const res: any = await getCurrentPosition()
+    // if( res.length ) center = res
     innitMap()
 })
 </script>

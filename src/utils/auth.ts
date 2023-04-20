@@ -16,7 +16,9 @@ const clearToken = () => {
 };
 
 const clearAllLocal = () => {
+  const apilocal = localStorage.getItem('mobaapiurl')
   localStorage.clear();
+  localStorage.setItem('mobaapiurl',String(apilocal))
 };
 
 const setTimestamp = (date: number) => {

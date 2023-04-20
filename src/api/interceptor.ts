@@ -44,7 +44,7 @@ const computedTime = () => {
 
 
 axios.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: AxiosRequestConfig | any) => {
     // let each request carry token
     // this example using the JWT token
     // Authorization is a custom headers key
@@ -56,6 +56,13 @@ axios.interceptors.request.use(
     //   }
     //   config.headers = { accessToken: token }
     // }
+    (window as any).mobaapiurl = localStorage.getItem('mobaapiurl') || ''
+    if( (window as any).mobaapiurl === 'main' ){
+      config.url = config.url.replace('/api/', '/main/')
+    }else if( (window as any).mobaapiurl === 'api' ){
+      config.url = config.url.replace('/main/', '/api/')
+    }
+    
     const token = getToken();
     if (token) {
       if (!config.headers) { config.headers = {} }

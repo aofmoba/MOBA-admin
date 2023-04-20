@@ -21,6 +21,22 @@
         <a-dropdown class="exit-doption" trigger="click">
           <icon-down style="font-size: 24px; color: RGBA(100, 116, 254, 1);" />
           <template #content>
+            <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('api')">
+              <a-space>
+                <span class="mtext-1 font-md" style="margin-left: 2px;">
+                  42.*.*.146
+                </span>
+                <icon-check-circle-fill v-if="apiActive === 'api'" style="color: green;opacity: .6"/>
+              </a-space>
+            </a-doption>
+            <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('main')">
+              <a-space>
+                <span class="mtext-1 font-md" style="margin-left: 2px;">
+                  161.*.*.95
+                </span>
+                <icon-check-circle-fill v-if="apiActive === 'main'" style="color: green;opacity: .6"/>
+              </a-space>
+            </a-doption>
             <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="handleLogout">
               <a-space>
                 <img style="width: 22px;height: 22px;" :src="exitImg" alt="">
@@ -62,6 +78,7 @@
       const avatar = computed(() =>  userStore );
       const username = computed(() => userStore.$state.username );
       const theme = computed(() => appStore.theme );
+      const apiActive = computed(() => localStorage.getItem('mobaapiurl'));
       const isDark: any = useDark({
         selector: 'body',
         attribute: 'arco-theme',
@@ -90,6 +107,11 @@
       const handleLogout = () => {
           logout();
       };
+      const setApiurl = (url: string) => {
+        (window as any).mobaapiurl = url
+        localStorage.setItem('mobaapiurl',url)
+        window.location.reload() // 切换成功后刷新整个站点
+      };
       const setDropDownVisible = () => {
         const event = new MouseEvent('click', {
           view: window,
@@ -103,7 +125,14 @@
         Message.success(res as string);
       };
       const toggleDrawerMenu = inject('toggleDrawerMenu');
+      onMounted(()=>{
+        if( localStorage.getItem('mobaapiurl') === 'null' ){
+          (window as any).mobaapiurl = 'api'
+          localStorage.setItem('mobaapiurl','api')
+        }
+      })
       return {
+        apiActive,
         appStore,
         locales,
         theme,
@@ -117,6 +146,7 @@
         refBtn,
         triggerBtn,
         handleLogout,
+        setApiurl,
         setDropDownVisible,
         switchRoles,
         toggleDrawerMenu,

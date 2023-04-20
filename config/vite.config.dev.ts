@@ -23,6 +23,11 @@ export default mergeConfig(
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
+        '/main': {
+          target: 'http://161.189.70.95:5679/api/', // main
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/main/, '')
+        },
         '/localhost': {
           target: 'http://localhost:7001/', // https://testnode.cyberpop.online/
           changeOrigin: true,
