@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { UserState } from '@/store/modules/user/types';
+import { getToken } from '@/utils/auth';
 
 export interface LoginData {
   username: string;
@@ -23,5 +24,5 @@ export function logout() {
 }
 
 export function getUserInfo() {
-  return axios.post<UserState>('/api/user/info');
+  return axios.post<UserState>('/api/user/info',{accessToken: getToken()});
 }

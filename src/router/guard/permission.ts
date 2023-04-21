@@ -24,7 +24,6 @@ export default function setupPermissionGuard(router: Router) {
       }
       NProgress.done();
     }
-
     if (isLogin()) {
       if (userStore.permissions[0]) {
         crossroads();

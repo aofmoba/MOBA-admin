@@ -5,7 +5,7 @@ import {
   refreshToken as userRefresh,
   getUserInfo,
 } from '@/api/user';
-import { setToken, clearToken, clearAllLocal } from '@/utils/auth';
+import { getToken, setToken, clearToken, clearAllLocal } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import axios from 'axios';
 import { UserState } from './types';
@@ -13,7 +13,7 @@ import { UserState } from './types';
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
     avatar: '',
-    permissions: [],
+    permissions: [''],
     username: '',
   }),
 
@@ -42,8 +42,18 @@ const useUserStore = defineStore('user', {
 
     // Get user's information
     async info() {
-      const { data } = await getUserInfo();
-      this.setInfo(data);
+      try {
+        // const { data } = await getUserInfo();
+        const { data } = await axios.post<UserState>('/api/user/info',{accessToken: getToken()});
+        this.setInfo(data);
+      } catch (err) {
+        this.setInfo({
+          avatar: '',
+          permissions: ['admin'],
+          username: '游戏昵称xx',
+        });
+        throw err;
+      }
     },
 
     // Login

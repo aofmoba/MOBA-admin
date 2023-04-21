@@ -231,7 +231,7 @@ const getCityName = (features: object | any, countrystr = 'country',placestr = '
 
 let center = $ref([104.07274,30.57899])
 let map: any = $ref({})
-const baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
+const baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places"
 mapboxgl.accessToken = 'pk.eyJ1IjoicG9ueW1lbmciLCJhIjoiY2xmajJwZW90MDQ5YzN2bXExOThuNDBsNiJ9.edbPo5ZLBI0BGFV0NZkLUQ';
 const innitMap = () => {
     map = new mapboxgl.Map({
@@ -286,10 +286,8 @@ const getLocation = async (address: string) => {
     if( formCity.arenaType === 1 ) {apiAddress = address}
     try {
         loading = true;
-        const response: any = await axios.get(
-            // `${baseUrl}/${center[0]},${center[1]}.json?access_token=${mapboxgl.accessToken}`&language=zh-Hans
-            `${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&access_token=${mapboxgl.accessToken}`
-        );
+        console.log(apiAddress);
+        const response: any = await axios.get(`${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&access_token=${mapboxgl.accessToken}`);
         console.log(response);
         if( response.features.length ){
             formCity.arenaName = response.features[0].matching_text || response.features[0].text

@@ -57,14 +57,16 @@ axios.interceptors.request.use(
     //   config.headers = { accessToken: token }
     // }
     (window as any).mobaapiurl = localStorage.getItem('mobaapiurl') || ''
-    if( (window as any).mobaapiurl === 'main' ){
-      config.url = config.url.replace('/api/', '/main/')
-    }else if( (window as any).mobaapiurl === 'api' ){
-      config.url = config.url.replace('/main/', '/api/')
+    if( !config.url.includes('https://') ){
+      if( (window as any).mobaapiurl === 'main' ){
+        config.url = config.url.replace('/api/', '/main/')
+      }else if( (window as any).mobaapiurl === 'api' ){
+        config.url = config.url.replace('/main/', '/api/')
+      }
     }
     
     const token = getToken();
-    if (token) {
+    if (token && !config.url.includes('https://api.mapbox.com')) {
       if (!config.headers) { config.headers = {} }
       config.headers.accessToken = token
       if (computedTime() && config.url !== '/api/user/refresh_token') {
