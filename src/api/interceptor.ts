@@ -160,10 +160,17 @@ axios.interceptors.response.use(
     return res;
   },
   (error) => {
-    Message.error({
-      content: error.message,
-      duration: 5* 1000,
-    });
+    if( error.message === 'Request failed with status code 422' ){
+      Message.error({
+        content: '地址查询参数过长',
+        duration: 5 * 1000,
+      })
+    }else{
+      Message.error({
+        content: error.message,
+        duration: 5* 1000,
+      });
+    }
     return Promise.reject(error);
   }
 );

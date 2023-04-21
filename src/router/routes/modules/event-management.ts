@@ -6,7 +6,8 @@ export default {
     locale: '赛事管理',
     icon: 'icon4',
     order: 3,
-    // requiresAuth: true,
+    requiresAuth: true,
     hideChildrenInMenu: true,
+    roles: ['*'],
   },
 };

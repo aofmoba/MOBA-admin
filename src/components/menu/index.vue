@@ -60,7 +60,9 @@
         copyRouter.splice(8,0,{
             meta: {
               locale: '权限管理',
+              requiresAuth: true,
               hideChildrenInMenu: true,
+              roles: ['admin'],
             }
         })
 

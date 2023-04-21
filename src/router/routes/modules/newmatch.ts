@@ -6,7 +6,8 @@ export default {
     locale: '创建赛事',
     icon: 'icon1',
     order: 0,
-    // requiresAuth: true,
+    requiresAuth: true,
     hideChildrenInMenu: true,
+    roles: ['*'],
   },
 };

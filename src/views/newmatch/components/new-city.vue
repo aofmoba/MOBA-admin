@@ -155,9 +155,12 @@ let formCity: createArenaData = $ref({
 watch(level1, (newV,oldV) => {level2.value = null;})
 watch(level2, (newV,oldV) => {level3.value = null;})
 watch(level3, (newV,oldV) => { 
+    // eslint-disable-next-line no-multi-assign
+    formCity.latitude = formCity.longitude = 1000000
     if( formCity.arenaType === 1 ){
         if(newV) {formCity.arenaName = newV}
-    }else if(newV && formCity.arenaType !== 1){
+        else formCity.arenaName = ''
+    }else if( formCity.arenaType !== 1){
         formCity.arenaName = ''
     }
 })
@@ -231,6 +234,7 @@ const getCityName = (features: object | any, countrystr = 'country',placestr = '
 
 let center = $ref([104.07274,30.57899])
 let map: any = $ref({})
+let targetMarker: any = $ref(null)
 const baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places"
 mapboxgl.accessToken = 'pk.eyJ1IjoicG9ueW1lbmciLCJhIjoiY2xmajJwZW90MDQ5YzN2bXExOThuNDBsNiJ9.edbPo5ZLBI0BGFV0NZkLUQ';
 const innitMap = () => {
@@ -243,36 +247,11 @@ const innitMap = () => {
     map.addControl(new MapboxLanguage({
         defaultLanguage: 'zh-Hans' // en
     }));
-    const marker1 = new mapboxgl.Marker({color: "#4F8AFF"})
+    targetMarker = new mapboxgl.Marker({color: "#4F8AFF"})
     .setLngLat(center)
     .addTo(map);
-    // const geolocate = new mapboxgl.GeolocateControl({
-    //     positionOptions: {
-    //         enableHighAccuracy: true
-    //     },
-    //     trackUserLocation: true
-    // });
-    // Add the control to the map.
-    // map.addControl(geolocate);
-    // 搜索： 文字解析到地理位置
-    // const geocoder =  new MapboxGeocoder({
-    //     accessToken: mapboxgl.accessToken,
-    //     mapboxgl,
-    // })
-    // map.addControl(geocoder);
-    // geocoder.on("result", (e: any) => {
-        // const marker = new mapboxgl.Marker({
-        //     draggable: true,
-        //     color: "#D80739",
-        // })
-        // .setLngLat(e.result.center)
-        // .addTo(map);
-        // center = e.result.center;
-        // marker.on("dragend", (eve: any) => {
-        //     center = Object.values(eve.target.getLngLat());
-        // });
-    // });
 }
+
 let loading = $ref(false)
 // 定位： 地理位置解析到文字
 const getLocation = async (address: string) => {
@@ -286,7 +265,6 @@ const getLocation = async (address: string) => {
     if( formCity.arenaType === 1 ) {apiAddress = address}
     try {
         loading = true;
-        console.log(apiAddress);
         const response: any = await axios.get(`${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&access_token=${mapboxgl.accessToken}`);
         console.log(response);
         if( response.features.length ){
@@ -296,7 +274,11 @@ const getLocation = async (address: string) => {
             center = response.features[0].center
             formCity.latitude = Math.floor(Number(center[1])*1000000)
             formCity.longitude = Math.floor(Number(center[0])*1000000)
-            innitMap()
+            map.setCenter(center);
+            targetMarker.remove();
+            targetMarker = new mapboxgl.Marker({color: "#4F8AFF"})
+            .setLngLat(center)
+            .addTo(map);
         } else {
             // eslint-disable-next-line no-lonely-if
             if(formCity.arenaType === 0 && !formCity.arenaName){

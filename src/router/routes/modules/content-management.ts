@@ -6,7 +6,7 @@ export default {
     locale: '内容管理',
     icon: 'icon5',
     order: 4,
-    // requiresAuth: true,
+    requiresAuth: true,
     hideChildrenInMenu: false,
   },
   children: [{
@@ -17,7 +17,9 @@ export default {
       locale: 'Banner',
       icon: 'icon-caret-right',
       order: 4-1,
+      requiresAuth: true,
       hideChildrenInMenu: true,
+      roles: ['*'],
   }},
   {
     path: 'community',
@@ -27,7 +29,9 @@ export default {
       locale: '社区内容',
       icon: 'icon-caret-right',
       order: 4-2,
+      requiresAuth: true,
       hideChildrenInMenu: true,
+      roles: ['*'],
   }},
   {
     path: 'knowledge',
@@ -37,7 +41,9 @@ export default {
       locale: '小知识导航内容',
       icon: 'icon-caret-right',
       order: 4-3,
+      requiresAuth: true,
       hideChildrenInMenu: true,
+      roles: ['*'],
   }},
 ]
 };

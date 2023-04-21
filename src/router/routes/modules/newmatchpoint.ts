@@ -3,7 +3,8 @@ export default {
   name: 'newpoint',
   component: () => import('@/views/newmatchpoint/index.vue'),
   meta: {
-    requiresAuth: false,
+    requiresAuth: true,
     hideChildrenInMenu: true,
+    roles: ['*'],
   },
 }

@@ -6,7 +6,8 @@ export default {
     locale: '创建权限',
     icon: 'icon7',
     order: 6,
-    // requiresAuth: true,
+    requiresAuth: true,
     hideChildrenInMenu: true,
+    roles: ['admin'],
   },
 };

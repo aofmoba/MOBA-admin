@@ -3,7 +3,8 @@ export default {
   name: 'operation',
   component: () => import('@/views/point-management/race-operation/index.vue'),
   meta: {
-    requiresAuth: false,
+    requiresAuth: true,
     hideChildrenInMenu: true,
+    roles: ['*'],
   },
 }

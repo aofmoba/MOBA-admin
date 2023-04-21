@@ -6,7 +6,8 @@ export default {
     locale: '创建社区内容',
     icon: 'icon2',
     order: 1,
-    // requiresAuth: true,
+    requiresAuth: true,
     hideChildrenInMenu: true,
+    roles: ['*'],
   },
 };
