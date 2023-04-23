@@ -1,5 +1,4 @@
-import { add, chain } from 'lodash';
-import contracts from '@/utils/contracts'
+import contracts from '@/utils/web3/contracts'
 
 
 // eslint-disable-next-line import/extensions

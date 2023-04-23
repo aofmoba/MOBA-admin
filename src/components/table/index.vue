@@ -57,8 +57,8 @@ import { reactive, ref, onMounted, watch, getCurrentInstance, onDeactivated,onAc
 import { Message } from '@arco-design/web-vue';
 import { useI18n } from 'vue-i18n';
 import axios from 'axios';
-import Web3J from '@/utils/web3';
-import contracts from '@/utils/contracts'
+import Web3J from '@/utils/web3/web3';
+import contracts from '@/utils/web3/contracts'
 // eslint-disable-next-line import/extensions
 import Web3 from 'web3/dist/web3.min.js'
 import { staticData } from '@/store';
