@@ -7,7 +7,6 @@ import {
 } from '@/api/user';
 import { getToken, setToken, clearToken, clearAllLocal } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
-import axios from 'axios';
 import { UserState } from './types';
 
 const useUserStore = defineStore('user', {
@@ -43,9 +42,8 @@ const useUserStore = defineStore('user', {
     // Get user's information
     async info() {
       try {
-        // const { data } = await getUserInfo();
-        const { data } = await axios.post<UserState>('/api/user/info',{accessToken: getToken()});
-        this.setInfo(data);
+        const res = await getUserInfo()
+        this.setInfo(res.data);
       } catch (err) {
         this.setInfo({
           avatar: '',

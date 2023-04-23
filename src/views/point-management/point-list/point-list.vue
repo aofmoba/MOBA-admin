@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onActivated, onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { vertTime } from '@/utils/computed'
@@ -212,6 +212,13 @@ const deleteHandler = () => {
   //   }
   // }).finally(()=>{delLoading = false})
 }
+onActivated(()=>{
+  if( !loading.value ){
+    matchName = String(router.currentRoute.value.query.match)
+    compId = String(router.currentRoute.value.query.compId)
+    initData()
+  }
+})
 
 
 onMounted(() => {

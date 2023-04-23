@@ -8,11 +8,12 @@ export default function useUser() {
   const logout = async (logoutTo?: string) => {
     await userStore.logout().catch();
     const currentRoute = router.currentRoute.value;
+    if( currentRoute.name === 'operation' ) 
     router.push({
       name: logoutTo && typeof logoutTo === 'string' ? logoutTo : 'login',
       query: {
-        ...router.currentRoute.value.query,
-        redirect: currentRoute.name as string,
+        ...(currentRoute.name === 'operation' ? '' : router.currentRoute.value.query),
+        redirect: currentRoute.name === 'operation' ? 'Event management' : currentRoute.name as string,
       },
     });
   };

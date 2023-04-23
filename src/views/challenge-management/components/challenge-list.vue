@@ -100,7 +100,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onActivated, onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { vertTime } from '@/utils/computed'
@@ -249,6 +249,11 @@ const showRangking = (data: any) => {
 const changeRang = (data: boolean) => {
   visible = data
 }
+onActivated(()=>{
+  if( !loading.value ){
+    initData()
+  }
+})
 
 onMounted(() => {
   setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)

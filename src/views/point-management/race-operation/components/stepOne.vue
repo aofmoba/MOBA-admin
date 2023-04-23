@@ -190,7 +190,7 @@ const nextStep = () => {
 
 onMounted(() => {
     const queryInfo: any = router.currentRoute.value.query.matchinfo
-    queryData = JSON.parse(queryInfo)
+    queryData = JSON.parse(queryInfo) || {}
     initData(queryData.id)
 })
 

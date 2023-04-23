@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Message, Modal } from '@arco-design/web-vue';
-import { useRouter } from 'vue-router';
+import { Message } from '@arco-design/web-vue';
 import { getToken, clearToken, getTimestamp, setTimestamp } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import useUser from '@/hooks/user';
@@ -49,13 +48,6 @@ axios.interceptors.request.use(
     // this example using the JWT token
     // Authorization is a custom headers key
     // please modify it according to the actual situation
-    // const token = getToken();
-    // if (token) {
-    //   if (!config.headers) {
-    //     config.headers = {};
-    //   }
-    //   config.headers = { accessToken: token }
-    // }
     (window as any).mobaapiurl = localStorage.getItem('mobaapiurl') || ''
     if( !config.url.includes('https://') ){
       if( (window as any).mobaapiurl === 'main' ){
@@ -64,12 +56,11 @@ axios.interceptors.request.use(
         config.url = config.url.replace('/main/', '/api/')
       }
     }
-    
     const token = getToken();
     if (token && !config.url.includes('https://api.mapbox.com')) {
       if (!config.headers) { config.headers = {} }
       config.headers.accessToken = token
-      if (computedTime() && config.url !== '/api/user/refresh_token') {
+      if (computedTime() && config.url !== '/api/user/refresh_token' && config.url !== '/main/user/refresh_token') {
         if (!(window as any).isRefreshing) {
           (window as any).isRefreshing = true
           refreshToken().then((res: any) => {
@@ -105,11 +96,10 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse>) => {
     const res: any = response.data;
-    // const router = useRouter();
-    // if the custom code is not 20000, it is judged as an error.
+    // if the custom code is not 0, it is judged as an error.
     if (res.error_code !== 0 && res?.type !== 'FeatureCollection') {
       if( res.error_code === 1001 ){
-        if( response.config.url !== '/api/user/logout' ){
+        if( response.config.url !== '/api/user/logout' && response.config.url !== '/main/user/logout' ){
           Message.error({
             content: '登录已过期，需要重新登录',
             duration: 5 * 1000,
@@ -160,7 +150,7 @@ axios.interceptors.response.use(
     return res;
   },
   (error) => {
-    if( error.message === 'Request failed with status code 422' ){
+    if( error.message === 'Request failed with status code 422' ){ // mapbox api
       Message.error({
         content: '地址查询参数过长',
         duration: 5 * 1000,

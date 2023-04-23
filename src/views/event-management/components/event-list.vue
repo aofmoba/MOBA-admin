@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onMounted, reactive, onActivated } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { vertTime } from '@/utils/computed'
@@ -142,6 +142,13 @@ const toPoint = (record: any) => {
     router.push({ path: '/newpoint', query: { compId: record.id,name: record.name,url:record.detailInfo.banner } });
   }
 }
+
+onActivated(()=>{
+  if( !loading.value ){
+    initData()
+  }
+})
+
 onMounted(() => {
   setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
   initData()
