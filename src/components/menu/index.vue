@@ -1,5 +1,5 @@
 <script lang="tsx">
-  import { compile, computed, defineComponent, h, ref, watch } from 'vue';
+  import { compile, computed, defineComponent, h, ref, inject } from 'vue';
   import { useI18n } from 'vue-i18n';
   import {
     RouteLocationNormalized,
@@ -21,6 +21,7 @@
       const { isAssetsAllow } = storeToRefs(comStore);
       const permission = usePermission();
       const router = useRouter();
+      const toggleDrawerMenu = inject('toggleDrawerMenu');
       const collapsed = computed({
         get() {
           if (appStore.device === 'desktop') return appStore.menuCollapse;
@@ -208,6 +209,7 @@
           level-indent={34}
           style="height: 100%;background-color:#222653;"
           onCollapse={setCollapse}
+          onMenuItemClick={ appStore.device === 'mobile' ? toggleDrawerMenu : ''}
         >
         <a-menu-item key='title' style="margin: 30px 0;padding: 0;font-size: 20px;height: 28px; line-height:28px;font-weight: bold; text-align: center;color: #fff;">MOBA后台管理系统</a-menu-item>
         {renderSubMenu()}

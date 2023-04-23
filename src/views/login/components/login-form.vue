@@ -96,7 +96,7 @@
 
   onMounted(() => {
     clearAllLocal()
-    connectSubmit()
+    // connectSubmit()
   });
 </script>
 

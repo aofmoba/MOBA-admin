@@ -37,7 +37,7 @@
               <img class="userimg" src="@/assets/images/default.webp" alt="">
               <div class="username line-hidden">{{ item.name !== undefined ? item.name : '' }}</div>
               <div class="level">LV{{ item.level !== undefined ? item.level : '' }}</div>
-              <div class="data">{{ item.assist !== undefined ? `${item.assist}/${item.dead}/${item.kill}` : '' }}</div>
+              <div class="data">{{ item.kill !== undefined ? `${item.kill}/${item.dead}/${item.assist}` : '' }}</div>
               <div class="score"><img src="@/assets/images/scores.webp" alt="">{{ item.score }}分</div>
             </li>
             <div v-show="!loading2 && !rankingList.length" class="pre100 flex-center"><img style="width: 140px;" src="@/assets/images/empty.png" alt=""></div>
@@ -110,9 +110,9 @@ const queryPlayer = (date: ranksLists[]) =>{
             ...item,
             head: res.data.head,
             level: res.data.level,
-            assist: [undefined,null].includes( res.data.assist )  ? '--' : res.data.assist,
-            dead: [undefined,null].includes( res.data.dead )  ? '--' : res.data.dead,
             kill: [undefined,null].includes( res.data.kill )  ? '--' : res.data.kill,
+            dead: [undefined,null].includes( res.data.dead )  ? '--' : res.data.dead,
+            assist: [undefined,null].includes( res.data.assist )  ? '--' : res.data.assist,
             name:  [undefined,null].includes( res.data.name ) ? 'null' : res.data.name
           }
         }
@@ -123,7 +123,7 @@ const queryPlayer = (date: ranksLists[]) =>{
 
 watch(()=>props.showbol, (newV,oldV)=>{
   dialogTableVisible.value = newV
-  getRewards()
+  if( newV ) getRewards()
 },{immediate: true})
 </script>
 
