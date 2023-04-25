@@ -69,7 +69,7 @@
   >
     <template #title>
       <div style="font-size: 20px;line-height: 28px;color: #3A3F63;font-weight: bold;">共有19支队伍进行比赛</div>
-      <img class="close-btn" style="width: 32px;height: 32px;" :src="closeImg" alt="" @click="handleCancel">
+      <img class="close-btn" style="width: 32px;height: 32px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/close.svg" alt="" @click="handleCancel">
     </template>
     <div class="flex-center font-md mcolor-1">
       <div>您必须需打出第：</div>
@@ -95,7 +95,6 @@ import {
 } from '@/api/competition';
 import type { resetPointDrawSlotsData } from '@/api/competition';
 
-const closeImg = new URL('../../../../assets/images/icons/close.svg', import.meta.url).href
 const { loading, setLoading } = useLoading(false);
 const emit = defineEmits(['on-next','on-prev'])
 const router = useRouter()

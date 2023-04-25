@@ -304,8 +304,10 @@ textarea:-ms-input-placeholder {
 }
 .del-lots.arco-modal .arco-modal-header {
   height: 28px;
-  margin-top: 19px;
+  margin-top: 18px;
   border-bottom: none;
+  font-size: 20px;
+  color: #3A3F63;
 }
 .del-lots.arco-modal .arco-modal-header .close-btn {
   position: absolute;
@@ -326,12 +328,12 @@ textarea:-ms-input-placeholder {
   padding: 40px 0 18px;
   text-align: center;
 }
-.del-lots.arco-modal .arco-modal-footer > div:last-child {
+.del-lots.arco-modal .arco-modal-footer .cancel {
   width: 128px;
   font-size: 16px;
   line-height: 40px;
   font-weight: bold;
 }
-.del-lots.arco-modal .arco-modal-footer > div:last-child:hover {
+.del-lots.arco-modal .arco-modal-footer .cancel:hover {
   opacity: 0.8;
 }

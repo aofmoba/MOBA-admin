@@ -52,11 +52,13 @@
           />
           <a-table-column
             title="参与人数"
-            data-index="playerNum"
             :width="167"
-          />
+          >
+            <template #cell="{ record }">{{ record.status === 1 ?  '--' : record.playerNum }}</template>
+          </a-table-column>
           <a-table-column title="状态" :width="104">
             <template #cell="{ record }">
+              <div v-if="record.status === -1" style="color: #858EBD;">审核中</div>
               <div v-if="record.status == 1" style="color: #4458FE;">未开始</div>
               <div v-else-if="record.status == 2" style="color: #FF2855;">进行中</div>
               <div v-else style="color: #3A3F63;">已结束</div>
@@ -66,9 +68,9 @@
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
                 <a-button v-if="record" class="active noboxshadow" style="width: 103px; height: 32px;" @click="showRangking(record)">
-                  <div style="font-size: 14px;line-height: 32px;">{{ record.status == 1 ? '编辑':'查看排行榜' }}</div>
+                  <div style="font-size: 14px;line-height: 32px;">{{ [-1,1].includes(record.status) ? '编辑':'查看排行榜' }}</div>
                 </a-button>
-                <a-button class="default" :disabled="record.status === 1 ? false : true" style="width: 103px; height: 32px; margin-top: 10px;" @click="deleteArenaFun(record)"><div style="width: 98.5px;font-size: 14px;line-height: 27.5px;">删除</div></a-button>
+                <a-button class="default" :disabled="[-1,1].includes(record.status) ? false : true" style="width: 103px; height: 32px; margin-top: 10px;" @click="deleteArenaFun(record)"><div style="width: 98.5px;font-size: 14px;line-height: 27.5px;">删除</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -82,7 +84,7 @@
   >
     <template #title>
       <div style="font-size: 20px;line-height: 28px;color: #3A3F63;font-weight: bold;">确认信息</div>
-      <img class="close-btn" style="width: 32px;height: 32px;" :src="closeImg" alt="" @click="sureDelete = false">
+      <img class="close-btn" style="width: 32px;height: 32px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/close.svg" alt="" @click="sureDelete = false">
     </template>
     <div class="flex-center font-md mcolor-1">
       <div>您确定要删除此擂台吗？</div>
@@ -93,7 +95,7 @@
           <div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="delLoading"/> 确认</div>
         </a-button>
       </a-space>
-      <div class="blue-1 cursor-pointer" @click="sureDelete = false">取消</div>
+      <div class="cancel blue-1 cursor-pointer" @click="sureDelete = false">取消</div>
     </template>
   </a-modal>
   <Ranking :showbol="visible" :arenaid="ranksID" @change-rang="changeRang" />
@@ -104,7 +106,7 @@ import { onActivated, onMounted, reactive } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { vertTime } from '@/utils/computed'
-import { Message,Modal } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
 import {  
   queryArenaList,
   ArenaLists,
@@ -113,7 +115,6 @@ import {
 } from '@/api/challenge';
 import Ranking from './rangking.vue'
 
-const closeImg = new URL('../../../assets/images/icons/close.svg', import.meta.url).href
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
@@ -216,7 +217,7 @@ interface allArenaLists extends ArenaLists {
 let sureDelete: boolean = $ref(false)
 let delNum: number = $ref()
 const deleteArenaFun = (record: allArenaLists) => {
-  if( record.status === 1 ){
+  if( record.status === 1 || record.status === -1 ){
     delNum = record.arenaId
     sureDelete = true
   }

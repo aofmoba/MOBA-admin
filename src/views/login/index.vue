@@ -47,7 +47,7 @@ import LoginForm from './components/login-form.vue';
       z-index: 1;
       position: relative;
       width: 740px;
-      height: 440px;
+      // height: 470px;
       background: #FFFFFF;
       box-shadow: 0px 0px 8px 0px rgba(46,55,127,0.39);
       border-radius: 4px;

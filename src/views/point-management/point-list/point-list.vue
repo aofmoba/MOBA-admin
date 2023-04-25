@@ -3,7 +3,7 @@
     <a-space style="margin-bottom: 40px;flex-wrap: wrap;">
       <div class="flex-items font-md white-nowrap">
         <span class="mcolor-1">所属赛事：</span>
-        <div class="blue-1 ml-30" style="margin-right: 80px;font-weight: bold;">{{ matchName }}</div>
+        <div class="blue-1 ml-30" style="min-width: 227px;margin-right: 80px;font-weight: bold;">{{ matchName }}</div>
       </div>
       <div>
         <a-input :style="{width:'355px'}" placeholder="输入赛点名称"/>
@@ -47,14 +47,16 @@
           />
           <a-table-column
             title="报名人数"
-            data-index="joinNum"
             :width="129"
-          />
+            >
+            <template #cell="{ record }">{{ record.joinNum === 1 ?  '--' : record.joinNum }}</template>
+          </a-table-column>
           <a-table-column
             title="参赛人数"
-            data-index="signNum"
             :width="117"
-          />
+            >
+            <template #cell="{ record }">{{ record.status === 1 ?  '--' : record.signNum }}</template>
+          </a-table-column>
           <a-table-column title="状态" :width="114">
             <template #cell="{ record }">
               <div v-if="record.status == 1" style="color: #4458FE;">未开始</div>
@@ -81,7 +83,7 @@
   >
     <template #title>
       <div style="font-size: 20px;line-height: 28px;color: #3A3F63;font-weight: bold;">确认信息</div>
-      <img class="close-btn" style="width: 32px;height: 32px;" :src="closeImg" alt="" @click="sureDelete = false">
+      <img class="close-btn" style="width: 32px;height: 32px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/close.svg" alt="" @click="sureDelete = false">
     </template>
     <div class="flex-center font-md mcolor-1">
       <div>您确定要删除此擂台吗？</div>
@@ -92,7 +94,7 @@
           <div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="delLoading"/> 确认</div>
         </a-button>
       </a-space>
-      <div class="blue-1 cursor-pointer" @click="sureDelete = false">取消</div>
+      <div class="cancel blue-1 cursor-pointer" @click="sureDelete = false">取消</div>
     </template>
   </a-modal>
 </template>
@@ -109,7 +111,6 @@ import {
   competitionPointInfo 
 } from '@/api/competition';
 
-const closeImg = new URL('../../../assets/images/icons/close.svg', import.meta.url).href
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)

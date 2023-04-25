@@ -66,6 +66,14 @@
               roles: ['admin'],
             }
         })
+        copyRouter.splice(11,0,{
+            meta: {
+              locale: '赛事审核管理',
+              requiresAuth: true,
+              hideChildrenInMenu: true,
+              roles: ['admin'],
+            }
+        })
 
         // 只有可配置的钱包地址可以查看 Assets Overview 页面
         // eslint-disable-next-line no-empty

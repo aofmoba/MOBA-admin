@@ -1,31 +1,44 @@
 <template>
   <div class="form-group">
-    <div class="form-title">MOBA后台管理系统</div>
-    <a-form ref="formRef" :model="formLogin" @submit="handleSubmit">
-      <a-form-item         
-        field="user_name"
-        :rules="[{ required: true, message: '用户名不能为空' }]"
-        :validate-trigger="['change', 'blur']" 
-        label="账号："
-      >
-        <a-input v-model="formLogin.user_name" placeholder="输入登录密码" />
-      </a-form-item>
-      <a-form-item 
-        field="password" 
-        :rules="[{ required: true, message: '密码不能为空' }]"
-        :validate-trigger="['change', 'blur']"
-        label="密码："
-      >
-        <a-input-password
-            v-model="formLogin.password"
-            placeholder="输入登录账号"
-            allow-clear
-        />
-      </a-form-item>
-      <a-form-item>
-          <a-button class="active large btn-loading" html-type="submit" style="margin-left: 4px;" :disabled="loading"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
-      </a-form-item>
-    </a-form>
+    <div class="form-title">AOF后台管理系统</div>
+    <a-tabs default-active-key="1">
+      <a-tab-pane key="1" title="账号登录">
+        <a-form ref="formRef" :model="formLogin" @submit="handleSubmit">
+          <a-form-item         
+            field="user_name"
+            :rules="[{ required: true, message: '账号不能为空' }]"
+            :validate-trigger="['change', 'blur']" 
+            label="账号："
+          >
+            <a-input v-model="formLogin.user_name" placeholder="输入登录账号" />
+          </a-form-item>
+          <a-form-item 
+            field="password" 
+            :rules="[{ required: true, message: '密码不能为空' }]"
+            :validate-trigger="['change', 'blur']"
+            label="密码："
+          >
+            <a-input-password
+                v-model="formLogin.password"
+                placeholder="输入登录密码"
+                allow-clear
+            />
+          </a-form-item>
+          <a-form-item>
+              <a-button class="active large btn-loading" html-type="submit" style="margin-left: 4px;" :disabled="loading"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
+          </a-form-item>
+        </a-form>
+      </a-tab-pane>
+      <a-tab-pane key="2" title="钱包登录" :disabled="true">
+        <div class="metamask flex-center">
+          <img src="https://moba-project.s3-accelerate.amazonaws.com/admin/metamask.jpg" alt="">
+          <div>METAMASK</div>
+        </div>
+        <div class="mobile-w" style="padding-bottom: 50px;">
+          <a-button class="active large btn-loading" style="margin-left: -2px;" :disabled="loading" @click="connectSubmit"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
+        </div>
+      </a-tab-pane>
+    </a-tabs>
   </div>
 </template>
 
@@ -73,54 +86,54 @@
   };
 
   const connectSubmit = async () => {
-    const { ethereum } = window as any; // 获取小狐狸实例
-    if (!ethereum) {
-      // noInVisible.value = true;
-    } else {
-      await ethereum
-        .request({ method: 'eth_requestAccounts' })
-        .then(async (res: any) => {
-          const web3obj = new Web3((Web3 as any).givenProvider);
-          const res0 = await web3obj.utils.toChecksumAddress(res[0]);
-          console.log(res0);
-          // try {
-          //   console.log('connect')
-          // } catch (err) {
-          //   console.log(err);
-          // } finally {
-          //   setLoading(false);
-          // }
-        });
-    }
+    Message.info('Sorry, this feature is still under development...')
+    // const { ethereum } = window as any; // 获取小狐狸实例
+    // if (!ethereum) {
+    //   // noInVisible.value = true;
+    // } else {
+    //   await ethereum
+    //     .request({ method: 'eth_requestAccounts' })
+    //     .then(async (res: any) => {
+    //       const web3obj = new Web3((Web3 as any).givenProvider);
+    //       const res0 = await web3obj.utils.toChecksumAddress(res[0]);
+    //       console.log(res0);
+    //       // try {
+    //       //   console.log('connect')
+    //       // } catch (err) {
+    //       //   console.log(err);
+    //       // } finally {
+    //       //   setLoading(false);
+    //       // }
+    //     });
+    // }
   };
 
   onMounted(() => {
     clearAllLocal()
-    // connectSubmit()
   });
 </script>
 
 <style lang="less" scoped>
   .form-group {
-    padding: 50px 0;
+    padding-top: 50px;
     text-align: center;
     .form-title {
       height: 56px;
-      margin-bottom: 60px;
       font-size: 40px;
       font-weight: bold;
       color: #4458FE;
       line-height: 56px;
       white-space: nowrap;
+
+      // margin-bottom: 40px;
     }
     :deep(.arco-form){
       .arco-row{
         position: relative;
         flex-wrap: nowrap;
-        padding: 0 163px 0 164px 0 !important;
+        padding-bottom: 30px;
         margin: 0;
-        &:nth-child(1){padding-bottom: 30px !important;}
-        &:nth-child(2){padding-bottom: 50px !important;}
+        &:last-child{padding-bottom: 50px;}
         .arco-form-item-label-col{
           min-width: 48px !important;
           max-width: 48px !important;
@@ -149,6 +162,73 @@
       }
     }
   }
+  .metamask{
+    flex-direction: column;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 30px;
+    border-radius: 4px;
+    border: 1px solid #DAE0F2;
+    img{
+      width: 60px;
+    }
+    div{
+      margin-top: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #3A3F63;
+      line-height: 22px;
+    }
+  }
+  :deep(.arco-tabs){
+    .arco-tabs-nav{
+      height: 110px;
+      padding: 30px 0 40px;
+      .arco-tabs-nav-tab{
+        display: block;
+        height: 100%;
+        overflow: visible;
+        .arco-tabs-nav-tab-list{
+          display: flex;
+          width: 246px;
+          height: 100%;
+          margin: 0 auto;
+          background: #FFFFFF;
+          border-radius: 4px;
+          border: 1px solid #DAE0F2;
+          .arco-tabs-tab{
+            flex: 1;
+            z-index: 2;
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+            line-height: 22px;
+            color: #3A3F63;
+            font-weight: 400;
+            transition: all .1s ease;
+            .arco-tabs-tab-title{
+              width: 100%;
+              line-height: 40px;
+              &::before{display: none;}
+            }
+            &.arco-tabs-tab-active{
+              color: #fff;
+              font-weight: bold;
+            }
+          }
+          .arco-tabs-nav-ink{ 
+            height: 100%;
+            background: #4458FE;
+            border-radius: 4px;
+            box-shadow: 0px 4px 16px 0px #B3C0E7; }
+        }
+      }
+      &::before{ display: none;}
+    } 
+    .arco-tabs-content{
+      padding: 0;
+    }
+  }
 </style>
 
 <style lang="less" scoped>
@@ -172,6 +252,12 @@
             .arco-form-item-wrapper-col{ margin: 0 auto; }
           }
         }
+      }
+    }
+    .mobile-w{
+      button{
+        width: 246px !important;
+        margin-left: 4px !important;
       }
     }
   }

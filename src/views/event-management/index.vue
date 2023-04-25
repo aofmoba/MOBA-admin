@@ -1,6 +1,6 @@
 <template>
   <div class="event-container other-form wrapbg">
-    <Mtitle title="赛事管理" />
+    <Mtitle title="赛事列表" />
     <EventList />
   </div>
 </template>

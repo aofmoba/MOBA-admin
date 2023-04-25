@@ -11,7 +11,7 @@
     >
       <template #title>
         <div>查看排行榜</div>
-        <img :src="closeImg" alt="" @click="cancelHandle" >
+        <img src="https://moba-project.s3-accelerate.amazonaws.com/admin/close.svg" alt="" @click="cancelHandle" >
       </template>
       <div class="rewards">
         <div class="title">奖励</div>
@@ -58,7 +58,6 @@ import {
   queryPlayerInfo
 } from '@/api/challenge';
 
-const closeImg = new URL('../../../assets/images/icons/close.svg', import.meta.url).href
 const { loading, setLoading } = useLoading(true);
 let loading1: boolean = $ref(true)
 let loading2: boolean = $ref(true)

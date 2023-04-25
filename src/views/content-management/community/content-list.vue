@@ -81,9 +81,9 @@ let tableHeight: number = $ref(0)
 let useDate:any = $ref([]);
 const pagination: any = $ref({
   type: 'pagination',
-  page: 50,
+  page: 1,
   current: 1,
-  pageSize: 4,
+  pageSize: 10,
 })
 
 const toPointList = (data: any) => {

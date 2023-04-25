@@ -213,6 +213,7 @@ onMounted(() => {
           padding: 9px 20px;
           color: #3A3F63;
           resize: none;
+          border-radius: 4px;
           border: 1px solid #DAE0F2;
         }
       }
