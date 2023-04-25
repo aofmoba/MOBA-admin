@@ -166,8 +166,6 @@ watch(()=>props.showbol, (newV,oldV)=>{
           background: rgba(68,88,254,0.1);
         }
         ul{
-          display: flex;
-          flex-wrap: wrap;
           font-size: 14px;
           line-height: 20px;
           font-weight: 500;
@@ -190,7 +188,7 @@ watch(()=>props.showbol, (newV,oldV)=>{
         }
       }
       .rewards{ 
-        ul{ height: 121px;padding: 0 4px;}
+        ul{ display: flex;flex-wrap: wrap;height: 121px;padding: 0 4px;}
         li{
           width: 68px;
           padding: 10px 0 9px;
