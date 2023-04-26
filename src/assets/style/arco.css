@@ -110,6 +110,10 @@ textarea:-ms-input-placeholder {
   margin-bottom: 25px;
   color: #3A3F63;
 }
+.arco-form .arco-form-item.arco-form-item-error,
+.arco-space .arco-form-item.arco-form-item-error {
+  margin-bottom: 25px;
+}
 .arco-form .arco-input-wrapper,
 .arco-space .arco-input-wrapper {
   box-sizing: border-box;
