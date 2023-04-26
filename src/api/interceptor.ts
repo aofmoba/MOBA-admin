@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message } from '@arco-design/web-vue';
-import { getToken, clearToken, getTimestamp, setTimestamp } from '@/utils/auth';
+import { getToken, clearToken, getTimestamp, setTimestamp, isLogin } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import useUser from '@/hooks/user';
 import { refreshToken } from '@/api/user';
@@ -50,9 +50,9 @@ axios.interceptors.request.use(
     // please modify it according to the actual situation
     (window as any).mobaapiurl = localStorage.getItem('mobaapiurl') || ''
     if( !config.url.includes('https://') ){
-      if( (window as any).mobaapiurl === 'main' ){
+      if( (window as any).mobaapiurl === 'main' && config.url.includes('/api/')){
         config.url = config.url.replace('/api/', '/main/')
-      }else if( (window as any).mobaapiurl === 'api' ){
+      }else if( (window as any).mobaapiurl === 'api' && config.url.includes('/main/') ){
         config.url = config.url.replace('/main/', '/api/')
       }
     }
@@ -99,7 +99,7 @@ axios.interceptors.response.use(
     // if the custom code is not 0, it is judged as an error.
     if (res.error_code !== 0 && res?.type !== 'FeatureCollection') {
       if( res.error_code === 1001 ){
-        if( response.config.url !== '/api/user/logout' && response.config.url !== '/main/user/logout' ){
+        if( !['/main/user/logout','/api/user/logout'].includes(String(response.config.url)) && isLogin() ){
           Message.error({
             content: '登录已过期，需要重新登录',
             duration: 5 * 1000,

@@ -110,7 +110,7 @@
       const setApiurl = (url: string) => {
         (window as any).mobaapiurl = url
         localStorage.setItem('mobaapiurl',url)
-        window.location.reload() // 切换成功后刷新整个站点
+        logout()
       };
       const setDropDownVisible = () => {
         const event = new MouseEvent('click', {
