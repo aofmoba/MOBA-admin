@@ -64,11 +64,11 @@ import {
     singleReward
 } from '@/api/challenge';
 import mapboxgl from 'mapbox-gl'
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
+// import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
 import MapboxLanguage from '@mapbox/mapbox-gl-language'
 import axios from 'axios';
 import type { dateType } from '@/types/global'
-import getCurrentPosition from '@/utils/map'
+// import getCurrentPosition from '@/utils/map'
 
 const setplaceImg = new URL('../../../assets/images/icons/setplace.svg', import.meta.url).href
 const router = useRouter();
