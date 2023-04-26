@@ -70,8 +70,9 @@ axios.interceptors.request.use(
             }
           }).catch((err: any) => {
             console.log(err);
-            const { logout } = useUser();
-            logout();
+            clearToken();
+            // const { logout } = useUser();
+            // logout();
           }).finally(() => {(window as any).isRefreshing = false;})
         }
         /* 把请求(token)=>{....}都push到一个数组中 */

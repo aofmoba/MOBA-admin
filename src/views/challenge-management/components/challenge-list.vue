@@ -131,7 +131,7 @@ interface allDataType {
   placeData: allDataTypeRes,
   markData: allDataTypeRes,
 }
-const allData: allDataType = $ref({
+let allData: allDataType = $ref({
   cityData: {total: 0, data:[]},
   placeData: {total: 0, data:[]},
   markData: {total: 0, data:[]},
@@ -252,6 +252,11 @@ const changeRang = (data: boolean) => {
 }
 onActivated(()=>{
   if( !loading.value ){
+    allData = {
+      cityData: {total: 0, data:[]},
+      placeData: {total: 0, data:[]},
+      markData: {total: 0, data:[]},
+    }
     initData()
   }
 })
