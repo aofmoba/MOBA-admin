@@ -22,7 +22,17 @@
           <a-spin :size="38" />
         </div>
         <div v-else class="flex">
-          <div v-for="sum,d in sumData" :key="d" :class="['col-wrap',{'marTop2': d == 1},{'marTop3': d == 2},{'marTop4': d == 3},{'second-line': d == sumData.length-2 && false},{'champion': d == sumData.length-1 && false},{'laststyle':sumData.length>1}]">
+          <div 
+            v-for="sum,d in sumData" 
+            :key="d" 
+            :class="['col-wrap',
+            {'marTop2': d == 1},
+            {'marTop3': d == 2 || (d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1) },
+            {'marTop4': d == 3 && !(d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1)},
+            {'second-line': d == sumData.length-2 && sumData[0][0].maxRound === sumData.length-1},
+            {'champion': d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1},
+            {'laststyle':sumData.length>1}]"
+          >
             <div v-for="data,index in sum" :key="index" class="battle-col">
               <div class="battle-top flex flex-col items-end">
                 <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
@@ -160,16 +170,16 @@ const tree1: any = reactive([
   ])
   
 const tree2 = reactive([
-    {
-      pointId: null,
+{
+      pointId: 123456,
       roundNum: 2,
-      redTeamId: null,
-      blueTeamId: null,
-      redScore: 0,
-      blueScore: 0,
-      winTeamId: null,
-      startTime: null,
-      finishTime: null,
+      redTeamId: '005',
+      blueTeamId: '008',
+      redScore: 5,
+      blueScore: 1,
+      winTeamId: '008',
+      startTime: 0,
+      finishTime: 0,
       maxRound: 2,
     },
     {
@@ -187,31 +197,31 @@ const tree2 = reactive([
 ])
 
 const tree3 = reactive([
-    // {
-    //   pointId: 123456,
-    //   roundNum: 3,
-    //   redTeamId: '001',
-    //   blueTeamId: '008',
-    //   redScore: 0,
-    //   blueScore: 6,
-    //   winTeamId: '008',
-    //   startTime: 10000,
-    //   finishTime: 10000,
-    //   maxRound: 1,
-    // },
+    {
+      pointId: 123456,
+      roundNum: 3,
+      redTeamId: '001',
+      blueTeamId: '008',
+      redScore: 5,
+      blueScore: 1,
+      winTeamId: '001',
+      startTime: 0,
+      finishTime: 0,
+      maxRound: 1,
+    },
 ])
 const tree4 = reactive([
     {
       pointId: 123456,
-      roundNum: 3,
+      roundNum: 4,
       redTeamId: '003',
       blueTeamId: '005',
       redScore: 0,
       blueScore: 6,
       winTeamId: '005',
-      startTime: 10000,
-      finishTime: 10000,
-      maxRound: 1,
+      startTime: 0,
+      finishTime: 0,
+      maxRound: 0,
     },
 ])
 const tree5 = reactive([
@@ -242,7 +252,7 @@ const tree6 = reactive([
       maxRound: 1,
     },
 ])
-let sumData = $ref([tree1,tree2,tree3,tree4])
+let sumData: getPointFightRes[][] | any[][] = $ref([])
 
 const treeData: any = reactive({
   level: 3,
@@ -321,7 +331,7 @@ const handleBeforeOk = () => {
 
 let contentloading: boolean = $ref(false)
 // const arrobj = [...tree1,...tree1,...tree2,...tree2,...tree3,...tree3,...tree5,...tree6]
-const arrobj = [...tree1,...tree2,...tree3]
+const arrobj = [...tree1,...tree2,...tree3,...tree4]
 const getPointFightDataFun = async () => {
   contentloading = true
   contentloading = false
@@ -356,7 +366,7 @@ const getPointFightDataFun = async () => {
   arrobj.forEach((item: getPointFightRes,i) => {
     const tempIndex = numArr.findIndex((da: Array<getPointFightRes>) => da[0].roundNum === item.roundNum )
     if( tempIndex >= 0 ){
-      if( item.roundNum === lenArr.length ){
+      if( item.roundNum !== 1 ){
         const oneIndex = numArr[0].findIndex((one: any) => one.winTeamId === item.redTeamId || one.winTeamId === item.blueTeamId )
         if( oneIndex >= 0 ){
           // eslint-disable-next-line no-restricted-properties
@@ -599,7 +609,6 @@ onMounted(() => {
     }
   }
   &.champion{
-    margin-top: 490px;
     margin-right: 0;
     .battle-col{margin-top: 980px;}
   }
