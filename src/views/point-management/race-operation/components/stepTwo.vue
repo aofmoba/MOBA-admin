@@ -17,14 +17,14 @@
         <li class="flex-center">4晋2 <span>冠亚</span></li>
         <li class="flex-center">季殿争夺 <span>季殿</span></li>
       </ul>
-      <div class="tabs-content">
+      <div class="tabs-content" style="overflow-x: auto;">
         <div v-if="contentloading" class="pre100 flex-center">
           <a-spin :size="38" />
         </div>
         <div v-else class="flex">
-          <div v-for="sum,d in sumData" :key="d" :class="['col-wrap',{'marTop2': d == 1},{'marTop3': d == 2 || d == 3},{'second-line': d == sumData.length-2}]">
+          <div v-for="sum,d in sumData" :key="d" :class="['col-wrap',{'marTop2': d == 1},{'marTop3': d == 2},{'marTop4': d == 3},{'second-line': d == sumData.length-2 && false},{'champion': d == sumData.length-1 && false},{'laststyle':sumData.length>1}]">
             <div v-for="data,index in sum" :key="index" class="battle-col">
-              <div v-if="data.groupA" class="battle-top flex flex-col items-end">
+              <div class="battle-top flex flex-col items-end">
                 <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
                   <a-button>更多操作 <icon-down/></a-button>
                   <template #content>
@@ -34,30 +34,35 @@
                   </template>
                 </a-dropdown>
                 <ul>
-                  <li v-for="item,i in data.groupA" :key="i" class="flex"><div class="d1">{{ item.score }}</div><div class="d2 flex-items between white-nowrap"><div>{{ item.name }}</div><span>{{ item.num }}</span></div></li>
+                  <li class="flex">
+                    <div v-if="data.redTeamId" class="d1">{{ data.redTeamId }}</div>
+                    <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                    <div class="d2 flex-items between white-nowrap">
+                      <div>{{ data.redTeamId }}</div>
+                      <span>{{ data.redScore }}</span>
+                    </div>
+                  </li>
+                  <li class="flex">
+                    <div v-if="data.blueTeamId" class="d1">{{ data.blueTeamId }}</div>
+                    <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                    <div class="d2 flex-items between white-nowrap">
+                      <div>{{ data.blueTeamId }}</div>
+                      <span>{{ data.blueScore }}</span>
+                    </div>
+                  </li>
                 </ul>
-                <div class="status">{{ '未开始' || '进行中' || '已结束' || '2023-01-30 14:00 已结束'}}</div>
-              </div>
-              <div v-if="data.groupB" class="battle-bot flex flex-col items-end mt-20">
-                <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
-                  <a-button>更多操作 <icon-down/></a-button>
-                  <template #content>
-                    <a-doption>改判</a-doption>
-                    <a-doption>重赛</a-doption>
-                    <a-doption>切换红蓝方</a-doption>
-                  </template>
-                </a-dropdown>
-                <ul>
-                  <li v-for="item,i in data.groupB" :key="i" class="flex"><div class="d1">{{ item.score }}</div><div class="d2 flex-items between white-nowrap"><div>{{ item.name }}</div> <span>{{ item.num }}</span></div></li>
-                </ul>
-                <div class="status">{{ '未开始' || '进行中' || '已结束' || '2023-01-30 14:00 已结束'}}</div>
+                <div class="status-wrap">
+                  <div v-if="computedStatus(data.startTime,data.finishTime) === 1" class="status" style="color:#4458FE">未开始</div>
+                  <div v-if="computedStatus(data.startTime,data.finishTime) === 2" class="status" style="color:#FF2855">进行中</div>
+                  <div v-if="computedStatus(data.startTime,data.finishTime) === 0" class="status">{{ vertTime(data.finishTime) + ' 已结束' }}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <a-space class="flex-items justify-end mt-20">
-        <a-button class="default mr-20" style="width:180px; height: 54px;" @click="getPointFightDataFun"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">重新抽签</div></a-button>
+        <a-button class="default mr-20" style="width:180px; height: 54px;" @click="reGetFightDataFun"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">重新抽签</div></a-button>
         <a-button class="default mr-20" style="width:180px; height: 54px;" @click="prevStep"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">返回上一步</div></a-button>
         <a-button class="active" style="width: 180px; height: 54px;" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">完成，下一步</div></a-button>
       </a-space>
@@ -86,14 +91,16 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onMounted, reactive, computed } from "vue"
 import { useRouter } from 'vue-router'
 import useLoading from '@/hooks/loading'
+import { vertTime } from '@/utils/computed'
 import {  
   resetPointDrawSlots,
   getPointFightData
 } from '@/api/competition';
-import type { resetPointDrawSlotsData } from '@/api/competition';
+import type { getPointFightRes } from '@/api/competition';
+import { Message } from "@arco-design/web-vue";
 
 const { loading, setLoading } = useLoading(false);
 const emit = defineEmits(['on-next','on-prev'])
@@ -103,106 +110,139 @@ const rewardNum: string = $ref('1')
 let visible = $ref(false);
 const tree1: any = reactive([
     {
-      level: 1,
-      groupA: [
-        {name:'队伍名称在此a',num:73,score:0},
-        {name:'队伍名称在此a1',num:73,score:0}
-      ],
-      groupB:[
-        {name:'队伍名称在此b1',num:73,score:0},
-        {name:'队伍名称在此b1',num:73,score:0},
-      ],
+      pointId: 123456,
+      roundNum: 1,
+      redTeamId: '001',
+      blueTeamId: '002',
+      redScore: 2,
+      blueScore: 1,
+      winTeamId: '001',
+      startTime: 1682641273,
+      finishTime: 1682651273,
+      maxRound: 3,
     },
     {
-      level: 1,
-      groupA: [
-        {name:'队伍名称在此c',num:73,score:0},
-        {name:'队伍名称在此c1',num:73,score:0}
-      ],
-      groupB:[
-        {name:'队伍名称在此d',num:73,score:0},
-        {name:'队伍名称在此d1',num:73,score:0},
-      ],
+      pointId: 123456,
+      roundNum: 1,
+      redTeamId: '003',
+      blueTeamId: '004',
+      redScore: 1,
+      blueScore: 0,
+      winTeamId: '003',
+      startTime: 1682651273,
+      finishTime: 1682661273,
+      maxRound: 3,
     },
-    // {
-    //   level: 1,
-    //   groupA: [
-    //     {name:'队伍名称在此e',num:73,score:0},
-    //     {name:'队伍名称在此e1',num:73,score:0}
-    //   ],
-    //   groupB:[
-    //     {name:'队伍名称在此f',num:73,score:0},
-    //     {name:'队伍名称在此f1',num:73,score:0},
-    //   ],
-    // },
-    // {
-    //   level: 1,
-    //   groupA: [
-    //     {name:'队伍名称在此g',num:73,score:0},
-    //     {name:'队伍名称在此g1',num:73,score:0}
-    //   ],
-    //   groupB:[
-    //     {name:'队伍名称在此h',num:73,score:0},
-    //     {name:'队伍名称在此h1',num:73,score:0},
-    //   ],
-    // },
-])
-
+    {
+      pointId: 123456,
+      roundNum: 1,
+      redTeamId: '005',
+      blueTeamId: '006',
+      redScore: 3,
+      blueScore: 0,
+      winTeamId: '005',
+      startTime: 1682661273,
+      finishTime: 1682681273,
+      maxRound: 3,
+    },
+    {
+      pointId: 123456,
+      roundNum: 1,
+      redTeamId: '007',
+      blueTeamId: '008',
+      redScore: 1,
+      blueScore: 5,
+      winTeamId: '008',
+      startTime: 1682681273,
+      finishTime: 16826101273,
+      maxRound: 3,
+    },
+  ])
+  
 const tree2 = reactive([
     {
-      level: 2,
-      groupA: [
-        {name:'队伍名称在此a',num:73,score:0},
-        {name:'队伍名称在此b',num:73,score:0}
-      ],
-      groupB:[
-        {name:'队伍名称在此c',num:73,score:0},
-        {name:'队伍名称在此d',num:73,score:0},
-      ],
+      pointId: null,
+      roundNum: 2,
+      redTeamId: null,
+      blueTeamId: null,
+      redScore: 0,
+      blueScore: 0,
+      winTeamId: null,
+      startTime: null,
+      finishTime: null,
+      maxRound: 2,
     },
-    // {
-    //   level: 2,
-    //   groupA: [
-    //     {name:'队伍名称在此e',num:73,score:0},
-    //     {name:'队伍名称在此f',num:73,score:0}
-    //   ],
-    //   groupB:[
-    //     {name:'队伍名称在此g',num:73,score:0},
-    //     {name:'队伍名称在此h',num:73,score:0},
-    //   ],
-    // }
+    {
+      pointId: 123456,
+      roundNum: 2,
+      redTeamId: '001',
+      blueTeamId: '003',
+      redScore: 5,
+      blueScore: 1,
+      winTeamId: '001',
+      startTime: 0,
+      finishTime: 0,
+      maxRound: 2,
+    },
 ])
 
 const tree3 = reactive([
-    {
-      level: 3,
-      groupA: [
-        {name:'队伍名称在此a',num:73,score:0},
-        {name:'队伍名称在此c',num:73,score:0}
-      ],
-      // groupB:[
-      //   {name:'队伍名称在此e',num:73,score:0},
-      //   {name:'队伍名称在此g',num:73,score:0},
-      // ],
-    },
+    // {
+    //   pointId: 123456,
+    //   roundNum: 3,
+    //   redTeamId: '001',
+    //   blueTeamId: '008',
+    //   redScore: 0,
+    //   blueScore: 6,
+    //   winTeamId: '008',
+    //   startTime: 10000,
+    //   finishTime: 10000,
+    //   maxRound: 1,
+    // },
 ])
 const tree4 = reactive([
     {
-      level: 4,
-      groupA: [
-        {name:'队伍名称在此a',num:73,score:0},
-        {name:'队伍名称在此c',num:73,score:0}
-      ],
+      pointId: 123456,
+      roundNum: 3,
+      redTeamId: '003',
+      blueTeamId: '005',
+      redScore: 0,
+      blueScore: 6,
+      winTeamId: '005',
+      startTime: 10000,
+      finishTime: 10000,
+      maxRound: 1,
     },
-    // {
-    //   level: 4,
-    //   groupA: [
-    //     {name:'队伍名称在此e',num:73,score:0},
-    //     {name:'队伍名称在此g',num:73,score:0}
-    //   ],
-    // },
 ])
-const sumData = $ref([tree1,tree2,tree3,tree4])
+const tree5 = reactive([
+    {
+      pointId: 123456,
+      roundNum: 4,
+      redTeamId: '003',
+      blueTeamId: '005',
+      redScore: 0,
+      blueScore: 6,
+      winTeamId: '005',
+      startTime: 10000,
+      finishTime: 10000,
+      maxRound: 1,
+    },
+])
+const tree6 = reactive([
+    {
+      pointId: 123456,
+      roundNum: 5,
+      redTeamId: '003',
+      blueTeamId: '005',
+      redScore: 0,
+      blueScore: 6,
+      winTeamId: '005',
+      startTime: 10000,
+      finishTime: 10000,
+      maxRound: 1,
+    },
+])
+let sumData = $ref([tree1,tree2,tree3,tree4])
 
 const treeData: any = reactive({
   level: 3,
@@ -250,6 +290,13 @@ const getFlatArr = (arr:any) => {
   }, []);
 }
 
+// eslint-disable-next-line consistent-return
+const computedStatus = (start: number,end: number) => {
+  const now = Math.floor(new Date().getTime() / 1000)
+  if( now < start || !start || !end ) return 1
+  if( now >= start && now < end ) return 2
+  if( now >= end ) return 0
+}
 // const getNameByIdFromArr = (arr: any, id: any) => {
   // return []
   // return getFlatArr(arr).find((item: any) => item.id === id).name;
@@ -273,12 +320,68 @@ const handleBeforeOk = () => {
 }
 
 let contentloading: boolean = $ref(false)
-const getPointFightDataFun = () => {
+// const arrobj = [...tree1,...tree1,...tree2,...tree2,...tree3,...tree3,...tree5,...tree6]
+const arrobj = [...tree1,...tree2,...tree3]
+const getPointFightDataFun = async () => {
   contentloading = true
-  getPointFightData(pointId).then((res: any) => {}).finally(()=>{contentloading = false})
+  contentloading = false
+  // const res: any = await getPointFightData(pointId).finally(()=>{contentloading = false})
+  let numArr: getPointFightRes[][] | any[][] = []
+  const lenArr: number[] = []
+  let oneLen = 0
+  arrobj.forEach((item: any)=>{
+      if( !lenArr.includes(item.roundNum) ){
+        lenArr.push(item.roundNum)
+      }
+      if( item.roundNum === 1 ){
+        oneLen +=1
+      }
+  })
+  numArr = reactive(Array(lenArr.length).fill(null).map((_, index) => ([])));
+  lenArr.forEach((item: any,i)=>{
+    // eslint-disable-next-line no-restricted-properties
+    numArr[i] = reactive(Array(oneLen/Math.pow(2,item-1)).fill(null).map((_, index) => ({
+      pointId: null,
+      roundNum: item,
+      redTeamId: null,
+      blueTeamId: null,
+      redScore: 0,
+      blueScore: 0,
+      winTeamId: null,
+      startTime: null,
+      finishTime: null,
+      maxRound: null,
+    })));
+  })
+  arrobj.forEach((item: getPointFightRes,i) => {
+    const tempIndex = numArr.findIndex((da: Array<getPointFightRes>) => da[0].roundNum === item.roundNum )
+    if( tempIndex >= 0 ){
+      if( item.roundNum === lenArr.length ){
+        const oneIndex = numArr[0].findIndex((one: any) => one.winTeamId === item.redTeamId || one.winTeamId === item.blueTeamId )
+        if( oneIndex >= 0 ){
+          // eslint-disable-next-line no-restricted-properties
+          numArr[tempIndex].splice(oneIndex/Math.pow(2,lenArr.length-1),1,item)
+        }
+      }else{
+        numArr[tempIndex].splice(i,1,item)
+      }
+    }
+    // else{
+    //   numArr.push([item])
+    // }
+    // return numArr.sort((a: getPointFightRes[],b: getPointFightRes[])=> a[0].roundNum - b[0].roundNum)
+  })
+  sumData = numArr
 }
 
-
+const reGetFightDataFun = async () => {
+  await getPointFightDataFun()
+  const temp = sumData[0].filter((item: getPointFightRes)=> item.redScore > 0 || item.blueScore > 0 )
+  if( temp.length > 0 ){ Message.error('比赛已经开始，不能进行重新抽签操作') }
+  else {
+    visible = true
+  }
+} 
 
 const handleSelect = () => {
 
@@ -287,9 +390,15 @@ const prevStep = () => {
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('on-prev')
 }
-const nextStep = () => {
-  // eslint-disable-next-line vue/custom-event-name-casing
-  emit('on-next')
+const nextStep = async () => {
+  await getPointFightDataFun()
+  const temp = sumData[0].filter((item: getPointFightRes)=> item.redScore > 0 || item.blueScore > 0 )
+  console.log(temp);
+  if( temp.length > 0 ){ Message.error('比赛已经开始，不能进行重新抽签操作') }
+  else {
+    // eslint-disable-next-line vue/custom-event-name-casing
+    emit('on-next')
+  }
 }
 
 onMounted(() => {
@@ -381,9 +490,10 @@ onMounted(() => {
         border: 1px solid #DAE0F2;
         .d1{
           min-width: 36px;
-          line-height: 30px;
+          width: 36px;
+          height: 100%;
+          line-height: 31px;
           background: #FF2855;
-          border: 1px solid #DAE0F2;
           color: #fff;
           text-align: center;
         }
@@ -403,13 +513,26 @@ onMounted(() => {
       li:last-child{border-top: none;
         .d1{border-top: none;background-color: #4458FE;}
       }
+      li .empty{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(218, 224, 242, .4) !important;
+        img{
+          width: 20px;
+          height: 20px;
+        }
+      }
     }
-    .status{width:100%;font-size: 13px;color: rgba(58,63,99,0.64);text-align: left;
-      &.waiting{color: #4458FE;}
-      &.pending{color: #FF2855;}
+    .status-wrap{
+      width:100%;
+      .status{width:100%;font-size: 13px;font-weight: 400;color: rgba(58,63,99,0.64);text-align: left;
+        &.waiting{color: #4458FE;}
+        &.pending{color: #FF2855;}
+      }
     }
   }
-  &:not(:first-child){margin-top: 30px;}
+  &:not(:first-child){margin-top: 20px;}
   &:first-child{margin-top: 0 !important;}
 }
 // 伪元素
@@ -418,52 +541,67 @@ onMounted(() => {
   position: absolute;
   background-color:#DAE0F2;
 }
-.battle-col{
-  height: auto;
-  position: relative;
-  &::before{
-    top: 59px;
-    right: -32px;
-    width: 1px;
-    height: calc(100% - 118px);
-    &:extend(.commonstyle);
-    opacity: .7;
-  }
-  &::after{
-    top: calc( (100% - 118px) / 2 + 60px );
-    right: -64px;
-    width: 32px;
-    height: 1px;
-    &:extend(.commonstyle);
-  }
-  .battle-top,.battle-bot{
+.col-wrap{
+  .battle-col{
+    height: auto;
     position: relative;
-    &::before{
+    &:nth-child(odd)::before{
       top: 59px;
       right: -32px;
+      width: 1px;
+      height: calc(100% + 20px);
+      &:extend(.commonstyle);
+      opacity: .7;
+    }
+    &:nth-child(odd)::after{
+      top: calc( (100% + 20px) / 2 + 60px );
+      right: -64px;
       width: 32px;
       height: 1px;
       &:extend(.commonstyle);
+      // opacity: .7;
+    }
+    .battle-top,.battle-bot{
+      position: relative;
+      &::before{
+        top: 59px;
+        right: -32px;
+        width: 32px;
+        height: 1px;
+        &:extend(.commonstyle);
+        opacity: .6;
+      }
     }
   }
+  &:last-child .battle-top::before{display: none;}
+  &:last-child .battle-top::after{display: none;}
 }
 .col-wrap{
   margin-right: 64px;
-  &:nth-child(2){margin-right: 96px;}
-  &.marTop2{margin-top: 70px;.battle-col{margin-top: 168px;.battle-bot{margin-top: 166px;}&::after{right: -96px;width: 64px;}}}
-  &.marTop3{margin-top: 212px;.battle-col{margin-top: 158px;.battle-bot{margin-top: 450px;}}}
-  &:last-child{
-    .battle-col{margin-top: 450px;}
-    .battle-col{
-      &::before,&::after{display:none;}
-      .battle-top,.battle-bot{&::before{display:none}}
+  &:not(:first-child){margin-right: 96px;}
+  &.marTop2{margin-top: 69.5px;.battle-col{margin-top: 157px;&:nth-child(odd)::before{height: calc(100% + 157px);};&::after{top: calc( (100% + 157px) / 2 + 60px );right: -96px;width: 64px;}}}
+  &.marTop3{margin-top: 207px;.battle-col{margin-top: 431px;&:nth-child(odd)::before{height: calc(100% + 431px);};&::after{top: calc( (100% + 431px) / 2 + 69.5px );right: -96px;width: 64px;}}}
+  &.marTop4{margin-top: 490px;.battle-col{margin-top: 980px;}}
+  &.laststyle{
+    &:last-child{
+      // .battle-col{margin-top: 450px;}
+      .battle-col{
+        &::before,&::after{display:none;}
+        .battle-top,.battle-bot{&::before{display:none}}
+      }
     }
   }
   &.second-line{
+    margin-right: 64px;
     .battle-col{
       &::before,&::after{display:none;}
-      .battle-top,.battle-bot{&::before{right: -64px;width: 64px;}}
+      .battle-top{&::before{right: -64px;width: 64px;}}
     }
+  }
+  &.champion{
+    margin-top: 490px;
+    margin-right: 0;
+    .battle-col{margin-top: 980px;}
   }
 }
 </style> 

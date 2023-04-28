@@ -8,11 +8,12 @@ export default function useUser() {
   const logout = async (logoutTo?: string) => {
     await userStore.logout().catch();
     const currentRoute = router.currentRoute.value;
+    const event = ['pointlist','operation'].includes(String(currentRoute.name))
     router.push({
       name: logoutTo && typeof logoutTo === 'string' ? logoutTo : 'login',
       query: {
-        ...(currentRoute.name === 'operation' ? '' : router.currentRoute.value.query),
-        redirect: currentRoute.name === 'operation' ? 'Event management' : currentRoute.name as string,
+        ...(event ? '' : router.currentRoute.value.query),
+        redirect: event ? 'Event management' : currentRoute.name as string,
       },
     });
   };

@@ -9,7 +9,7 @@ export default function setupPermissionGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     NProgress.start();
     const userStore = useUserStore();
-
+    const event = ['pointlist','operation'].includes(String(to.name))
     async function crossroads() {
       const Permission = usePermission();
       if (Permission.accessRouter(to)) await next();
@@ -35,8 +35,8 @@ export default function setupPermissionGuard(router: Router) {
           next({
             name: 'login',
             query: {
-              redirect: to.name,
-              ...to.query,
+              redirect: event ? 'Event management' : to.name,
+              ...(event ? '' : to.query),
             } as LocationQueryRaw,
           });
           NProgress.done();
@@ -51,8 +51,8 @@ export default function setupPermissionGuard(router: Router) {
       next({
         name: 'login',
         query: {
-          redirect: to.name,
-          ...to.query,
+          redirect: event ? 'Event management' : to.name,
+          ...(event ? '' : to.query),
         } as LocationQueryRaw,
       });
       NProgress.done();

@@ -39,7 +39,7 @@
             </a-doption>
             <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="handleLogout">
               <a-space>
-                <img style="width: 22px;height: 22px;" :src="exitImg" alt="">
+                <img style="width: 22px;height: 22px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/exit.svg" alt="">
                 <span class="mtext-1 font-md" style="margin-left: 2px;">
                   退出登录
                 </span>
@@ -68,7 +68,6 @@
       // MessageBox,
     },
     setup() {
-      const exitImg = new URL('../../assets/images/icons/exit.svg', import.meta.url).href
       const appStore = useAppStore();
       const userStore = useUserStore();
       const router = useRouter()
@@ -138,7 +137,6 @@
         theme,
         avatar,
         username,
-        exitImg,
         changeLocale,
         toggleTheme,
         setVisible,

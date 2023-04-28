@@ -18,10 +18,10 @@
         <ul>
           <a-spin class="pre100" :loading="loading1">
             <li v-for="item,i in rewardsInfo?.rewards" :key="i">
-              <div v-if="item.propList[0].id === 1" class="mx-auto"><img class="pre100" src="@/assets/images/reward-1.webp" alt=""></div>
-              <div v-else-if="item.propList[0].id === 2" class="mx-auto"><img class="pre100" src="@/assets/images/reward-2.webp" alt=""></div>
-              <div v-else-if="item.propList[0].id === 3" class="mx-auto"><img class="pre100" src="@/assets/images/reward-3.webp" alt=""></div>
-              <div v-else class="mx-auto"><img class="pre100" src="@/assets/images/reward-4.webp" alt=""></div>
+              <div v-if="item.propList[0].id === 1" class="mx-auto"><img class="pre100" src="https://moba-project.s3-accelerate.amazonaws.com/admin/reward-1.webp" alt=""></div>
+              <div v-else-if="item.propList[0].id === 2" class="mx-auto"><img class="pre100" src="https://moba-project.s3-accelerate.amazonaws.com/admin/reward-2.webp" alt=""></div>
+              <div v-else-if="item.propList[0].id === 3" class="mx-auto"><img class="pre100" src="https://moba-project.s3-accelerate.amazonaws.com/admin/reward-3.webp" alt=""></div>
+              <div v-else class="mx-auto"><img class="pre100" src="https://moba-project.s3-accelerate.amazonaws.com/admin/reward-4.webp" alt=""></div>
               <div>{{ item.name }}</div>
               <div class="texts line-hidden">第{{ item.startRank == item.endRank ? item.startRank : item.startRank - item.endRank }}名</div>
             </li>
@@ -34,13 +34,13 @@
             <a-spin v-show="loading2" class="pre100" style="padding-top: 60px;text-align: center;" :loading="loading2" />
             <li v-for="item,i in rankingList" :key="i">
               <div :class="['num',{'r1':i==0,'r2': i==1,'r3': i==2}]">{{ i > 2 ? item.rank : '' }}</div>
-              <img class="userimg" src="@/assets/images/default.webp" alt="">
+              <img class="userimg" src="https://moba-project.s3-accelerate.amazonaws.com/admin/default.webp" alt="">
               <div class="username line-hidden">{{ item.name !== undefined ? item.name : '' }}</div>
               <div class="level">LV{{ item.level !== undefined ? item.level : '' }}</div>
               <div class="data">{{ item.kill !== undefined ? `${item.kill}/${item.dead}/${item.assist}` : '' }}</div>
-              <div class="score"><img src="@/assets/images/scores.webp" alt="">{{ item.score }}分</div>
+              <div class="score"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/scores.webp" alt="">{{ item.score }}分</div>
             </li>
-            <div v-show="!loading2 && !rankingList.length" class="pre100 flex-center"><img style="width: 140px;" src="@/assets/images/empty.png" alt=""></div>
+            <div v-show="!loading2 && !rankingList.length" class="pre100 flex-center"><img style="width: 140px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
           </ul>
       </div>
     </a-modal>
@@ -215,15 +215,15 @@ watch(()=>props.showbol, (newV,oldV)=>{
             line-height: 27px;
             font-weight: 800;
             &.r1{
-              background: url('@/assets/images/ranking-1.webp') no-repeat;
+              background: url('https://moba-project.s3-accelerate.amazonaws.com/admin/ranking-1.webp') no-repeat;
               background-size: 100% 100%;
             }
             &.r2{
-              background: url('@/assets/images/ranking-2.webp') no-repeat;
+              background: url('https://moba-project.s3-accelerate.amazonaws.com/admin/ranking-2.webp') no-repeat;
               background-size: 100% 100%;
             }
             &.r3{
-              background: url('@/assets/images/ranking-3.webp') no-repeat;
+              background: url('https://moba-project.s3-accelerate.amazonaws.com/admin/ranking-3.webp') no-repeat;
               background-size: 100% 100%;
             }
           }

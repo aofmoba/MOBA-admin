@@ -36,10 +36,10 @@ const props = defineProps({
   backrew: Array,
 })
 const rewardsIcon = [
-  {id: 1,img:new URL('../../../assets/images/reward-1.webp', import.meta.url).href},
-  {id: 2,img:new URL('../../../assets/images/reward-2.webp', import.meta.url).href},
-  {id: 3,img:new URL('../../../assets/images/reward-3.webp', import.meta.url).href},
-  {id: 4,img:new URL('../../../assets/images/reward-4.webp', import.meta.url).href},
+  {id: 1,img: 'https://moba-project.s3-accelerate.amazonaws.com/admin/reward-1.webp'},
+  {id: 2,img: 'https://moba-project.s3-accelerate.amazonaws.com/admin/reward-2.webp'},
+  {id: 3,img: 'https://moba-project.s3-accelerate.amazonaws.com/admin/reward-3.webp'},
+  {id: 4,img: 'https://moba-project.s3-accelerate.amazonaws.com/admin/reward-4.webp'},
 ]
 let rewardList: any = $ref([
   {

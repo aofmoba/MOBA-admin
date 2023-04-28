@@ -19,15 +19,15 @@
                             <a-option v-for="value,i of cityName[level1] ? cityName[level1][level2] : []" :key="i">{{value}}</a-option>
                         </a-select>
                         <div class="label ml-10 mr-20 white-nowrap">城市</div>
-                        <div v-if="arenaTypeRadio == 0" class="setplace flex-center cursor-pointer" @click="getLocation(level3)"><img :src="setplaceImg" alt=""></div>
+                        <div v-if="arenaTypeRadio == 0" class="setplace flex-center cursor-pointer" @click="getLocation(level3)"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/setplace.svg" alt=""></div>
                     </a-space>
                     <a-space v-if="arenaTypeRadio == 1" class="city-input">
                         <a-input v-model="formCity.arenaName" placeholder="请输入地标地址" />
-                        <div class="setplace flex-center cursor-pointer" @click="getLocation(formCity.arenaName)"><img :src="setplaceImg" alt=""></div>
+                        <div class="setplace flex-center cursor-pointer" @click="getLocation(formCity.arenaName)"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/setplace.svg" alt=""></div>
                     </a-space>
                     <a-space v-if="arenaTypeRadio == 2" class="city-input">
                         <a-input v-model="formCity.arenaName" placeholder="请输入地点地址" />
-                        <div class="setplace open1 flex-center cursor-pointer" @click="getLocation(formCity.arenaName)"><img :src="setplaceImg" alt=""></div>
+                        <div class="setplace open1 flex-center cursor-pointer" @click="getLocation(formCity.arenaName)"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/setplace.svg" alt=""></div>
                     </a-space>
                     <div id="map" class="mt-20" style="width: 269px;height: 151px;background: #eee;"></div>
                 </div>
@@ -70,7 +70,6 @@ import axios from 'axios';
 import type { dateType } from '@/types/global'
 // import getCurrentPosition from '@/utils/map'
 
-const setplaceImg = new URL('../../../assets/images/icons/setplace.svg', import.meta.url).href
 const router = useRouter();
 const formRef: HTMLFormElement = $ref()
 let subLoading: boolean = $ref(false)

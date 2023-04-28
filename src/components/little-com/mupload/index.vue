@@ -21,7 +21,7 @@
             <img :src="file.url" />
             <div class="arco-upload-list-picture-mask">
               <div class="flex-center flex-col pre100">
-                <img style="width: 18px;height: 18px;" :src="deleteImg" alt="">
+                <img style="width: 18px;height: 18px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/delete.svg" alt="">
                 <div class="mt-10 font-sm">重新上传</div>
               </div>
             </div>
@@ -55,7 +55,6 @@ import { onMounted, watch } from 'vue'
 import { FileItem, RequestOption,  Message, UploadRequest } from '@arco-design/web-vue'
 import axios from 'axios'
 
-const deleteImg = new URL('../../../assets/images/icons/delete.svg', import.meta.url).href
 const emit = defineEmits(['change-banner'])
 const props = defineProps({
   width:{

@@ -5,12 +5,12 @@
       <a-button class="default" style="width: 145px; height: 36px;"><div style="width: 143px;font-size: 16px;line-height: 33px;margin-top: 1px;">全部取消到场</div></a-button>
       <a-input :style="{width:'180px'}" placeholder="玩家昵称">
         <template #append>
-          <img style="width: 24px;height: 24px;" :src="searchImg" alt="">
+          <img style="width: 24px;height: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/search.svg" alt="">
         </template>
       </a-input>
       <a-input :style="{width:'240px'}" placeholder="输入赛点名称">
         <template #append>
-          <img style="width: 24px;height: 24px;" :src="searchImg" alt="">
+          <img style="width: 24px;height: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/search.svg" alt="">
         </template>
       </a-input>
     </a-space>
@@ -25,14 +25,14 @@
         :pagination="false"
       >
         <template #empty>
-          <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="@/assets/images/empty.png" alt=""></div>
+          <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
         </template>
         <template #expand-row>
             <a-table class="expand-table" :data="expandData" :pagination="false">
               <template #columns>
                 <a-table-column
                   title="选手ID"
-                  data-index="playerID"
+                  data-index="playerid"
                   :width="133"
                 />
                 <a-table-column
@@ -58,7 +58,7 @@
         <template #columns>
           <a-table-column
             title="队伍编号"
-            data-index="id"
+            data-index="teamId"
             :width="133"
           />
           <a-table-column
@@ -118,7 +118,6 @@ import {
 } from '@/api/competition';
 import type { comPointCheckinListRes } from '@/api/competition';
 
-const searchImg = new URL('../../../../assets/images/icons/search.svg', import.meta.url).href
 const emit = defineEmits(['on-next'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
@@ -132,7 +131,7 @@ const expandRow = (id: any) => {
     if (expands.indexOf(id) < 0) {
         expands = []
         expands.push(id)
-        expandData = useData.filter((item: TableData)=> item.id === id)[0].info
+        expandData = useData.filter((item: TableData)=> item.id === id)[0].members
     } else {
         expands = [];
     }
@@ -143,14 +142,11 @@ const querySingalTeam = (data: object[]) =>{
     queryPointTeamInfo(item.id).then((res: any)=>{
       setLoading(false)
       if( res.error_code === 0 ){
-        const temp = useData.findIndex((ele: any) => ele.id === res.data.id)
-        if( temp > -1 ){
+        const temp = useData.findIndex((ele: any) => ele.id === res.data.teamId)
+        if( temp > -1 ) {
           useData[temp] = {
-            ...item,
-            id: item.id,
-            name: item.name,
-            person: item.person,
-            info: item.info
+            ...res.data,
+            person: res.data.members.length
           }
         }
       }
@@ -163,7 +159,7 @@ const initData = async (id: string) => {
     queryComPointCheckinList(id).then((res: any) => {
       if( res.error_code === 0 ) {
         if( !res.data.checkins.length ) setLoading(false)
-        allTeamData = [...res.checkins.length,...res.noncheckins.length]
+        allTeamData = [...res.checkins,...res.noncheckins]
         useData = res.data.checkins
         // eslint-disable-next-line no-use-before-define
         querySingalTeam( res.data.checkins )
@@ -184,8 +180,10 @@ const cancelSign = (id: number) => {
 
 const nextStep = () => {
   // 完成签到过程，同时签到结束时间修改为点击【完成下一步】按钮的时间
-  // eslint-disable-next-line vue/custom-event-name-casing
-  emit('on-next')
+  if( useData.length >= 2 ){
+    // eslint-disable-next-line vue/custom-event-name-casing
+    emit('on-next')
+  }
 }
 
 onMounted(() => {

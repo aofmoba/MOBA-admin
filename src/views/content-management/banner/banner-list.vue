@@ -10,7 +10,7 @@
       @page-change="onPageChange"
     >
       <template #empty>
-        <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="@/assets/images/empty.png" alt=""></div>
+        <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
       </template>
       <template #pagination-left>
         <div class="left-icon flex-center" style="pointer-events: none;margin-right: -32px;"><icon-arrow-left /></div>
@@ -88,7 +88,7 @@ const initData = () => {
   useDate = []
   // useDate = reactive(Array(10).fill(null).map((_, index) => ({
   //   order: String(index+1),
-  //   banner: new URL('../../../assets/images/demo.jpg', import.meta.url).href,
+  //   banner: 'https://moba-project.s3-accelerate.amazonaws.com/admin/demo.jpg',
   //   target: 'https://pvp.qq.com',
   //   duration: '2023-01-30 15:30-2023-01-30 16:30',
   // })));
