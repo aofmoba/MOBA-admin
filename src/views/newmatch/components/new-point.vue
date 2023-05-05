@@ -157,32 +157,6 @@ const handleSubmit = ({errors, values}: {
 }
 
 
-
-
-const getINfo = async (id: number) => {
-    // if(!id) return
-    // const { data } = await queryArenaInfo(id)
-    // const tempRewards: singleReward[] = data.rewards.map((item)=>({
-    //     startRank: item.startRank,
-    //     endRank: item.endRank,
-    //     name: item.name,
-    //     props: item.propList
-    // }))
-    // formCity = {
-    //     arenaType: data.arenaType,
-    //     startTime: data.startTime,
-    //     finishTime: data.finTime,
-    //     latitude: data.latitude,
-    //     longitude: data.longitude,
-    //     rule: data.rules,
-    //     arenaName: data.arenaName,
-    //     rewards: tempRewards,
-    //     arenaId: data.arenaId
-    // }
-    // backRewards = tempRewards
-}
-
-
 const toPoint = () => {
   if( compId ){
     router.push({ path: '/newpoint', query: { compId,name: form.name,url:form.banner } });
@@ -190,9 +164,7 @@ const toPoint = () => {
     Message.info('请先创建赛事')
   }
 }
-watch(() => router.currentRoute.value.query,(newQ) => {
-    getINfo(Number(newQ.arenaId))
-},{immediate: true,deep: true})
+
 onMounted(() => {
 })
 </script>
