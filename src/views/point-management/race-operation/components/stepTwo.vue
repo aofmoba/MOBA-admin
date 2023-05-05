@@ -403,7 +403,6 @@ const prevStep = () => {
 const nextStep = async () => {
   await getPointFightDataFun()
   const temp = sumData[0].filter((item: getPointFightRes)=> item.redScore > 0 || item.blueScore > 0 )
-  console.log(temp);
   if( temp.length > 0 ){ Message.error('比赛已经开始，不能进行重新抽签操作') }
   else {
     // eslint-disable-next-line vue/custom-event-name-casing
@@ -412,8 +411,7 @@ const nextStep = async () => {
 }
 
 onMounted(() => {
-  const queryInfo: any = router.currentRoute.value.query.matchinfo
-  pointId = JSON.parse(queryInfo).id
+  pointId = JSON.parse(localStorage.getItem('matchinfo') || '').id
   // console.log(getNameByIdFromArr(treeData.group,2));
 })
 

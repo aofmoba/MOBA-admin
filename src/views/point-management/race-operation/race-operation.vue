@@ -66,9 +66,9 @@ onActivated(()=>{
 onMounted(() => {
   currentStep = 1
   currentStep = Number(localStorage.getItem('currentStep')) || 1
-  const queryInfo: any = router.currentRoute.value.query.matchinfo
-  signTime.startTime = Number(JSON.parse(queryInfo).start) || 0
-  signTime.finishTime = Number(JSON.parse(queryInfo).end) || 0
+  const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '')
+  signTime.startTime = Number(queryInfo.start) || 0
+  signTime.finishTime = Number(queryInfo.end) || 0
 })
 
 </script>

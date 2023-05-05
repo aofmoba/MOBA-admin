@@ -13,8 +13,8 @@ import RaceOperation from './race-operation.vue';
 const router = useRouter()
 let path: string = $ref('')
 onMounted(()=>{
-  const queryInfo: any = router.currentRoute.value.query.matchinfo
-  path = `match=${ JSON.parse(queryInfo).match }&compId=${ JSON.parse(queryInfo).compId }`
+  const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '')
+  path = `match=${ queryInfo.match }&compId=${ queryInfo.compId }`
 })
 
 </script>

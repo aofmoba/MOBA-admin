@@ -27,7 +27,7 @@
           <a-table-column
             title="赛事ID"
             data-index="id"
-            :width="118"
+            :width="124"
           />
           <a-table-column
             title="赛事名称"
@@ -37,7 +37,7 @@
           <a-table-column
             title="时间"
             data-index="validtime"
-            :width="210"
+            :width="220"
           />
           <a-table-column
             title="赛点数量"

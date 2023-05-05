@@ -44,17 +44,17 @@
         <template #columns>
           <a-table-column
             title="名次"
-            data-index="id"
+            data-index="rank"
             :width="104"
           />
           <a-table-column
             title="队伍编号"
-            data-index="name"
+            data-index="id"
             :width="211"
           />
           <a-table-column
             title="队伍名称"
-            data-index="person"
+            data-index="name"
             :width="251"
           />
           <a-table-column
@@ -86,7 +86,7 @@
     </div>
     <a-space class="flex justify-end items-end" style="margin-top: 30px;">
       <a-button class="default" style="width:180px; height: 54px;" @click="prevStep"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">返回上一步</div></a-button>
-      <a-button class="active" style="width: 180px; height: 54px;" @click="router.push({path:'/pointlist'})"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">保存</div></a-button>
+      <a-button class="active" style="width: 180px; height: 54px;" @click="saveRank"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">保存</div></a-button>
     </a-space>
   </div>
 </template>
@@ -145,12 +145,14 @@ const expandRow = (id: any) => {
 }
 
 const initData = () => {
-    setLoading(false)
-    useDate = data
+  setLoading(false)
+  useDate = data
 }
 
-const cancelRank = (record: any) => {
+const cancelRank = (record: any) => {}
 
+const saveRank = () => {
+  router.push({path:'/pointlist'})
 }
 
 const prevStep = () => {

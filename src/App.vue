@@ -20,7 +20,10 @@
       const { logout } = useUser();
 
       watch(()=>route.name,(newV,oldV)=>{
-        if( newV !== 'operation' && newV !== undefined ) localStorage.removeItem('currentStep')
+        if( newV !== 'operation' && newV !== undefined ) {
+          localStorage.removeItem('currentStep')
+          localStorage.removeItem('matchinfo')
+        }
       },{immediate:true,deep:true});
       onMounted(() => {});
       return {

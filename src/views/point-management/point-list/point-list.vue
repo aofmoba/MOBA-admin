@@ -33,7 +33,7 @@
           <a-table-column
             title="赛点ID"
             data-index="id"
-            :width="118"
+            :width="124"
           />
           <a-table-column
             title="赛点名称"
@@ -43,7 +43,7 @@
           <a-table-column
             title="时间"
             data-index="validtime"
-            :width="210"
+            :width="220"
           />
           <a-table-column
             title="报名人数"
@@ -180,7 +180,8 @@ const initData = async() => {
 }
 const toRaceOperation = (record: allPointLists) => {
   if( record.status === 1 || record.status === 2 ){
-    router.push({path: '/operation',query:{ matchinfo: JSON.stringify({
+    router.push({path: '/operation'})
+    localStorage.setItem('matchinfo',JSON.stringify({
       id: record.id,
       match: record.name,
       compId,
@@ -189,7 +190,7 @@ const toRaceOperation = (record: allPointLists) => {
       end: record.signFinTime,
       signTime: record.signTime,
       fightTime: record.fightTime
-    })}})
+    }))
   }
 }
 
