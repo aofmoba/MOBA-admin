@@ -38,7 +38,7 @@
             <a-form-item field="reward">
                 <template #label>
                 <div>赛事奖励 :</div>
-                <div>（设置第0-10名为签到奖励）</div>
+                <div>（设置第0-0名为签到奖励）</div>
                 </template>
                 <RewardCard :backrew="backRewards" @change-reward="changeReward"/>
             </a-form-item>

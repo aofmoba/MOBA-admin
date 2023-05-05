@@ -202,8 +202,8 @@ const handleSubmit = async ({errors, values,}: {
     errors: Record<string, ValidatedError> | undefined
   }) => {
     countUpload = 0
-    console.log(formPoint.name,formPoint.name.length);
-    if( !errors && fightRoundView >= 0 && formPoint.signTime && formPoint.signFinTime && formPoint.checkInTime && formPoint.checkInFinTime && formPoint.fightTime ){
+    const nameLen = getNameLeng(formPoint.name)
+    if( !errors && nameLen >= 4 && nameLen <= 20 && fightRoundView >= 0 && formPoint.signTime && formPoint.signFinTime && formPoint.checkInTime && formPoint.checkInFinTime && formPoint.fightTime ){
       willCreate() // 默认数据处理
       if( formPoint.checkInTime <= formPoint.signTime || formPoint.checkInTime >= formPoint.fightTime ){
         Message.error({
@@ -256,14 +256,13 @@ const handleSubmit = async ({errors, values,}: {
       
     }else{
       let message = ''
-      const nameLen = getNameLeng(formPoint.name)
       if( !formPoint.fightTime ) message = '比赛开始时间'
       if( !formPoint.checkInTime || !formPoint.checkInFinTime ) message = '签到时间'
       if( !formPoint.signTime || !formPoint.signFinTime ) message = '报名时间'
       if( fightRoundView < 0 ) message = '获胜方式'
       if( nameLen < 4 || nameLen > 20 ) message = '赛点名称最少填写2个字，最多可填写10个字'
       if( !formPoint.name ) message = '赛点名称'
-      if( nameLen >= 4 && nameLen <= 20 ){message += '不能为空'}
+      if( nameLen === 0 || (nameLen >= 4 && nameLen <= 20) ){message += '不能为空'}
       Message.error(message)
     }
 }

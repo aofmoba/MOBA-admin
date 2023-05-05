@@ -97,7 +97,7 @@
     <div class="flex-items between">
         <div>
           <span class="font-md mcolor-1">已确认签到：{{ useData.length }} / {{ allTeamData.length }}</span>
-          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数 5支</span>
+          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数{{ useData.length }}支</span>
         </div>
         <a-space>
           <a-button class="active submit" style="width: 284px; height: 54px;" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">完成，下一步</div></a-button>
@@ -160,7 +160,7 @@ const initData = async (id: string) => {
       if( res.error_code === 0 ) {
         if( !res.data.checkins.length ) setLoading(false)
         allTeamData = [...res.checkins,...res.noncheckins]
-        useData = res.data.checkins
+        useData = res.data.checkins.map((item: any,i: number)=>({...item,teamId: i}))
         // eslint-disable-next-line no-use-before-define
         querySingalTeam( res.data.checkins )
       }
@@ -235,6 +235,10 @@ onMounted(() => {
     }
   }
   :deep(.arco-table){
+    min-height: 324px;
+    .arco-spin{
+      min-height: 324px;
+    }
     thead .arco-table-th:nth-child(4){padding-left: 106px;}
     tbody>.arco-table-tr{
       height: 72px !important;

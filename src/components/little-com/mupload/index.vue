@@ -111,7 +111,6 @@ const beforeUpload = (files: File) => {
       img.src = _URL.createObjectURL(files);
   }).then(()=>{
       // 调用后台接口上传图片的方法
-      console.log('success');
       return true
   }).catch(()=>{
       return false

@@ -19,7 +19,7 @@
             <a-form-item field="reward">
                 <template #label>
                 <div>赛事奖励 :</div>
-                <div>（设置第0-10名为签到奖励）</div>
+                <div>（设置第0-0名为签到奖励）</div>
                 </template>
                 <RewardCard :backrew="backRewards" @change-reward="changeReward"/>
             </a-form-item>
@@ -100,14 +100,18 @@ const changeReward = (data: any) => {
   }))
 }
 
+const getNameLeng = (str: string) => {
+  return str.replace(/[\u0391-\uFFE5]/g, 'aa').length;
+}
+
 let compId: string = $ref('')
 const axiosCreate = () => {
-  console.log(form);
   createCompetition(form).then(({data}) => {
       compId = data
       Message.success('success')
   }).finally(()=>setLoading(false))
 }
+
 
 const uploadComRef: any = $ref()
 const uploadComRef2: any = $ref()
@@ -118,7 +122,9 @@ const handleSubmit = ({errors, values}: {
   }) => {
     countUpload = 0
     // console.log('values:', values, '\nerrors:', errors)
-    if( !errors && form.banner && form.rewards.length && (form.rule || form.rulePic) ){
+    const nameLen = getNameLeng(form.name)
+    const ruleLen = getNameLeng(form.rule)
+    if( !errors && nameLen >= 4 && nameLen <= 18 && form.banner && form.rewards.length && ((form.rule && ruleLen >= 8) || form.rulePic) ){
       setLoading(true)
       try {
           uploadComRef.uploadRequest(banneFile.file).then((result: any) => { // banner图片上传之后
@@ -141,14 +147,12 @@ const handleSubmit = ({errors, values}: {
           setLoading(false)
         }
     }else{
-      let message = ''
-      if( !form.rule && !form.rulePic ) message = '赛事规则'
-      if( !form.rewards.length ) message = '赛事奖励'
-      if( !form.banner ) message = '赛事banner'
-      if( form.name.length > 18 ) message = '赛事名称最多可填写18个字'
-      if( !form.name ) message = '赛事名称'
-      if( form.name.length <= 18 ){message += '不能为空'}
-      Message.error(message)
+      if( !form.name ) {Message.error('赛事名称不能为空'); return}
+      if( nameLen < 4 || nameLen > 18 ) {Message.error('赛事名称最少填写2个字，最多可填写18个字');return}
+      if( !form.banner ) {Message.error('赛事banner不能为空');return}
+      if( !form.rewards.length ) {Message.error('赛事奖励不能为空');return}
+      if( !form.rule && !form.rulePic ) {Message.error('赛事规则不能为空');return}
+      if( form.rule && ruleLen < 8 ) Message.error('赛事规则文字过短')
     }
 }
 
