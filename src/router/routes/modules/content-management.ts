@@ -5,7 +5,7 @@ export default {
   meta: {
     locale: '内容管理',
     icon: 'icon5',
-    order: 4,
+    order: 6,
     requiresAuth: true,
     hideChildrenInMenu: false,
   },
@@ -16,10 +16,10 @@ export default {
     meta: {
       locale: 'Banner',
       icon: 'icon-caret-right',
-      order: 4-1,
+      order: 6-1,
       requiresAuth: true,
       hideChildrenInMenu: true,
-      roles: ['*'],
+      roles: ['admin'],
   }},
   {
     path: 'community',
@@ -28,10 +28,10 @@ export default {
     meta: {
       locale: '社区内容',
       icon: 'icon-caret-right',
-      order: 4-2,
+      order: 6-2,
       requiresAuth: true,
       hideChildrenInMenu: true,
-      roles: ['*'],
+      roles: ['admin'],
   }},
   {
     path: 'knowledge',
@@ -40,10 +40,10 @@ export default {
     meta: {
       locale: '小知识导航内容',
       icon: 'icon-caret-right',
-      order: 4-3,
+      order: 6-3,
       requiresAuth: true,
       hideChildrenInMenu: true,
-      roles: ['*'],
+      roles: ['admin'],
   }},
 ]
 };

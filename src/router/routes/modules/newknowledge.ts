@@ -5,9 +5,9 @@ export default {
   meta: {
     locale: '创建小知识内容',
     icon: 'icon3',
-    order: 2,
+    order: 3,
     requiresAuth: true,
     hideChildrenInMenu: true,
-    roles: ['*'],
+    roles: ['admin'],
   },
 };

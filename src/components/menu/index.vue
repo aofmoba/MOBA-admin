@@ -46,34 +46,6 @@
             );
           }
         );
-        copyRouter.splice(0,0,{
-            meta: {
-              locale: '赛事内容创建',
-              hideChildrenInMenu: true,
-            }
-        })
-        copyRouter.splice(4,0,{
-            meta: {
-              locale: '赛事内容管理',
-              hideChildrenInMenu: true,
-            }
-        })
-        copyRouter.splice(8,0,{
-            meta: {
-              locale: '权限管理',
-              requiresAuth: true,
-              hideChildrenInMenu: true,
-              roles: ['admin'],
-            }
-        })
-        copyRouter.splice(11,0,{
-            meta: {
-              locale: '赛事审核管理',
-              requiresAuth: true,
-              hideChildrenInMenu: true,
-              roles: ['admin'],
-            }
-        })
 
         // 只有可配置的钱包地址可以查看 Assets Overview 页面
         // eslint-disable-next-line no-empty
@@ -189,6 +161,7 @@
                 </a-sub-menu>
               ) : (
                   <a-menu-item
+                    class={[{'menutext':element?.meta?.menutext}]}
                     key={element?.name}
                     v-slots={{
                       icon: () => h(compile(icon)),
@@ -236,10 +209,12 @@
   :deep(.arco-menu-inner) {
     padding: 0 16px !important;
     &>.arco-menu-item{margin-bottom: 10px;}
-    &>.arco-menu-item:nth-child(2),&>.arco-menu-item:nth-child(6),&>.arco-menu-item:nth-child(10),&>.arco-menu-item:nth-child(13){
-      padding-left: 0;
-      height: 20px;
+    .menutext{
+      padding-left: 0 !important;
+      height: 20px !important;
+      margin-top: 20px;
       margin-bottom: 10px;
+      cursor: auto;
       &:hover{
         &:extend(.mainColor);
         background: transparent !important;
@@ -247,9 +222,6 @@
       &:extend(.mainColor);
       .arco-menu-icon{display: none;}
       .arco-menu-title{line-height: 20px;}
-    }
-    .arco-menu-item:nth-child(6),.arco-menu-item:nth-child(10),.arco-menu-item:nth-child(13){
-      margin-top: 20px;
     }
     .arco-menu-inline-header{margin-bottom: 0;}
     .arco-menu-item, .arco-menu-inline-header{

@@ -5,7 +5,7 @@ export default {
   meta: {
     locale: '创建权限',
     icon: 'icon7',
-    order: 6,
+    order: 9,
     requiresAuth: true,
     hideChildrenInMenu: true,
     roles: ['admin'],

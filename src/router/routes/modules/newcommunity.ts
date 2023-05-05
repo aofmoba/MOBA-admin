@@ -5,9 +5,9 @@ export default {
   meta: {
     locale: '创建社区内容',
     icon: 'icon2',
-    order: 1,
+    order: 2,
     requiresAuth: true,
     hideChildrenInMenu: true,
-    roles: ['*'],
+    roles: ['admin'],
   },
 };

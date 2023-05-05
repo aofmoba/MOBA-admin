@@ -2,33 +2,33 @@
     <div class="form-group">
         <a-form :model="form" @submit="handleSubmit">
             <a-form-item
-                field="name" label="赛事名称："
-                :rules="[{ required: true, message:'name is required' },{maxLength:18,message:'最多可填写18个字'}]"
-                :validate-trigger="['blur']"
+              field="name" label="赛事名称："
+              :rules="[{ required: true, message:'name is required' },{maxLength:18,message:'最多可填写18个字'}]"
+              :validate-trigger="['blur']"
             >
-                <a-input v-model="form.name" placeholder="请输入您的赛事名称" />
+              <a-input v-model="form.name" placeholder="请输入您的赛事名称" />
             </a-form-item>
             <a-form-item
-                field="banner" label="赛事banner："
+              field="banner" label="赛事banner："
             >
-                <div class="flex-col">
+              <div class="flex-col">
                 <Mupload ref="uploadComRef" :width="335" :height="120" :uwidth="670" :uheight="240" @change-banner="changeBanner" />
                 <div class="mt-10 mtext-gray font-sm">尺寸（670*240px），仅限JPG和PNG格式</div>
-                </div>
+              </div>
             </a-form-item>
             <a-form-item field="reward">
-                <template #label>
+              <template #label>
                 <div>赛事奖励 :</div>
                 <div>（设置第0-0名为签到奖励）</div>
-                </template>
-                <RewardCard :backrew="backRewards" @change-reward="changeReward"/>
+              </template>
+              <RewardCard :backrew="backRewards" @change-reward="changeReward"/>
             </a-form-item>
             <a-form-item field="rules">
-                <template #label>
+              <template #label>
                 <div>赛事规则 :</div>
                 <div>（支持图片和文字单独两种模式）</div>
-                </template>
-                <div class="flex-col">
+              </template>
+              <div class="flex-col">
                 <div>
                     <Mupload ref="uploadComRef2" :width="335" :height="120" :uwidth="670" @change-banner="changeRules"/>
                     <div class="mt-10 mtext-gray font-sm">图片宽度尺寸仅限670px，仅限JPG和PNG格式</div>
@@ -37,13 +37,13 @@
                     <div class="font-md mb-14">填写规则</div>
                     <a-textarea v-model="form.rule" class="bg-white rounded" :max-length="{length:10000,errorOnly:true}" placeholder="请输入您的赛事规则" style="width: 758px;height: 120px;"/>
                 </div>
-                </div>
+              </div>
             </a-form-item>
             <a-form-item>
-                <div class="flex-center" style="width: 758px;margin-bottom: 20px;">
+              <div class="flex-center" style="width: 758px;margin-bottom: 20px;">
                 <a-button class="active btn-loading" html-type="submit" :disabled="loading"><div><a-spin v-if="loading"/> 保存并确认</div></a-button>
                 <a-button class="default" style="margin-left: 64px;" @click="toPoint"><div>添加赛点</div></a-button>
-                </div>
+              </div>
             </a-form-item>
         </a-form>
     </div>

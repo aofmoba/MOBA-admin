@@ -13,10 +13,9 @@ export default mergeConfig(
       host: '0.0.0.0',
       proxy: {
         '/api': {
-          // target: 'https://gamepool.cyberpop.online:5679/api/', 
           // target: 'http://192.168.0.109:5679/api/',
           // target: 'http://161.189.70.95:5679/api/', // main
-          // target: 'http://42.193.248.146:5679/api/', // main2
+          // target: 'http://42.193.248.146:5679/api/', // main2 api
           target: 'http://192.168.130.13/api/', // 赛程测试
           // target: 'http://192.168.0.134/api/', // han   
           // target: 'http://192.168.130.13/api/', // han2  
@@ -30,7 +29,7 @@ export default mergeConfig(
           rewrite: (path) => path.replace(/^\/main/, '')
         },
         '/localhost': {
-          target: 'http://localhost:7001/', // https://testnode.cyberpop.online/
+          target: 'http://localhost:7001/',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/localhost/, '')
         },

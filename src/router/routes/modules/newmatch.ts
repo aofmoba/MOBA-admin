@@ -5,7 +5,7 @@ export default {
   meta: {
     locale: '创建赛事',
     icon: 'icon1',
-    order: 0,
+    order: 1,
     requiresAuth: true,
     hideChildrenInMenu: true,
     roles: ['*'],

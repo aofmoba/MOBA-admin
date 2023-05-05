@@ -5,7 +5,7 @@ export default {
   meta: {
     locale: '擂台管理',
     icon: 'icon6',
-    order: 5,
+    order: 7,
     requiresAuth: true,
     hideChildrenInMenu: true,
     roles: ['*'],

@@ -5,7 +5,7 @@ export default {
     meta: {
       locale: '锦标赛',
       icon: 'icon10',
-      order: 8,
+      order: 12,
       requiresAuth: true,
       hideChildrenInMenu: true,
       roles: ['admin'],
