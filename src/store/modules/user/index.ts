@@ -5,7 +5,7 @@ import {
   refreshToken as userRefresh,
   getUserInfo,
 } from '@/api/user';
-import { getToken, setToken, clearToken, clearAllLocal } from '@/utils/auth';
+import { setToken, clearToken, clearAllLocal } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import { UserState } from './types';
 

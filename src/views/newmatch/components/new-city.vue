@@ -241,7 +241,7 @@ const innitMap = () => {
         container: 'map', // container ID
         style: 'mapbox://styles/mapbox/streets-v12', // style URL
         center,
-        zoom: 8, // starting zoom
+        zoom: 0, // starting zoom
     });
     map.addControl(new MapboxLanguage({
         defaultLanguage: 'zh-Hans' // en
@@ -273,6 +273,7 @@ const getLocation = async (address: string) => {
             center = response.features[0].center
             formCity.latitude = Math.floor(Number(center[1])*1000000)
             formCity.longitude = Math.floor(Number(center[0])*1000000)
+            map.setZoom(8)
             map.setCenter(center);
             targetMarker.remove();
             targetMarker = new mapboxgl.Marker({color: "#4F8AFF"})
