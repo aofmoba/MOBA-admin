@@ -1,17 +1,2 @@
 export default {
-  'menu.workplace': 'System Settings',
-  'menu.mywallet': 'My Wallet',
-  'menu.hashrate': 'Data Display',
-  'menu.datascreen': 'Other Settings',
-  'menu.system': 'System Settings',
-  'menu.query': 'Data Query',
-  'menu.agent': 'Agent Management',
-  'menu.agent2': 'Personnel Summary',
-  'menu.financial': 'Financial Statistics',
-  'menu.link': 'Promotion Link',
-  'menu.purchase': 'Purchase',
-  'menu.asset': 'Asset Overview',
-  'menu.trade': 'Trade',
-  'menu.trade.order': 'Order',
-  'menu.trade.orderInGame': 'Game Order',
 };

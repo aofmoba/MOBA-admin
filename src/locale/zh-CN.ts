@@ -10,11 +10,6 @@ import Menu from '@/locale/zh-CN/menu';
 import SearchTableAction from '@/locale/zh-CN/common/searchTableAction';
 
 // Views
-import Login from '@/locale/zh-CN/login';
-import Workplace from '@/locale/zh-CN/workplace';
-import Hashrate from '@/locale/zh-CN/hashrate';
-import Agent from '@/locale/zh-CN/agent';
-import System from '@/locale/zh-CN/systemsetting';
 
 export default {
   // Examples are shown above, and real business is shown below
@@ -24,9 +19,4 @@ export default {
   ...SuccessMessage,
   ...FailedMessage,
   ...SearchTableAction,
-  ...Login,
-  ...Workplace,
-  ...Hashrate,
-  ...Agent,
-  ...System,
 };

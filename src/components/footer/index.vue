@@ -1,6 +1,6 @@
 <template>
   <a-layout-footer class="footer">
-    Cyberpop Labs. Ltd. ALL Rights Reserved.
+    Arena of Faith Labs Ltd. Games, Inc. ALL Rights Reserved.
   </a-layout-footer>
 </template>
 

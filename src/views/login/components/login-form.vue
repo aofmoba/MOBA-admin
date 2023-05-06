@@ -58,7 +58,7 @@
   const router = useRouter();
   const { loading, setLoading } = useLoading(false);
   const comStore = staticData();
-  const { isAssetsAllow } = storeToRefs(comStore);
+  const { userAddress } = storeToRefs(comStore);
   const formLogin = reactive({
     user_name: '',
     password: ''

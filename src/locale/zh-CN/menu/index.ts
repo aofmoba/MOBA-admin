@@ -1,17 +1,2 @@
 export default {
-  'menu.workplace': '系统设置',
-  'menu.mywallet': '我的钱包',
-  'menu.hashrate': '数据展示',
-  'menu.datascreen': '其他设置',
-  'menu.system': '系统设置',
-  'menu.query': '数据查询',
-  'menu.agent': '代理管理',
-  'menu.agent2': '人员汇总',
-  'menu.financial': '财务统计',
-  'menu.link': '推广链接',
-  'menu.purchase': '进货',
-  'menu.asset': '资产总览',
-  'menu.trade': 'Trade',
-  'menu.trade.order': 'Order',
-  'menu.trade.orderInGame': 'Game Order',
 };
