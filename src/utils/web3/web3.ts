@@ -1,5 +1,5 @@
 import contracts from '@/utils/web3/contracts'
-
+import { getAddress } from '@/utils/auth';
 
 // eslint-disable-next-line import/extensions
 import Web3 from 'web3/dist/web3.min.js'
@@ -66,13 +66,13 @@ const setNotifyRewardAmount = (abi: any[], address: string, amount: number) => {
       const web3 = new Web3((Web3 as any).givenProvider);
       const contract = new web3.eth.Contract(abi, address)
       const accounts = localStorage.getItem('address')
-      contract.methods.setNotifyRewardAmount(amount).send({ from: accounts }).then(function (receipt: any) {
+      contract.methods.setNotifyRewardAmount(amount).send({ from: accounts }).then((receipt: any) =>{
         console.log(receipt);
         resolve(receipt)
-    }).catch((err: any) => {
-        resolve(0)
-        console.log('error',err);
-    })
+      }).catch((err: any) => {
+          resolve(0)
+          console.log('error',err);
+      })
   })
 }
 
@@ -208,15 +208,10 @@ const ERC20balanceOf = (abi: any[], address: string, account: any) => {
 
 
 // Native 1155 query assets
-const balanceOfBatch = (abi: any, address: any, ids: any, isMarketV2?: any) => {
-  // const account = '0xD4c27B5A5c15B1524FC909F0FE0d191C4e893695'
-  console.log(address, 'balanceOfBatch');
-  
+const balanceOfBatch = (abi: any, address: any, ids: any, account: any) => {
   const tempAccounts: any = []
   // eslint-disable-next-line no-restricted-syntax
-  for (const i of ids) {
-      tempAccounts.push(address)
-  }
+  for (const i of ids) { tempAccounts.push(account) }
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
       const web3 = new Web3((window as any ).ethereum)

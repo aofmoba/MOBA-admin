@@ -2,10 +2,12 @@
   <div class="form-group m-30">
     <a-form :model="form">
       <a-form-item field="radio" label="赛事类型：">
-        <Mradio :radioarr="permissions[0] === 'admin' ? createType: ['擂台']" :defaultvalue="form.type" @change-radio="changeRadio" />
+        <!-- <Mradio :radioarr="permissions[0] === 'admin' ? createType: ['擂台']" :defaultvalue="form.type" @change-radio="changeRadio" /> -->
+        <Mradio :radioarr="createType" :defaultvalue="form.type" @change-radio="changeRadio" />
       </a-form-item>
     </a-form>
-    <NewPoint v-if="form.type !== '擂台' && permissions[0] === 'admin'" :type="form.type" />
+    <!-- <NewPoint v-if="form.type !== '擂台' && permissions[0] === 'admin'" :type="form.type" /> -->
+    <NewPoint v-if="form.type !== '擂台'" :type="form.type" />
     <NewCity v-else :type="form.type"/>
 </div>
 </template>
@@ -25,7 +27,7 @@ const form:any = reactive({
 });
 const permissions: any = computed(() => userStore.$state.permissions );
 watch(()=>permissions,(newV,oldV)=>{
-  if( newV.value[0] !== 'admin' ) form.type = '擂台'
+  // if( newV.value[0] !== 'admin' ) form.type = '擂台'
 },{immediate: true,deep: true})
 const changeRadio = (file: any) => {
   form.type = file

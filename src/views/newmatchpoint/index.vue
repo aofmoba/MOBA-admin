@@ -1,5 +1,5 @@
 <template>
-  <div class="newpoint-container">
+  <div class="newpoint-container" style="overflow: hidden;">
     <Breadcrumb :items="['返回赛点列表','添加赛点']" :path="[`pointlist?match=${name}&compId=${compId}`]" />
     <div class="newpoint-wrap wrapbg">
       <Mtitle title="添加赛点" />

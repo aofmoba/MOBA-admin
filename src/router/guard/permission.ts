@@ -29,6 +29,11 @@ export default function setupPermissionGuard(router: Router) {
         crossroads();
       } else {
         try {
+          if( to.name === 'login' ){
+            next();
+            NProgress.done();
+            return;
+          }
           await userStore.info();
           crossroads();
         } catch (error) {

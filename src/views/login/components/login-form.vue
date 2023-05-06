@@ -50,7 +50,7 @@
   import { storeToRefs } from 'pinia';
   import useLoading from '@/hooks/loading';
   import { LoginData } from '@/api/user';
-  import { setTimestamp, clearAllLocal } from '@/utils/auth';
+  import { setTimestamp, clearAllLocal, getAddress } from '@/utils/auth';
   // eslint-disable-next-line import/extensions
   import Web3 from 'web3/dist/web3.min.js'
 
@@ -87,24 +87,14 @@
 
   const connectSubmit = async () => {
     Message.info('Sorry, this feature is still under development...')
-    // const { ethereum } = window as any; // 获取小狐狸实例
+    // const { ethereum } = window as any // 获取小狐狸实例
     // if (!ethereum) {
     //   // noInVisible.value = true;
     // } else {
-    //   await ethereum
-    //     .request({ method: 'eth_requestAccounts' })
-    //     .then(async (res: any) => {
-    //       const web3obj = new Web3((Web3 as any).givenProvider);
-    //       const res0 = await web3obj.utils.toChecksumAddress(res[0]);
-    //       console.log(res0);
-    //       // try {
-    //       //   console.log('connect')
-    //       // } catch (err) {
-    //       //   console.log(err);
-    //       // } finally {
-    //       //   setLoading(false);
-    //       // }
-    //     });
+    //   const account = await getAddress()
+    //   if( account ){
+    //     console.log(account)
+    //   }
     // }
   };
 

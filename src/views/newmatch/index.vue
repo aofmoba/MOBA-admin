@@ -1,5 +1,5 @@
 <template>
-  <div class="newmatch-container wrapbg">
+  <div class="newmatch-container wrapbg" style="overflow: hidden;">
     <Mtitle title="创建赛事" />
     <FormGroup />
   </div>

@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/extensions
+import Web3 from 'web3/dist/web3.min.js'
+
 const isLogin = () => {
   return !!localStorage.getItem('TOKEN_KEY');
   // return true
@@ -28,4 +31,17 @@ const getTimestamp = () => {
   return localStorage.getItem('TIME_STAMP');
 };
 
-export { isLogin, getToken, setToken, clearToken, clearAllLocal, setTimestamp, getTimestamp  };
+const getAddress = () => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    await (window as any).ethereum.request({ method: 'eth_requestAccounts' }).then(async (res: any) => {
+      const web3obj = new Web3((Web3 as any).givenProvider);
+      const res0 = await web3obj.utils.toChecksumAddress(res[0]);
+      resolve(res0)
+    }).catch((err: any) => {
+      resolve(0)
+    })
+  })
+};
+
+export { isLogin, getToken, setToken, clearToken, clearAllLocal, setTimestamp, getTimestamp, getAddress };
