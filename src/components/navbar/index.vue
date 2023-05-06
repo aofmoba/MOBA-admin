@@ -37,6 +37,14 @@
                 <icon-check-circle-fill v-if="apiActive === 'main'" style="color: green;opacity: .6"/>
               </a-space>
             </a-doption>
+            <!-- <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('han')">
+              <a-space>
+                <span class="mtext-1 font-md" style="margin-left: 2px;">
+                  192.*.*.13
+                </span>
+                <icon-check-circle-fill v-if="apiActive === 'han'" style="color: green;opacity: .6"/>
+              </a-space>
+            </a-doption> -->
             <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="handleLogout">
               <a-space>
                 <img style="width: 22px;height: 22px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/exit.svg" alt="">
@@ -154,6 +162,7 @@
 </script>
 
 <style lang="less" scoped>
+  
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -220,6 +229,9 @@
       padding: 0;
       border: none;
       box-shadow: 0px 4px 16px 0px rgba(179,192,231,0.32);
+    }
+    .arco-dropdown-list-wrapper{
+      max-height: 400px !important;
     }
   }
 </style>

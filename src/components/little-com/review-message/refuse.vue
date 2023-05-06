@@ -112,7 +112,7 @@ onMounted(()=>{
       border-radius: 4px;
       border: 1px solid #DAE0F2;
       &:hover{
-        background-color: #fff;
+        background-color: var(--color-bg-1);
       }
     }
   }

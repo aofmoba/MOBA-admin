@@ -38,7 +38,7 @@
 .form-group .arco-btn.default > div,
 .arco-space .arco-btn.default > div {
   color: #4458FE;
-  background-color: #fff;
+  background-color: var(--color-bg-1);
 }
 .form-group .arco-btn.default:hover::after,
 .arco-space .arco-btn.default:hover::after {
@@ -121,7 +121,7 @@ textarea:-ms-input-placeholder {
   height: 40px;
   padding: 0 18px 0 20px;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: var(--color-bg-1);
 }
 .arco-form .arco-input-wrapper:hover,
 .arco-space .arco-input-wrapper:hover,
@@ -178,7 +178,7 @@ textarea:-ms-input-placeholder {
 .arco-picker {
   position: relative;
   padding: 0px 15px;
-  background-color: #fff;
+  background-color: var(--color-bg-1);
 }
 .arco-picker .arco-picker-suffix {
   position: absolute;
@@ -269,7 +269,7 @@ textarea:-ms-input-placeholder {
   box-shadow: 0px 0px 8px 0px rgba(179, 192, 231, 0.6) !important;
 }
 .arco-table tbody > .arco-table-tr:hover .arco-table-td {
-  background: #FFFFFF !important;
+  background: var(--color-bg-1) !important;
 }
 .arco-table .arco-space .arco-space-item {
   margin-right: 0 !important;
@@ -283,7 +283,7 @@ textarea:-ms-input-placeholder {
   height: 32px;
   color: #4B60FF;
   font-size: 14px;
-  background-color: #fff;
+  background-color: var(--color-bg-1);
   box-shadow: 0px 4px 8px 0px rgba(179, 192, 231, 0.32);
   border-radius: 4px;
 }

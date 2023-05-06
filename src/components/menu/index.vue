@@ -181,7 +181,7 @@
           onCollapse={setCollapse}
           onMenuItemClick={ appStore.device === 'mobile' ? toggleDrawerMenu : ''}
         >
-        <a-menu-item key='title' style="margin: 30px 0;padding: 0;font-size: 20px;height: 28px; line-height:28px;font-weight: bold; text-align: center;color: #fff;">MOBA后台管理系统</a-menu-item>
+        <a-menu-item key='title' class="menu-title">MOBA后台管理系统</a-menu-item>
         {renderSubMenu()}
         </a-menu>
       );
@@ -211,6 +211,21 @@
       &:extend(.mainColor);
       .arco-menu-icon{display: none;}
       .arco-menu-title{line-height: 20px;}
+    }
+    .menu-title{
+      height: 28px !important; 
+      padding: 0 !important;
+      margin: 30px 0;
+      font-size: 20px;
+      line-height:28px;
+      font-weight: bold; 
+      text-align: center;
+      color: #fff;
+      &:hover{
+        background: transparent !important;
+        color: #fff;
+        cursor: auto;
+      }
     }
     .arco-menu-inline-header{margin-bottom: 0;}
     .arco-menu-item, .arco-menu-inline-header{

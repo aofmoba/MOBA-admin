@@ -19,7 +19,7 @@
     </a-date-picker>
     <div class="flex-items mcolor-1">开始<div class="mtext-1 white-nowrap overhidden flex-content" style="width: 26px;margin: 0 20px;">— —</div></div>
     <a-date-picker
-      style="width: 210px;height: 40px; margin-right: 10px;background-color: #fff;border: 1px solid #DAE0F2;"
+      style="width: 210px;height: 40px; margin-right: 10px;background-color: var(--color-bg-1);border: 1px solid #DAE0F2;"
       show-time
       :default-value="backFinish?backFinish:''"
       format="YYYY/MM/DD HH:mm"

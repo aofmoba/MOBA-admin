@@ -88,7 +88,7 @@ onMounted(() => {
       }
       .arco-steps-item-node{
         color: #fff;
-        background-color: #fff;
+        background-color: var(--color-bg-1);
         border-color: #4458FE;
         div{
           background-color: #4458FE;
@@ -108,7 +108,7 @@ onMounted(() => {
       height: 36px;
       color: #858EBD;
       border-radius: 100%;
-      background-color: #fff;
+      background-color: var(--color-bg-1);
       border: 1px solid #DAE0F2;
       div{
         width: 30px;
@@ -128,7 +128,7 @@ onMounted(() => {
         border: 1px solid #DAE0F2;
         border-left: none;
         border-right: none;
-        background: #fff;
+        background: var(--color-bg-1);
       }
     }
     &:nth-child(1){

@@ -4,7 +4,7 @@
       <div class="reward-ranking flex-items mcolor-1 font-md">
         <a-date-picker
           v-model="item.startTime"
-          style="width: 210px;height: 40px; margin-right: 29px;background-color: #fff;border: 1px solid #DAE0F2;"
+          style="width: 210px;height: 40px; margin-right: 29px;background-color: var(--color-bg-1);border: 1px solid #DAE0F2;"
           show-time
           format="YYYY/MM/DD HH:mm"
           placeholder="选择日期"

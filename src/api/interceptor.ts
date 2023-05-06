@@ -50,17 +50,22 @@ axios.interceptors.request.use(
     // please modify it according to the actual situation
     (window as any).mobaapiurl = localStorage.getItem('mobaapiurl') || ''
     if( !config.url.includes('https://') ){
-      if( (window as any).mobaapiurl === 'main' && config.url.includes('/api/')){
+      if( (window as any).mobaapiurl === 'main' && ( config.url.includes('/api/') || config.url.includes('/han/') ) ){
         config.url = config.url.replace('/api/', '/main/')
-      }else if( (window as any).mobaapiurl === 'api' && config.url.includes('/main/') ){
+        config.url = config.url.replace('/han/', '/main/')
+      }else if( (window as any).mobaapiurl === 'api' && ( config.url.includes('/main/') || config.url.includes('/han/') ) ){
         config.url = config.url.replace('/main/', '/api/')
+        config.url = config.url.replace('/han/', '/api/')
+      }else if( (window as any).mobaapiurl === 'han' && ( config.url.includes('/main/') || config.url.includes('/api/') ) ){
+        config.url = config.url.replace('/main/', '/han/')
+        config.url = config.url.replace('/api/', '/han/')
       }
     }
     const token = getToken();
     if (token && !config.url.includes('https://api.mapbox.com')) {
       if (!config.headers) { config.headers = {} }
       config.headers.accessToken = token
-      if (computedTime() && config.url !== '/api/user/refresh_token' && config.url !== '/main/user/refresh_token') {
+      if (computedTime() && config.url !== '/api/user/refresh_token' && config.url !== '/main/user/refresh_token' && config.url !== '/han/user/refresh_token') {
         if (!(window as any).isRefreshing) {
           (window as any).isRefreshing = true
           refreshToken().then((res: any) => {
@@ -100,7 +105,7 @@ axios.interceptors.response.use(
     // if the custom code is not 0, it is judged as an error.
     if (res.error_code !== 0 && res?.type !== 'FeatureCollection') {
       if( res.error_code === 1001 ){
-        if( !['/main/user/logout','/api/user/logout'].includes(String(response.config.url)) && isLogin() ){
+        if( !['/main/user/logout','/api/user/logout','/han/user/logout'].includes(String(response.config.url)) && isLogin() ){
           Message.error({
             content: '登录已过期，需要重新登录',
             duration: 5 * 1000,

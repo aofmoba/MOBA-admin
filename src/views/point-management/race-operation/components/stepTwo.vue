@@ -494,7 +494,7 @@ onMounted(() => {
       li{
         height: 32px;
         font-size: 14px;
-        background: #FFFFFF;
+        background: var(--color-bg-1);
         border: 1px solid #DAE0F2;
         .d1{
           min-width: 36px;
@@ -644,7 +644,7 @@ onMounted(() => {
     max-width: 143px;
     border-radius: 4px;
     border: 1px solid #DAE0F2;
-    background-color: #fff;
+    background-color: var(--color-bg-1);
     .arco-select-view-value{
       font-size: 16px;
       color: #3A3F63;
@@ -664,7 +664,7 @@ onMounted(() => {
   margin-left: 0px;
   .arco-dropdown{
     padding: 0;
-    background: #FFFFFF;
+    background: var(--color-bg-1);
     box-shadow: 0px 4px 16px 0px rgba(179,192,231,0.32);
     border-radius: 4px;
     .arco-dropdown-option{

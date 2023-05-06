@@ -183,7 +183,7 @@
           width: 246px;
           height: 100%;
           margin: 0 auto;
-          background: #FFFFFF;
+          background: var(--color-bg-1);
           border-radius: 4px;
           border: 1px solid #DAE0F2;
           .arco-tabs-tab{

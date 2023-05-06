@@ -23,6 +23,11 @@ export default mergeConfig(
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
+        '/han': {
+          target: 'http://192.168.130.13:80/api/', // han 赛程测试
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/han/, '')
+        },
         '/main': {
           target: 'http://161.189.70.95:5679/api/', // main
           changeOrigin: true,

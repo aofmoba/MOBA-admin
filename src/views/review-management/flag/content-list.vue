@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onMounted } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import Ranking from '@/views/challenge-management/components/rangking.vue'

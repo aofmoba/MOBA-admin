@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue"
+import { onMounted, onActivated } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { Message, TableData } from "@arco-design/web-vue"
@@ -185,6 +185,13 @@ const nextStep = () => {
     emit('on-next')
   }
 }
+
+onActivated(()=>{
+  if( !loading.value ){
+    queryData = JSON.parse(localStorage.getItem('matchinfo') || '')
+    initData(queryData.id)
+  }
+})
 
 onMounted(() => {
     queryData = JSON.parse(localStorage.getItem('matchinfo') || '')

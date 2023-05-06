@@ -93,7 +93,7 @@
 
 <script lang="ts" setup>
 import { TableData } from "@arco-design/web-vue";
-import { onMounted, reactive } from "vue"
+import { onMounted, reactive, onActivated } from "vue"
 import { useRouter } from 'vue-router'
 import useLoading from '@/hooks/loading'
 
@@ -101,6 +101,7 @@ const emit = defineEmits(['on-next','on-prev'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
+let queryData: any = $ref()
 let useDate: TableData[] = $ref([]);
 let expandData: any = $ref([]);
 const data: TableData[] = reactive([{
@@ -144,7 +145,7 @@ const expandRow = (id: any) => {
     }
 }
 
-const initData = () => {
+const initData = (id: string) => {
   setLoading(false)
   useDate = data
 }
@@ -160,8 +161,17 @@ const prevStep = () => {
   emit('on-prev')
 }
 
+
+onActivated(()=>{
+  if( !loading.value ){
+    queryData = JSON.parse(localStorage.getItem('matchinfo') || '')
+    initData(queryData.id)
+  }
+})
+
 onMounted(() => {
-  initData()
+  queryData = JSON.parse(localStorage.getItem('matchinfo') || '')
+  initData(queryData.id)
 })
 
 </script>

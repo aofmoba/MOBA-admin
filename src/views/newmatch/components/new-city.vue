@@ -307,7 +307,7 @@ onMounted(() => {
             }
             .arco-select{
                 padding: 0 18px 0 20px;
-                background: #fff;
+                background: var(--color-bg-1);
                 border-radius: 4px;
                 border: 1px solid #DAE0F2;
                 .arco-select-view-value{
