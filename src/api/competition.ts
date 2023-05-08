@@ -185,7 +185,23 @@ export function queryPointTeamInfo(id: string) {
     return axios.post<queryPointTeamInfoRes>('/api/competition_team/info',{team_id: id});
 }
 
+export type battlePosition = 'AGAINST' | 'MIDDLE' | 'GROW' | 'MONSTER' | 'WALKER';
+
+/**
+ * mainPos--队伍成员主玩位置
+ * AGAINST: 0 对抗路
+ * MIDDLE： 1 中路
+ * GROW：   2 发育
+ * MONSTER：3 打野
+ * WALKER： 4 游走
+ * */ 
+
+// 查看赛事队伍详情
+export function queryPlayerInfo(id: string) {
+    return axios.post('/api/player/comp_info ',{player_id: id});
+}
+
 // 替队伍签到
-export function queryPointTeamCheckin(id: string) {
-    return axios.post('/api/competition_team/checkin',{team_id: id});
+export function queryPointTeamCheckin(teamId: string,pointId: string) {
+    return axios.post('/api/competition_team/checkin',{team_id: teamId,point_id: pointId});
 }

@@ -91,7 +91,7 @@
     </div>
     <template #footer>
       <a-space>
-        <a-button class="active noboxshadow btn-loading" :disabled="delLoading" style="width:128px; height: 40px;" @click="deleteHandler">
+        <a-button class="active noboxshadow " :disabled="delLoading" style="width:128px; height: 40px;" @click="deleteHandler">
           <div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="delLoading"/> 确认</div>
         </a-button>
       </a-space>

@@ -67,7 +67,7 @@
           <a-table-column title="操作" :width="191">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="![1,2].includes(record.status)" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
                 <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="exportXLSX(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;" >导出报名</div></a-button>
                 <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;" @click="deletePointFun(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
               </a-space>
@@ -90,7 +90,7 @@
     </div>
     <template #footer>
       <a-space>
-        <a-button class="active noboxshadow btn-loading" :disabled="delLoading" style="width:128px; height: 40px;" @click="deleteHandler">
+        <a-button class="active noboxshadow " :disabled="delLoading" style="width:128px; height: 40px;" @click="deleteHandler">
           <div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="delLoading"/> 确认</div>
         </a-button>
       </a-space>
@@ -179,19 +179,17 @@ const initData = async() => {
   setLoading(false)
 }
 const toRaceOperation = (record: allPointLists) => {
-  if( record.status === 1 || record.status === 2 ){
-    router.push({path: '/operation'})
-    localStorage.setItem('matchinfo',JSON.stringify({
-      id: record.id,
-      match: record.name,
-      compId,
-      fightRound: record.fightRound,
-      start: record.signTime,
-      end: record.signFinTime,
-      signTime: record.signTime,
-      fightTime: record.fightTime
-    }))
-  }
+  router.push({path: '/operation'})
+  localStorage.setItem('matchinfo',JSON.stringify({
+    id: record.id,
+    match: record.name,
+    compId,
+    fightRound: record.fightRound,
+    start: record.checkInTime,
+    end: record.checkInFinTime,
+    checkInTime: record.checkInTime,
+    fightTime: record.fightTime
+  }))
 }
 
 

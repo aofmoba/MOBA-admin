@@ -44,7 +44,7 @@
             </a-form-item>
             <a-form-item style="align-items: end;">
                 <div class="flex-center" style="width: 758px;">
-                    <a-button class="active large btn-loading" html-type="submit" :disabled="subLoading"><div><a-spin v-if="subLoading"></a-spin> 保存并确认</div></a-button>
+                    <a-button class="active large " html-type="submit" :disabled="subLoading"><div><a-spin v-if="subLoading"></a-spin> 保存并确认</div></a-button>
                 </div>
             </a-form-item>
         </a-form>

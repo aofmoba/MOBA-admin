@@ -6,28 +6,37 @@
         :bordered="{ cell: false }"
         :data="useDate"
         :loading="loading"
-        row-key="id"
+        row-key="teamId"
         :expanded-keys="expands"
         :pagination="false"
       >
         <template #expand-row>
-            <a-table class="expand-table" :data="expandData" :pagination="false">
+            <a-table class="expand-table" :loading="inloading" :data="expandData" :pagination="false">
+              <template #empty>
+                <div style="margin-top: 75px;"><img v-if="!inloading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
+              </template>
               <template #columns>
                 <a-table-column
                   title="选手ID"
-                  data-index="playerID"
+                  data-index="id"
                   :width="133"
                 />
                 <a-table-column
                   title="选手昵称"
-                  data-index="playerNickname"
                   :width="325"
-                />
+                >
+                  <template #cell="{ record }">
+                    {{ record.name ? record.name : '--' }}
+                  </template>
+                </a-table-column>
                 <a-table-column
                   title="主玩位置"
-                  data-index="mainPlay"
                   :width="102"
-                />
+                >
+                  <template #cell="{ record }">
+                    {{ getPlayerMainPos(record.mainPos) }}
+                  </template>
+                </a-table-column>
                 <a-table-column title="" />
               </template>
             </a-table>
@@ -65,7 +74,7 @@
           <a-table-column title="操作" :width="216">
             <template #cell="{ record }">
               <a-space class="flex-content">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="cancelRank(record)"><div style="font-size: 14px;line-height: 32px;">取消名次</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="celloading" @click="cancelRank(record)"><div style="font-size: 14px;line-height: 32px;"><a-spin v-if="celloading"/>取消名次</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -95,15 +104,19 @@
 import { TableData } from "@arco-design/web-vue";
 import { onMounted, reactive, onActivated } from "vue"
 import { useRouter } from 'vue-router'
+import { getPlayerMainPos } from '@/utils/filterData'
 import useLoading from '@/hooks/loading'
+import {  
+  queryPlayerInfo,
+} from '@/api/competition';
 
 const emit = defineEmits(['on-next','on-prev'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
+const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
 let useDate: TableData[] = $ref([]);
-let expandData: any = $ref([]);
 const data: TableData[] = reactive([{
     id: 12345,
     rank: 1,
@@ -134,15 +147,29 @@ const data: TableData[] = reactive([{
     }]
 }])
 
-let expands:any = $ref([])
-const expandRow = (id: any) => {
-    if (expands.indexOf(id) < 0) {
-        expands = []
-        expands.push(id)
-        expandData = data.filter((item: TableData)=> item.id === id)[0].info
-    } else {
-        expands = [];
+const allExpandData: any = $ref([]) // 保存查看的所有队伍成员
+let expandData: any = $ref([]) // 队伍选手
+let expands:any = $ref([]) // 队伍id
+const expandRow = (record: any) => {
+  if (expands.indexOf(String(record.teamId)) < 0) {
+    expands = []
+    expands.push(String(record.teamId))
+    const temp = allExpandData.findIndex((ele: any) => ele[0].teamId === record.teamId)
+    if( temp > -1 ){ expandData = allExpandData[temp] }
+    else{
+      inSetLoading(true)
+      record.members.forEach((item: any,i: number) => {
+        queryPlayerInfo(item.id).then((res: any) => {
+          if( res.error_code === 0 ){
+            expandData[i] = {...res.data.comp,name: res.data.name,teamId:record.teamId }
+          }
+        }).finally(()=>{inSetLoading(false)})
+      })
+      allExpandData.push(expandData)
     }
+  } else {
+      expands = [];
+  }
 }
 
 const initData = (id: string) => {
@@ -150,6 +177,7 @@ const initData = (id: string) => {
   useDate = data
 }
 
+const celloading: boolean = $ref(false)
 const cancelRank = (record: any) => {}
 
 const saveRank = () => {
@@ -191,37 +219,16 @@ onMounted(() => {
     }
   }
 }
-:deep(.arco-table){
-  tbody>.arco-table-tr{
-    height: 72px !important;
-  }
-  .arco-table-tr-expand
-  .expand-table{
-    .arco-table-container{border: 1px solid rgba(133, 142, 189, 0.2);border-bottom: none;}
-    thead>.arco-table-tr{
-      height: 46px;
-      .arco-table-th{
-        background: rgba(218, 224, 242, .4);
-        .arco-table-th-title{
-          font-size: 14px;
-          color: #858EBD;
-        }
-      }
+
+:deep(.race-table){
+    &>.arco-table,&>.arco-table>.arco-spin{
+        min-height: 324px;
     }
-    tbody>.arco-table-tr{
-      height: 44px !important;
-      &:hover{
-        .arco-table-cell,.arco-table-td{
-          background-color: rgba(218, 224, 242, .1) !important;
-        }
-      }
-      .arco-table-cell,.arco-table-td{
-        font-size: 14px;
-        color: #858EBD;
-        background-color: #FBFBFD !important;
+    &>.arco-table{
+      tbody>.arco-table-tr:not(.arco-table-tr-expand .arco-table-tr){
+        height: 72px !important;
       }
     }
   }
-}
 </style>
   

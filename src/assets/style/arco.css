@@ -66,7 +66,7 @@
 .arco-space .arco-btn.large {
   width: 286px;
 }
-.btn-loading .arco-spin-icon {
+.arco-btn .arco-spin-icon {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -248,27 +248,27 @@ textarea:-ms-input-placeholder {
   font-weight: bold;
   color: #3A3F63;
 }
-.arco-table tbody > .arco-table-tr {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand) {
   height: 114px;
   margin-left: 3px;
   margin-right: 3px;
 }
-.arco-table tbody > .arco-table-tr.arco-table-tr-empty .arco-table-td {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand).arco-table-tr-empty .arco-table-td {
   border-bottom: none !important;
 }
-.arco-table tbody > .arco-table-tr .arco-table-td {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand) .arco-table-td {
   border-bottom: 1px solid #DAE0F2 !important;
 }
-.arco-table tbody > .arco-table-tr .arco-table-cell {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand) .arco-table-cell {
   text-align: center;
   font-size: 16px;
   color: #3A3F63;
 }
-.arco-table tbody > .arco-table-tr:hover {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand):hover {
   position: relative;
   box-shadow: 0px 0px 8px 0px rgba(179, 192, 231, 0.6) !important;
 }
-.arco-table tbody > .arco-table-tr:hover .arco-table-td {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand):hover .arco-table-td {
   background: var(--color-bg-1) !important;
 }
 .arco-table .arco-space .arco-space-item {
@@ -301,6 +301,35 @@ textarea:-ms-input-placeholder {
   color: #fff;
   background-color: #4458FE;
   box-shadow: 0px 5px 16px 0px rgba(65, 70, 109, 0.1);
+}
+.arco-table .arco-table-tr-expand .arco-table-container {
+  border: 1px solid rgba(133, 142, 189, 0.2);
+  border-bottom: none;
+}
+.arco-table .arco-table-tr-expand thead > .arco-table-tr {
+  height: 46px;
+}
+.arco-table .arco-table-tr-expand thead > .arco-table-tr .arco-table-th {
+  background: rgba(218, 224, 242, 0.4);
+}
+.arco-table .arco-table-tr-expand thead > .arco-table-tr .arco-table-th .arco-table-th-title {
+  font-size: 14px;
+  color: #858EBD;
+}
+.arco-table .arco-table-tr-expand tbody > .arco-table-tr {
+  height: 44px !important;
+  background-color: #fbfbfd !important;
+}
+.arco-table .arco-table-tr-expand tbody > .arco-table-tr:hover {
+  background-color: #f7f7fb !important;
+}
+.arco-table .arco-table-tr-expand tbody > .arco-table-tr:hover .arco-table-td {
+  background: transparent !important;
+}
+.arco-table .arco-table-tr-expand tbody > .arco-table-tr .arco-table-cell,
+.arco-table .arco-table-tr-expand tbody > .arco-table-tr .arco-table-td {
+  font-size: 14px;
+  color: #858EBD;
 }
 .del-lots.arco-modal {
   width: 466px;

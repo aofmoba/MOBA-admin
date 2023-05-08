@@ -63,7 +63,7 @@
     width: 286px;
   }
 }
-.btn-loading .arco-spin-icon{
+.arco-btn .arco-spin-icon{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -225,7 +225,7 @@ textarea:-ms-input-placeholder {  /* Internet Explorer 10-11 */
       }
     }
   }
-  tbody>.arco-table-tr{
+  tbody>.arco-table-tr:not(.arco-table-tr-expand){
     height: 114px;
     margin-left: 3px;
     margin-right: 3px;
@@ -236,8 +236,8 @@ textarea:-ms-input-placeholder {  /* Internet Explorer 10-11 */
     .arco-table-cell{text-align: center;font-size: 16px;color: #3A3F63;}
     &:hover{
       position: relative;
-      .arco-table-td{background: var(--color-bg-1) !important;}
       box-shadow: 0px 0px 8px 0px rgba(179,192,231,0.6) !important;
+      .arco-table-td{background: var(--color-bg-1) !important;}
     }
   }
   .arco-space .arco-space-item{
@@ -267,6 +267,31 @@ textarea:-ms-input-placeholder {  /* Internet Explorer 10-11 */
       color: #fff;
       background-color: #4458FE;
       box-shadow: 0px 5px 16px 0px rgba(65,70,109,0.1);
+    }
+  }
+  .arco-table-tr-expand{
+    .arco-table-container{border: 1px solid rgba(133, 142, 189, 0.2);border-bottom: none;}
+    thead>.arco-table-tr{
+      height: 46px;
+      .arco-table-th{
+        background: rgba(218, 224, 242, .4);
+        .arco-table-th-title{
+          font-size: 14px;
+          color: #858EBD;
+        }
+      }
+    }
+    tbody>.arco-table-tr{
+      height: 44px !important;
+      background-color: RGBA(251, 251, 253, 1) !important;
+      &:hover{
+        background-color: RGBA(247, 247, 251, 1) !important;
+        .arco-table-td{background: transparent !important;}
+      }
+      .arco-table-cell,.arco-table-td{
+        font-size: 14px;
+        color: #858EBD;
+      }
     }
   }
 }

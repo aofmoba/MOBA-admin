@@ -69,7 +69,7 @@
       </div>
       <a-form-item>
         <div class="flex-center" style="width: 758px;margin-bottom: 20px;">
-          <a-button class="active btn-loading" :disabled="loading" html-type="submit"><div><a-spin v-if="loading" />保存并确认</div></a-button>
+          <a-button class="active " :disabled="loading" html-type="submit"><div><a-spin v-if="loading" />保存并确认</div></a-button>
           <a-button class="default" style="margin-left: 64px;" @click="createAnotherPoint"><div>添加赛点</div></a-button>
         </div>
       </a-form-item>

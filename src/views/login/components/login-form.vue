@@ -25,7 +25,7 @@
             />
           </a-form-item>
           <a-form-item>
-              <a-button class="active large btn-loading" html-type="submit" style="margin-left: 4px;" :disabled="loading"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
+              <a-button class="active large " html-type="submit" style="margin-left: 4px;" :disabled="loading"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
           </a-form-item>
         </a-form>
       </a-tab-pane>
@@ -35,7 +35,7 @@
           <div>METAMASK</div>
         </div>
         <div class="mobile-w" style="padding-bottom: 50px;">
-          <a-button class="active large btn-loading" style="margin-left: -2px;" :disabled="loading" @click="connectSubmit"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
+          <a-button class="active large " style="margin-left: -2px;" :disabled="loading" @click="connectSubmit"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
         </div>
       </a-tab-pane>
     </a-tabs>

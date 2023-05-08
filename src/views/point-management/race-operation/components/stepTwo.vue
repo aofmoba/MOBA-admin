@@ -94,7 +94,7 @@
       名
     </div>
     <template #footer>
-      <a-space><a-button class="active btn-loading" style="width:128px; height: 40px;" :disabled="loading" @click="handleBeforeOk"><div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="loading" />确认抽签</div></a-button></a-space>
+      <a-space><a-button class="active " style="width:128px; height: 40px;" :disabled="loading" @click="handleBeforeOk"><div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="loading" />确认抽签</div></a-button></a-space>
       <div class="blue-1 cursor-pointer" style="font-size: 16px;line-height: 40px;font-weight: bold;" @click="handleCancel">取消</div>
     </template>
   </a-modal>

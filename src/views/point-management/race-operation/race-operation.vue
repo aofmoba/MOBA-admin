@@ -61,6 +61,9 @@ const changeDate = (date: dateType) => {
 
 onActivated(()=>{
   if( !localStorage.getItem('currentStep') ) currentStep = 1
+  const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '')
+  signTime.startTime = Number(queryInfo.start) || 0
+  signTime.finishTime = Number(queryInfo.end) || 0
 })
 
 onMounted(() => {

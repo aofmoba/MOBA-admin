@@ -20,7 +20,7 @@
         :bordered="{ cell: false }"
         :data="useData"
         :loading="loading"
-        row-key="id"
+        row-key="teamId"
         :expanded-keys="expands"
         :pagination="false"
       >
@@ -28,23 +28,32 @@
           <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
         </template>
         <template #expand-row>
-            <a-table class="expand-table" :data="expandData" :pagination="false">
+            <a-table class="expand-table" :loading="inloading" :data="expandData" :pagination="false">
+              <template #empty>
+                <div style="margin-top: 75px;"><img v-if="!inloading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
+              </template>
               <template #columns>
                 <a-table-column
                   title="选手ID"
-                  data-index="playerid"
+                  data-index="id"
                   :width="133"
                 />
                 <a-table-column
                   title="选手昵称"
-                  data-index="playerNickname"
                   :width="325"
-                />
+                >
+                <template #cell="{ record }">
+                  {{ record.name ? record.name : '--' }}
+                </template>
+                </a-table-column>
                 <a-table-column
                   title="主玩位置"
-                  data-index="mainPlay"
                   :width="102"
-                />
+                >
+                  <template #cell="{ record }">
+                    {{ getPlayerMainPos(record.mainPos) }}
+                  </template>
+                </a-table-column>
                 <a-table-column title="" />
               </template>
             </a-table>
@@ -58,7 +67,7 @@
         <template #columns>
           <a-table-column
             title="队伍编号"
-            data-index="teamId"
+            data-index="indexId"
             :width="133"
           />
           <a-table-column
@@ -74,8 +83,8 @@
           <a-table-column title="操作" :width="378">
             <template #cell="{ record }">
               <a-space class="flex-content" style="padding-left: 106px;">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="cancelSign(record.id)"><div style="font-size: 14px;line-height: 32px;">取消报名</div></a-button>
-                <a-button class="default btn-loading" style="width: 103px; height: 32px;margin-left: 10px;" :disabled="signloading" @click="teamCheckin(record.id)"><div style="width: 100px;font-size: 14px;line-height: 29px;"><a-spin v-if="signloading"/>签到</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="celSignloading" @click="cancelSign(record.teamId)"><div style="font-size: 14px;line-height: 32px;"><a-spin v-if="celSignloading"/>取消报名</div></a-button>
+                <a-button class="default signbtn" style="width: 103px; height: 32px;margin-left: 10px;" :disabled="signloading || checkinsData.includes(record.teamId)" @click="teamCheckin(record.teamId)"><div style="width: 100px;font-size: 14px;line-height: 28px;"><a-spin v-if="signloading"/>签到</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -84,9 +93,9 @@
             title=""
           >
             <template #cell="{ record }">
-              <div class="o-expend white-nowrap" @click="expandRow(record.id)">
+              <div class="o-expend white-nowrap" @click="expandRow(record)">
                 <span class="expend-btn" style="color: #858EBD;">展开</span>
-                <icon-down v-if="expands.indexOf(record.id) < 0" class="iconStyle" />
+                <icon-down v-if="expands.indexOf(String(record.teamId)) < 0" class="iconStyle" />
                 <icon-up v-else class="iconStyle" />
               </div>
             </template>
@@ -96,8 +105,8 @@
     </div>
     <div class="flex-items between">
         <div>
-          <span class="font-md mcolor-1">已确认签到：{{ useData.length }} / {{ allTeamData.length }}</span>
-          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数{{ useData.length }}支</span>
+          <span class="font-md mcolor-1">已确认签到：{{ checkinsData.length }} / {{ useData.length }}</span>
+          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数{{ canCheck }}支</span>
         </div>
         <a-space>
           <a-button class="active submit" style="width: 284px; height: 54px;" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">完成，下一步</div></a-button>
@@ -107,62 +116,83 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onActivated } from "vue"
+import { onMounted, onActivated, computed } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { getPlayerMainPos } from '@/utils/filterData'
 import { Message, TableData } from "@arco-design/web-vue"
 import {  
   queryComPointCheckinList,
   queryPointTeamInfo,
-  queryPointTeamCheckin
+  queryPlayerInfo,
+  queryPointTeamCheckin,
 } from '@/api/competition';
 import type { comPointCheckinListRes } from '@/api/competition';
 
 const emit = defineEmits(['on-next'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
+const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
 let useData: TableData[] = $ref([])
+const canCheck = computed(()=> useData.filter((item: any) => item?.person >= queryData?.fightRound).length)
 
+const allExpandData: any = $ref([]) // 保存查看的所有队伍成员
 let expandData: any = $ref([]) // 队伍选手
 let expands:any = $ref([]) // 队伍id
-const expandRow = (id: any) => {
-    if (expands.indexOf(id) < 0) {
-        expands = []
-        expands.push(id)
-        expandData = useData.filter((item: TableData)=> item.id === id)[0].members
-    } else {
-        expands = [];
+const expandRow = (record: any) => {
+  if (expands.indexOf(String(record.teamId)) < 0) {
+    expands = []
+    expands.push(String(record.teamId))
+    const temp = allExpandData.findIndex((ele: any) => ele[0].teamId === record.teamId)
+    if( temp > -1 ){ expandData = allExpandData[temp] }
+    else{
+      inSetLoading(true)
+      record.members.forEach((item: any,i: number) => {
+        queryPlayerInfo(item.id).then((res: any) => {
+          if( res.error_code === 0 ){
+            expandData[i] = {...res.data.comp,name: res.data.name,teamId:record.teamId }
+          }
+        }).finally(()=>{inSetLoading(false)})
+      })
+      allExpandData.push(expandData)
     }
+  } else {
+      expands = [];
+  }
 }
 
 const querySingalTeam = (data: object[]) =>{
   data.forEach((item: any )=>{
-    queryPointTeamInfo(item.id).then((res: any)=>{
-      setLoading(false)
+    queryPointTeamInfo(item.teamId).then((res: any)=>{
       if( res.error_code === 0 ){
-        const temp = useData.findIndex((ele: any) => ele.id === res.data.teamId)
+        const temp = useData.findIndex((ele: any) => ele.teamId === res.data.teamId)
         if( temp > -1 ) {
+          const olddata = useData[temp]
           useData[temp] = {
+            ...olddata,
             ...res.data,
-            person: res.data.members.length
+            person: res.data.members.length,
           }
         }
       }
-    })
+    }).finally(()=>{setLoading(false)})
   })
 }
 
-let allTeamData: any = $ref([])
+let checkinsData: any = $ref([])
 const initData = async (id: string) => {
     queryComPointCheckinList(id).then((res: any) => {
       if( res.error_code === 0 ) {
-        if( !res.data.checkins.length ) setLoading(false)
-        allTeamData = [...res.checkins,...res.noncheckins]
-        useData = res.data.checkins.map((item: any,i: number)=>({...item,teamId: i}))
+        if( !res.data.checkins ) res.data.checkins = []        
+        if( !res.data.noncheckins ) res.data.noncheckins = []        
+        useData = [...res.data.checkins,...res.data.noncheckins]
+        if( !useData.length ) { setLoading(false); return}
+        checkinsData = res.data.checkins
+        useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
         // eslint-disable-next-line no-use-before-define
-        querySingalTeam( res.data.checkins )
+        querySingalTeam( useData )
       }
     }).catch(()=>{setLoading(false)})
 }
@@ -170,12 +200,15 @@ const initData = async (id: string) => {
 let signloading: boolean = $ref(false)
 const teamCheckin = async (teamId: string) => {
   signloading = true
-  await queryPointTeamCheckin(teamId).finally(()=>{signloading = false})
-  Message.success('Successfully signed in!')
+  try {
+    await queryPointTeamCheckin(teamId,queryData?.id).finally(()=>{signloading = false})
+    Message.success('Successfully signed in!')
+  } catch (error) {console.log(error)}
 }
 
-
+const celSignloading: boolean = $ref(false)
 const cancelSign = (id: number) => {
+  // celSignloading = true
 }
 
 const nextStep = () => {
@@ -201,6 +234,9 @@ onMounted(() => {
 </script>
   
   <style scoped lang="less">
+  :deep(.signbtn .arco-spin-icon){
+    color: #4458FE !important;
+  }
   .iconStyle{
     font-size: 16px;
     margin-left: 16px;
@@ -240,40 +276,14 @@ onMounted(() => {
       }
     }
   }
-  :deep(.arco-table){
-    min-height: 324px;
-    .arco-spin{
-      min-height: 324px;
+  :deep(.race-table){
+    &>.arco-table,&>.arco-table>.arco-spin{
+        min-height: 324px;
     }
-    thead .arco-table-th:nth-child(4){padding-left: 106px;}
-    tbody>.arco-table-tr{
-      height: 72px !important;
-    }
-    .arco-table-tr-expand
-    .expand-table{
-      .arco-table-container{border: 1px solid rgba(133, 142, 189, 0.2);border-bottom: none;}
-      thead>.arco-table-tr{
-        height: 46px;
-        .arco-table-th{
-          background: rgba(218, 224, 242, .4);
-          .arco-table-th-title{
-            font-size: 14px;
-            color: #858EBD;
-          }
-        }
-      }
-      tbody>.arco-table-tr{
-        height: 44px !important;
-        &:hover{
-          .arco-table-cell,.arco-table-td{
-            background-color: rgba(218, 224, 242, .1) !important;
-          }
-        }
-        .arco-table-cell,.arco-table-td{
-          font-size: 14px;
-          color: #858EBD;
-          background-color: #FBFBFD !important;
-        }
+    &>.arco-table{
+      thead .arco-table-th:nth-child(4){padding-left: 106px;}
+      tbody>.arco-table-tr:not(.arco-table-tr-expand .arco-table-tr){
+        height: 72px !important;
       }
     }
   }

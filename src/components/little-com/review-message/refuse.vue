@@ -11,7 +11,7 @@
     <template #footer>
       <div class="cancel blue-1 cursor-pointer" @click="cancelHandler">取消</div>
       <a-space>
-        <a-button class="active noboxshadow btn-loading" :disabled="delLoading" style="width:128px; height: 40px;" @click="isAgreeHandler">
+        <a-button class="active noboxshadow " :disabled="delLoading" style="width:128px; height: 40px;" @click="isAgreeHandler">
           <div style="font-size: 16px;line-height: 40px;font-weight: bold;"><a-spin v-if="delLoading"/> 确认</div>
         </a-button>
       </a-space>
