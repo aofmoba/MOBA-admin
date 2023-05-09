@@ -67,7 +67,7 @@
         <template #columns>
           <a-table-column
             title="队伍编号"
-            data-index="indexId"
+            data-index="teamId"
             :width="133"
           />
           <a-table-column
@@ -130,7 +130,7 @@ import {
 } from '@/api/competition';
 import type { comPointCheckinListRes } from '@/api/competition';
 
-const emit = defineEmits(['on-next'])
+const emit = defineEmits(['on-next','getchecknum'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
@@ -232,15 +232,18 @@ const noFinishFilter = (): boolean => {
 
 
 const nextStep = async () => {
-  // 完成签到过程，同时签到结束时间修改为点击【完成下一步】按钮的时间
+  // 完成签到过程，同时签到结束时间修改为点击【完成下一步】按钮的时间，-重新进入需判断是否已结束签到
   const nowTime = new Date().getTime()
-  if( nowTime >= queryData.fightTime*1000 ){ // 战斗已经开始 直接进入下一步
+  if( nowTime >= queryData.fightTime*1000 ){ // 战斗已经开始或已过签到结束时间 直接进入下一步
     // eslint-disable-next-line vue/custom-event-name-casing
     emit('on-next')
     return
   }
   finloading = true
   await finishCheckStep(queryData?.id).finally(()=>{finloading = false})
+  emit('getchecknum',checkinsData.length)
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('on-next')
 }
 
 onActivated(()=>{

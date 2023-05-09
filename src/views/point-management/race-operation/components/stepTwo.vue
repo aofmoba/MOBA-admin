@@ -83,7 +83,7 @@
     modal-class="draw-lots"
   >
     <template #title>
-      <div style="font-size: 20px;line-height: 28px;color: #3A3F63;font-weight: bold;">共有19支队伍进行比赛</div>
+      <div style="font-size: 20px;line-height: 28px;color: #3A3F63;font-weight: bold;">共有{{ checknum }}支队伍进行比赛</div>
       <img class="close-btn" style="width: 32px;height: 32px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/close.svg" alt="" @click="handleCancel">
     </template>
     <div class="flex-center font-md mcolor-1">
@@ -114,6 +114,12 @@ import {
 import type { getPointFightRes } from '@/api/competition';
 import { Message } from "@arco-design/web-vue";
 
+const props = defineProps({
+  checknum: {
+    type: Number,
+    default: 0
+  }
+})
 const comStore = staticData();
 const { currentStep } = storeToRefs(comStore);
 const { loading, setLoading } = useLoading(false);

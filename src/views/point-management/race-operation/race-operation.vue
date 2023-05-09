@@ -23,8 +23,8 @@
         <DatePicker v-if="currentStep === 1" :key="signTime.startTime" :starttime="signTime.startTime" :interval="true" :finishtime="signTime.finishTime" style="margin-top: 40px;" @change-date="changeDate"/>
       </div>
     </div>
-    <StepOne v-if="currentStep === 1" @on-next="onNext"/>
-    <StepTwo v-if="currentStep === 2" @on-prev="onPrev" @on-next="onNext"/>
+    <StepOne v-if="currentStep === 1" @on-next="onNext" @getchecknum="getCheckNum"/>
+    <StepTwo v-if="currentStep === 2" :checknum="checkNum" @on-prev="onPrev" @on-next="onNext"/>
     <stepThree v-if="currentStep === 3" @on-prev="onPrev" @on-next="onNext"/>
   </div>
 </template>
@@ -60,6 +60,11 @@ const onNext = () => {
 const changeDate = (date: dateType) => {
   signTime.startTime = Math.floor(Number(date.start) / 1000)
   signTime.finishTime = Math.floor(Number(date.end) / 1000)
+}
+
+let checkNum: number = $ref(0)
+const getCheckNum = (num: number) => {
+  checkNum = num
 }
 
 onActivated(()=>{
