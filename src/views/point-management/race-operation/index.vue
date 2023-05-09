@@ -14,7 +14,7 @@ const router = useRouter()
 let path: string = $ref('')
 onMounted(()=>{
   const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '')
-  path = `match=${ queryInfo.match }&compId=${ queryInfo.compId }`
+  path = `match=${ queryInfo.compName }&compId=${ queryInfo.compId }`
 })
 
 </script>

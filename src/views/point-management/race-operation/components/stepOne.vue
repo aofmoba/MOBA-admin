@@ -84,7 +84,7 @@
             <template #cell="{ record }">
               <a-space class="flex-content" style="padding-left: 106px;">
                 <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="celSignloading" @click="cancelSign(record.teamId)"><div style="font-size: 14px;line-height: 32px;"><a-spin v-if="celSignloading"/>取消报名</div></a-button>
-                <a-button class="default signbtn" style="width: 103px; height: 32px;margin-left: 10px;" :disabled="signloading || checkinsData.includes(record.teamId)" @click="teamCheckin(record.teamId)"><div style="width: 100px;font-size: 14px;line-height: 28px;"><a-spin v-if="signloading"/>签到</div></a-button>
+                <a-button class="default signbtn" style="width: 103px; height: 32px;margin-left: 10px;" :disabled="noCheckFilter(record.teamId)" @click="teamCheckin(record.teamId)"><div style="width: 100px;font-size: 14px;line-height: 28px;"><a-spin v-if="signloading"/>签到</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -109,7 +109,7 @@
           <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数{{ canCheck }}支</span>
         </div>
         <a-space>
-          <a-button class="active submit" style="width: 284px; height: 54px;" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">完成，下一步</div></a-button>
+          <a-button class="active submit" style="width: 284px; height: 54px;" :disabled="noFinishFilter()" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;"><a-spin v-if="finloading"/>完成，下一步</div></a-button>
         </a-space>
     </div>
   </div>
@@ -126,6 +126,7 @@ import {
   queryPointTeamInfo,
   queryPlayerInfo,
   queryPointTeamCheckin,
+  finishCheckStep,
 } from '@/api/competition';
 import type { comPointCheckinListRes } from '@/api/competition';
 
@@ -136,6 +137,8 @@ const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
 let useData: TableData[] = $ref([])
+let checkinsData: any = $ref([])
+let signloading: boolean = $ref(false)
 const canCheck = computed(()=> useData.filter((item: any) => item?.person >= queryData?.fightRound).length)
 
 const allExpandData: any = $ref([]) // 保存查看的所有队伍成员
@@ -163,6 +166,13 @@ const expandRow = (record: any) => {
   }
 }
 
+const noCheckFilter = (id: string) => {
+  const nowTime = new Date().getTime()
+  let timeBol: boolean = $ref(false)
+  if( nowTime < queryData.start*1000 || nowTime > queryData.end*1000 ) timeBol = true
+  return signloading || checkinsData.includes(id) || timeBol
+}
+
 const querySingalTeam = (data: object[]) =>{
   data.forEach((item: any )=>{
     queryPointTeamInfo(item.teamId).then((res: any)=>{
@@ -181,7 +191,6 @@ const querySingalTeam = (data: object[]) =>{
   })
 }
 
-let checkinsData: any = $ref([])
 const initData = async (id: string) => {
     queryComPointCheckinList(id).then((res: any) => {
       if( res.error_code === 0 ) {
@@ -197,11 +206,11 @@ const initData = async (id: string) => {
     }).catch(()=>{setLoading(false)})
 }
 
-let signloading: boolean = $ref(false)
 const teamCheckin = async (teamId: string) => {
   signloading = true
   try {
     await queryPointTeamCheckin(teamId,queryData?.id).finally(()=>{signloading = false})
+    initData(queryData.id)
     Message.success('Successfully signed in!')
   } catch (error) {console.log(error)}
 }
@@ -211,23 +220,38 @@ const cancelSign = (id: number) => {
   // celSignloading = true
 }
 
-const nextStep = () => {
+
+let finloading: boolean = $ref(false)
+const noFinishFilter = (): boolean => {
+  const nowTime = new Date().getTime()
+  let canBol: boolean = $ref(false)
+  if( nowTime <= queryData?.start*1000  ) canBol = true // 签到还未开始 不能结束
+  if( nowTime >= queryData?.fightTime*1000 ) canBol = false // 战斗已经开始 直接进入下一步
+  return finloading || checkinsData.length <= 1 || canBol
+}
+
+
+const nextStep = async () => {
   // 完成签到过程，同时签到结束时间修改为点击【完成下一步】按钮的时间
-  if( useData.length >= 2 ){
+  const nowTime = new Date().getTime()
+  if( nowTime >= queryData.fightTime*1000 ){ // 战斗已经开始 直接进入下一步
     // eslint-disable-next-line vue/custom-event-name-casing
     emit('on-next')
+    return
   }
+  finloading = true
+  await finishCheckStep(queryData?.id).finally(()=>{finloading = false})
 }
 
 onActivated(()=>{
   if( !loading.value ){
-    queryData = JSON.parse(localStorage.getItem('matchinfo') || '')
+    queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
     initData(queryData.id)
   }
 })
 
 onMounted(() => {
-    queryData = JSON.parse(localStorage.getItem('matchinfo') || '')
+    queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
     initData(queryData.id)
 })
 

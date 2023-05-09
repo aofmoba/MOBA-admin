@@ -16,7 +16,7 @@
     setup() {
       const route = useRoute();
       const comStore = staticData();
-      const { userAddress, chainId } = storeToRefs(comStore);
+      const { userAddress, chainId, currentStep } = storeToRefs(comStore);
       const { logout } = useUser();
 
       watch(()=>route.name,(newV,oldV)=>{

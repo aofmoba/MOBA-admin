@@ -5,6 +5,7 @@ const staticData = defineStore('common', {
     return {
       userAddress: '',
       chainId: -1, // chainid
+      currentStep: Number(localStorage.getItem('currentStep')) || 1
     };
   },
 

@@ -205,3 +205,8 @@ export function queryPlayerInfo(id: string) {
 export function queryPointTeamCheckin(teamId: string,pointId: string) {
     return axios.post('/api/competition_team/checkin',{team_id: teamId,point_id: pointId});
 }
+
+// 完成签到下一步
+export function finishCheckStep(id: string) {
+    return axios.post('/api/competition_point/finish_checkin',{point_id: id});
+}

@@ -32,27 +32,30 @@
 <script lang="ts" setup>
 import { onActivated, onMounted } from "vue"
 import { useRouter } from 'vue-router'
+import { staticData } from '@/store';
+import { storeToRefs } from 'pinia';
 import { dateType } from "@/types/global"
 import StepOne from './components/stepOne.vue'
 import StepTwo from './components/stepTwo.vue'
 import stepThree from './components/stepThree.vue'
 
 const router = useRouter()
-let currentStep: number = $ref(1)
+const comStore = staticData();
+const { currentStep } = storeToRefs(comStore);
 const signTime = $ref({
   startTime: 0,
   finishTime: 0
 })
 const setCurrent = (current: number) => {
-  currentStep = current
+  currentStep.value = current
 }
 const onPrev = () => {
-  currentStep = Math.max(1, currentStep - 1)
-  localStorage.setItem('currentStep',String(currentStep))
+  currentStep.value = Math.max(1, Number(currentStep.value) - 1)
+  localStorage.setItem('currentStep',String(currentStep.value))
 }
 const onNext = () => {
-  currentStep = Math.min(3, currentStep + 1)
-  localStorage.setItem('currentStep',String(currentStep))
+  currentStep.value = Math.min(3, Number(currentStep.value) + 1)
+  localStorage.setItem('currentStep',String(currentStep.value))
 }
 const changeDate = (date: dateType) => {
   signTime.startTime = Math.floor(Number(date.start) / 1000)
@@ -60,16 +63,15 @@ const changeDate = (date: dateType) => {
 }
 
 onActivated(()=>{
-  if( !localStorage.getItem('currentStep') ) currentStep = 1
-  const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '')
+  if( !localStorage.getItem('currentStep') ) currentStep.value = 1
+  const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '{}')
   signTime.startTime = Number(queryInfo.start) || 0
   signTime.finishTime = Number(queryInfo.end) || 0
 })
 
 onMounted(() => {
-  currentStep = 1
-  currentStep = Number(localStorage.getItem('currentStep')) || 1
-  const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '')
+  if( !localStorage.getItem('currentStep') ) currentStep.value = 1
+  const queryInfo: any = JSON.parse(localStorage.getItem('matchinfo') || '{}')
   signTime.startTime = Number(queryInfo.start) || 0
   signTime.finishTime = Number(queryInfo.end) || 0
 })

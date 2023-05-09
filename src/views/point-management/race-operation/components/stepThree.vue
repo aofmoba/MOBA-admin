@@ -4,7 +4,7 @@
       <a-table
         column-resizable
         :bordered="{ cell: false }"
-        :data="useDate"
+        :data="useData"
         :loading="loading"
         row-key="teamId"
         :expanded-keys="expands"
@@ -107,6 +107,8 @@ import { useRouter } from 'vue-router'
 import { getPlayerMainPos } from '@/utils/filterData'
 import useLoading from '@/hooks/loading'
 import {  
+  queryComPointCheckinList,
+  queryPointTeamInfo,
   queryPlayerInfo,
 } from '@/api/competition';
 
@@ -116,8 +118,8 @@ const { loading, setLoading } = useLoading(true);
 const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
-let useDate: TableData[] = $ref([]);
-const data: TableData[] = reactive([{
+const useData: TableData[] = $ref([]);
+const datas: TableData[] = reactive([{
     id: 12345,
     rank: 1,
     name: '超级无敌战队',
@@ -172,16 +174,43 @@ const expandRow = (record: any) => {
   }
 }
 
+const querySingalTeam = (data: object[]) =>{
+  data.forEach((item: any )=>{
+    queryPointTeamInfo(item.teamId).then((res: any)=>{
+      if( res.error_code === 0 ){
+        const temp = useData.findIndex((ele: any) => ele.teamId === res.data.teamId)
+        if( temp > -1 ) {
+          const olddata = useData[temp]
+          useData[temp] = {
+            ...olddata,
+            ...res.data,
+            person: res.data.members.length,
+          }
+        }
+      }
+    }).finally(()=>{setLoading(false)})
+  })
+}
+
 const initData = (id: string) => {
   setLoading(false)
-  useDate = data
+  // useData = data
+  // queryComPointCheckinList(id).then((res: any) => {
+  //   if( res.error_code === 0 ) {
+  //     useData = res.data
+  //     if( !useData.length ) { setLoading(false); return}
+  //     useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
+  //     // eslint-disable-next-line no-use-before-define
+  //     querySingalTeam( useData )
+  //   }
+  // }).catch(()=>{setLoading(false)})
 }
 
 const celloading: boolean = $ref(false)
 const cancelRank = (record: any) => {}
 
 const saveRank = () => {
-  router.push({path:'/pointlist'})
+  router.push({path:'/pointlist',query:{ match: queryData.compName,compId: queryData.compId }})
 }
 
 const prevStep = () => {

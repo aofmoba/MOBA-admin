@@ -183,6 +183,7 @@ const toRaceOperation = (record: allPointLists) => {
   localStorage.setItem('matchinfo',JSON.stringify({
     id: record.id,
     match: record.name,
+    compName: matchName,
     compId,
     fightRound: record.fightRound,
     start: record.checkInTime,

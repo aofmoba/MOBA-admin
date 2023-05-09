@@ -5,7 +5,7 @@
       <div class="flex-items between">
           <div class="font-md mcolor-1">已确认签到：0 / 10</div>
           <a-space>
-            <a-button class="default" style="width:180px; height: 54px;" @click="prevStep"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">返回上一步</div></a-button>
+            <a-button class="default" style="width:180px; height: 54px;" @click="emit('on-prev')"><div style="font-size: 18px;line-height: 50px;font-weight: bold;">返回上一步</div></a-button>
             <a-button class="active" style="width: 180px; height: 54px;" @click="visible = true"><div style="font-size: 18px;line-height: 54px;font-weight: bold;">抽签</div></a-button>
           </a-space>
       </div>
@@ -101,8 +101,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, computed } from "vue"
+import { onMounted, reactive, onActivated, watch } from "vue"
 import { useRouter } from 'vue-router'
+import { staticData } from '@/store';
+import { storeToRefs } from 'pinia';
 import useLoading from '@/hooks/loading'
 import { vertTime } from '@/utils/computed'
 import {  
@@ -112,6 +114,8 @@ import {
 import type { getPointFightRes } from '@/api/competition';
 import { Message } from "@arco-design/web-vue";
 
+const comStore = staticData();
+const { currentStep } = storeToRefs(comStore);
 const { loading, setLoading } = useLoading(false);
 const emit = defineEmits(['on-next','on-prev'])
 const router = useRouter()
@@ -164,7 +168,7 @@ const tree1: any = reactive([
       blueScore: 5,
       winTeamId: '008',
       startTime: 1682681273,
-      finishTime: 16826101273,
+      finishTime: 1682661273,
       maxRound: 3,
     },
   ])
@@ -176,7 +180,7 @@ const tree2 = reactive([
       redTeamId: '005',
       blueTeamId: '008',
       redScore: 5,
-      blueScore: 1,
+      blueScore: 6,
       winTeamId: '008',
       startTime: 0,
       finishTime: 0,
@@ -209,11 +213,9 @@ const tree3 = reactive([
       finishTime: 0,
       maxRound: 1,
     },
-])
-const tree4 = reactive([
     {
       pointId: 123456,
-      roundNum: 4,
+      roundNum: 3,
       redTeamId: '003',
       blueTeamId: '005',
       redScore: 0,
@@ -221,7 +223,21 @@ const tree4 = reactive([
       winTeamId: '005',
       startTime: 0,
       finishTime: 0,
-      maxRound: 0,
+      maxRound: 1,
+    },
+])
+const tree4 = reactive([
+    {
+      pointId: 123456,
+      roundNum: 3,
+      redTeamId: '003',
+      blueTeamId: '005',
+      redScore: 0,
+      blueScore: 6,
+      winTeamId: '005',
+      startTime: 0,
+      finishTime: 0,
+      maxRound: 1,
     },
 ])
 const tree5 = reactive([
@@ -312,7 +328,6 @@ const computedStatus = (start: number,end: number) => {
   // return getFlatArr(arr).find((item: any) => item.id === id).name;
 // }
 
-
 const handleCancel = () => {
   visible = false;
 }
@@ -330,16 +345,19 @@ const handleBeforeOk = () => {
 }
 
 let contentloading: boolean = $ref(false)
-// const arrobj = [...tree1,...tree1,...tree2,...tree2,...tree3,...tree3,...tree5,...tree6]
-const arrobj = [...tree1,...tree2,...tree3,...tree4]
+// let allFightData = [...tree1,...tree2,...tree3]
+let allFightData: Array<getPointFightRes> | Array<any> = []
 const getPointFightDataFun = async () => {
   contentloading = true
   contentloading = false
-  // const res: any = await getPointFightData(pointId).finally(()=>{contentloading = false})
+  const res: any = await getPointFightData(pointId).catch(()=>{contentloading = false})
+  if( !res.data ) {contentloading = false; return;}
+  // eslint-disable-next-line no-multi-assign
+  allFightData = res.data
   let numArr: getPointFightRes[][] | any[][] = []
   const lenArr: number[] = []
   let oneLen = 0
-  arrobj.forEach((item: any)=>{
+  allFightData.forEach((item: any)=>{
       if( !lenArr.includes(item.roundNum) ){
         lenArr.push(item.roundNum)
       }
@@ -348,9 +366,10 @@ const getPointFightDataFun = async () => {
       }
   })
   numArr = reactive(Array(lenArr.length).fill(null).map((_, index) => ([])));
+  // eslint-disable-next-line no-restricted-properties
   lenArr.forEach((item: any,i)=>{
     // eslint-disable-next-line no-restricted-properties
-    numArr[i] = reactive(Array(oneLen/Math.pow(2,item-1)).fill(null).map((_, index) => ({
+    numArr[i] = reactive(Array(Math.floor(oneLen/Math.pow(2,item-1))).fill(null).map((_, index) => ({
       pointId: null,
       roundNum: item,
       redTeamId: null,
@@ -363,30 +382,32 @@ const getPointFightDataFun = async () => {
       maxRound: null,
     })));
   })
-  arrobj.forEach((item: getPointFightRes,i) => {
+  allFightData.forEach((item: getPointFightRes,i) => {
     const tempIndex = numArr.findIndex((da: Array<getPointFightRes>) => da[0].roundNum === item.roundNum )
     if( tempIndex >= 0 ){
       if( item.roundNum !== 1 ){
         const oneIndex = numArr[0].findIndex((one: any) => one.winTeamId === item.redTeamId || one.winTeamId === item.blueTeamId )
         if( oneIndex >= 0 ){
           // eslint-disable-next-line no-restricted-properties
-          numArr[tempIndex].splice(oneIndex/Math.pow(2,lenArr.length-1),1,item)
+          numArr[tempIndex].splice(Math.ceil(oneIndex/Math.pow(2,item.roundNum-1)),1,item)
         }
       }else{
         numArr[tempIndex].splice(i,1,item)
       }
     }
-    // else{
-    //   numArr.push([item])
-    // }
-    // return numArr.sort((a: getPointFightRes[],b: getPointFightRes[])=> a[0].roundNum - b[0].roundNum)
   })
+  if( numArr[numArr.length-1].length === 2 ){
+    numArr.push([numArr[numArr.length-1][1]])
+    numArr[numArr.length-1] = numArr[numArr.length-2].splice(1,1)
+  }
   sumData = numArr
+  contentloading = false
 }
 
 const reGetFightDataFun = async () => {
   await getPointFightDataFun()
-  const temp = sumData[0].filter((item: getPointFightRes)=> item.redScore > 0 || item.blueScore > 0 )
+  const nowTime = new Date().getTime()
+  const temp = allFightData.filter((item: getPointFightRes)=> item.startTime <= nowTime )
   if( temp.length > 0 ){ Message.error('比赛已经开始，不能进行重新抽签操作') }
   else {
     visible = true
@@ -396,19 +417,39 @@ const reGetFightDataFun = async () => {
 const handleSelect = () => {
 
 }
-const prevStep = () => {
-  // eslint-disable-next-line vue/custom-event-name-casing
-  emit('on-prev')
+
+const prevStep = async () => {
+  await getPointFightDataFun()
+  const nowTime = new Date().getTime()
+  const temp = allFightData.filter((item: getPointFightRes)=> item.startTime <= nowTime )
+  if( temp.length > 0 ){ Message.error('比赛已经开始，不能返回上一步') }
+  else {
+    // eslint-disable-next-line vue/custom-event-name-casing
+    emit('on-prev')
+  }
 }
 const nextStep = async () => {
   await getPointFightDataFun()
-  const temp = sumData[0].filter((item: getPointFightRes)=> item.redScore > 0 || item.blueScore > 0 )
-  if( temp.length > 0 ){ Message.error('比赛已经开始，不能进行重新抽签操作') }
+  const nowTime = new Date().getTime()
+  const temp = allFightData.filter((item: getPointFightRes)=> item.finishTime > nowTime )
+  if( temp.length > 0 ){ Message.error('晋级比赛还未全部完成') }
   else {
     // eslint-disable-next-line vue/custom-event-name-casing
     emit('on-next')
   }
 }
+
+const intoActive = async () => {
+  pointId = JSON.parse(localStorage.getItem('matchinfo') || '').id
+  await getPointFightDataFun()
+  const nowTime = new Date().getTime()
+  const temp = allFightData.filter((item: getPointFightRes)=> item.startTime <= nowTime )
+  if( temp.length > 0 ){ showOne = false } // 如果已抽签且比赛已开始直接显示对战表
+}
+
+watch(currentStep,(newV: any,oldV: any)=>{
+  if( newV === 2 ) intoActive()
+},{immediate: true,deep: true})
 
 onMounted(() => {
   pointId = JSON.parse(localStorage.getItem('matchinfo') || '').id
