@@ -35,7 +35,7 @@
                 </div>
                 <div class="text-rule mt-30">
                     <div class="font-md mb-14">填写规则</div>
-                    <a-textarea v-model="form.rule" class="bg-white rounded" :max-length="{length:10000,errorOnly:true}" placeholder="请输入您的赛事规则" style="width: 758px;height: 120px;"/>
+                    <a-textarea v-model="form.rule" class="rounded" :max-length="{length:10000,errorOnly:true}" placeholder="请输入您的赛事规则" style="width: 758px;height: 120px;background-color: var(--color-bg-1);"/>
                 </div>
               </div>
             </a-form-item>
@@ -55,10 +55,7 @@ import { FileItem, Message, ValidatedError } from '@arco-design/web-vue';
 import { LoginData } from '@/api/user';
 import { useRouter } from 'vue-router';
 import useLoading from '@/hooks/loading'
-import { 
-  createCompetition,
-  singleComRewardRes
-} from '@/api/competition';
+import { createCompetition } from '@/api/competition';
   
 const router = useRouter();
 const { loading, setLoading } = useLoading(false);

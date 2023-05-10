@@ -13,9 +13,10 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted, computed, watch } from 'vue'
+import { reactive, onMounted, computed, watch, ComputedRef } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store';
+import { RoleType } from '@/store/modules/user/types';
 import NewPoint from './new-point.vue';
 import NewCity from './new-city.vue';
 
@@ -25,7 +26,7 @@ const createType = ['主题赛','俱乐部联赛(仅限俱乐部参与)','擂台
 const form:any = reactive({
     type: '主题赛',
 });
-const permissions: any = computed(() => userStore.$state.permissions );
+const permissions: ComputedRef<RoleType[]> = computed(() => userStore.$state.permissions );
 watch(()=>permissions,(newV,oldV)=>{
   // if( newV.value[0] !== 'admin' ) form.type = '擂台'
 },{immediate: true,deep: true})

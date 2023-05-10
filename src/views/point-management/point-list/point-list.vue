@@ -100,18 +100,19 @@
 </template>
 
 <script lang="ts" setup>
-import { onActivated, onMounted, reactive } from "vue"
+import { onActivated, onMounted, computed, ComputedRef } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store';
 import { vertTime } from '@/utils/computed'
+import { queryCompetitionPointList } from '@/api/competition';
+import type { comPointListRes, competitionPointInfo } from '@/api/competition';
+import { RoleType } from "@/store/modules/user/types";
 import * as XLSX from "xlsx"
-import {  
-  queryCompetitionPointList,
-  comPointListRes,
-  competitionPointInfo 
-} from '@/api/competition';
 
 const router = useRouter()
+const userStore = useUserStore();
+const permissions: ComputedRef<RoleType[]> = computed(() => userStore.$state.permissions );
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
 let tableHeight: number = $ref(0)
@@ -146,6 +147,7 @@ const computedStatus = (start: number,end: number) => {
 
 // eslint-disable-next-line consistent-return
 const getData = async () => {
+  // 权限处理：钱包登录用户仅查看自己列表
   const result: comPointListRes | any = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize,compId}).catch(()=>setLoading(false))
   if( result.data.list ){
     pagination.total = result.data.total

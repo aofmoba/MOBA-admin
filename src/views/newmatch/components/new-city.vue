@@ -56,13 +56,8 @@ import { onMounted, ref, watch } from 'vue'
 import { Message, ValidatedError } from '@arco-design/web-vue'
 import { LoginData } from '@/api/user'
 import { useRouter } from 'vue-router'
-import { 
-    createArena,
-    createArenaData,
-    ArenaLists,
-    queryArenaInfo,
-    singleReward
-} from '@/api/challenge';
+import { createArena, queryArenaInfo } from '@/api/challenge';
+import type { createArenaData, singleReward } from '@/api/challenge';
 import cityData from '@/utils/cityData'
 import mapboxgl from 'mapbox-gl'
 // import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'

@@ -71,15 +71,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, onActivated } from "vue"
+import { onMounted, onActivated } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
 import { vertTime } from '@/utils/computed'
-import {  
-  queryCompetitionList,
-  comListRes,
-  competitionInfo
-} from '@/api/competition';
+import { queryCompetitionList } from '@/api/competition';
+import type { comListRes, competitionInfo } from '@/api/competition';
 
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);

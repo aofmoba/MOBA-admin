@@ -102,20 +102,20 @@
 </template>
 
 <script lang="ts" setup>
-import { onActivated, onMounted, reactive } from "vue"
+import { onActivated, onMounted, computed, ComputedRef } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store';
 import { vertTime } from '@/utils/computed'
 import { Message } from '@arco-design/web-vue';
-import {  
-  queryArenaList,
-  ArenaLists,
-  deleteArena,
-  ArenaListsRes
-} from '@/api/challenge';
+import { queryArenaList, deleteArena } from '@/api/challenge';
+import type { ArenaLists, ArenaListsRes } from '@/api/challenge';
+import { RoleType } from "@/store/modules/user/types";
 import Ranking from './rangking.vue'
 
 const router = useRouter()
+const userStore = useUserStore();
+const permissions: ComputedRef<RoleType[]> = computed(() => userStore.$state.permissions );
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
 let activeIndex: number = $ref(0)
