@@ -141,9 +141,9 @@ axios.interceptors.response.use(
             })
             break;
           case 1012: Message.error({
-            content: '账号锁定',
-            duration: 5 * 1000,
-          })
+              content: '账号锁定',
+              duration: 5 * 1000,
+            })
             break;
           default: Message.error({
               content: res.msg || 'Error',

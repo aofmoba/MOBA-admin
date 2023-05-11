@@ -82,7 +82,15 @@ let formCity: createArenaData = $ref({
     finishTime: 0,
     latitude: 1000000,
     longitude: 1000000,
-    rule: '暂无',
+    rule: `计分游戏：Arena of Faith
+积分模式：快速游戏模式
+如何参与：
+1、点击活动页面下方的“参与挑战”按钮进行参与；
+2、将使用挑战后的第一场游戏中击杀、死亡、助攻等数据综合得分进行排名；
+3、游戏完成对局后，可回到本页面进行排名结果查询；
+4、玩家在挑战无人占领的擂台时可以选择自己擅长的角色类型进行比拼；
+5、每个擂台的解算周期为72h，结束后擂主和擂台类型都会清空；
+6、每个玩家最多可在一个结算周期内参与5个擂台（不包括官方擂台）。`,
     arenaName: '',
     rewards: [],
     cityName: ''
@@ -198,7 +206,6 @@ const getLocation = async (address: string) => {
     try {
         loading = true;
         const response: any = await axios.get(`${baseUrl}/${apiAddress}.json?country=${getFilters(level1.value)}&types=${getTypesFilters()}&fuzzyMatch=false&limit=1&access_token=${mapboxgl.accessToken}`);
-        console.log(response);
         if( response.features.length ){
             formCity.arenaName = response.features[0].matching_text || response.features[0].text
             formCity.arenaName = formCity.arenaName.replace(/[^\u4e00-\u9fa5]/gi, "") || formCity.arenaName
@@ -256,14 +263,123 @@ const handleSubmit = async ({errors, values,}: {
     }
 }
 
+// 测试
+// const getRandTime = () => {
+//     const now = Math.floor(new Date().getTime() / 1000) + 100
+//     const max = Math.floor(new Date(2023,4,31,23,59,59).getTime() / 1000) // 传入年，月，日，时，分，秒(月的范围是0-11，即真实月份-1)
+//     return Math.floor(Math.random()*(max-now)+now)
+// }
+// const getMoney = (max: number,min: number) => {
+//     const arr = [66,88,99,100,199,200,299,300,399,500]
+//     const res = `${arr[Math.floor(Math.random()*(max-min)+min)]}元`
+//     return res
+// }
+
+// const getRewardss = (num: number) => {
+//     if( num === 0 ) return [{name: getMoney(9,0),startRank:1,endRank:1,props:[{count:1,id:3}]}]
+//     if( num === 1 ) return [
+//         {name:getMoney(9,3),startRank:1,endRank:1,props:[{count:1,id:3}]},
+//         {name:getMoney(2,0),startRank:2,endRank:2,props:[{count:1,id:4}]},
+//     ]
+//     return [
+//         {name:getMoney(9,5),startRank:1,endRank:1,props:[{count:1,id:3}]},
+//         {name:getMoney(4,2),startRank:2,endRank:2,props:[{count:1,id:4}]},
+//         {name:getMoney(1,0),startRank:3,endRank:3,props:[{count:1,id:4}]},
+//     ]
+// }
+
+// const autoCreateOne = () => {
+//     formCity.arenaType = 1
+//     formCity.arenaName = '成都市'
+//     formCity.cityName = 'ChinaChengdu Shi'
+//     formCity.startTime = getRandTime()
+//     formCity.finishTime = 1685548799
+//     formCity.latitude = 30659863
+//     formCity.longitude = 104063372
+//     formCity.rewards = getRewardss(Math.floor(Math.random()*(2-0)+0))
+// }
+// const autoCreateTwo = () => {
+//     formCity.arenaType = 2
+//     formCity.cityName = 'ChinaChengdu Shi'
+//     formCity.startTime = getRandTime()
+//     formCity.finishTime = 1685548799
+//     formCity.rewards = getRewardss(Math.floor(Math.random()*(2-0)+0))
+// }
+// const autoCreateThree = () => {
+//     formCity.arenaType = 0
+//     formCity.cityName = 'ChinaChengdu Shi'
+//     formCity.startTime = getRandTime()
+//     formCity.finishTime = 1685548799
+//     formCity.rewards = getRewardss(Math.floor(Math.random()*(2-0)+0))
+// }
+
+// const getMarkCity = () => {
+//     const arr = [
+//         '天府立交桥','电视塔','环球中心','安顺廊桥','春熙路lFS','天府广场','武侯祠博物馆','天府熊猫塔','杜甫草堂博物馆','国际金融中心',
+//         '望江楼公园','新世纪环球中心','熊猫基地','宽窄巷子','成都理工大学','武侯祠','青羊宫','金沙博物馆','四川大学','望江楼公园',
+//         '太古里','人民公园','金融城双子塔','双子塔','交子之环','青城山','成都大熊猫繁育基地','道明竹艺村','小绿球大地艺术营地','猛追湾'
+//     ]
+//     return arr[Math.floor(Math.random()*(29-0)+0)]
+// }
+// const getlocal = () => {
+//     const arr = [
+//         '龙窝子','彭州小鱼洞','武侯区','植物园','龙泉驿区','青白江区','新都区','金牛区','大邑弯弓崖','楠木溪',
+//         '九龙广场','青年路','华西医学院','天府广场','依藤花园','奎星楼街','泡桐树街','望平街香香巷','文殊院','建设巷',
+//         '香香巷','祥和里','海椒市','华兴街','吉祥街','文殊坊','天府五街','天府三街','软件园',
+//     ]
+//     return arr[Math.floor(Math.random()*(29-0)+0)]
+// }
+
+// let count = 0
+// const gettypeone = async (type: number) => {
+//     if( type === 0 ){ // 城市
+//         while(count < 10 ){
+//             autoCreateOne()
+//             // eslint-disable-next-line no-await-in-loop
+//             await handleSubmit({})
+//             count += 1
+//         }
+//     }
+//     if( type === 1 ){  // 地标
+//         while(count < 10 ){
+//             autoCreateTwo()
+//             level1.value = '中国'
+//             level2.value = '四川省'
+//             level3.value = '成都市'
+//             formCity.arenaName = getMarkCity()
+//             // eslint-disable-next-line no-await-in-loop
+//             await getLocation(formCity.arenaName)
+//             if( !['成都市','成都'].includes(formCity.arenaName) ){
+//                 // eslint-disable-next-line no-await-in-loop
+//                 await handleSubmit({})
+//             }
+//             count += 1
+//         }
+//     }
+//     if( type === 2 ){  // 地点
+//         while(count < 10 ){
+//             autoCreateThree()
+//             level1.value = '中国'
+//             level2.value = '四川省'
+//             level3.value = '成都市'
+//             formCity.arenaName = getlocal()
+//             // eslint-disable-next-line no-await-in-loop
+//             await getLocation(formCity.arenaName)
+//             if( !['成都市','成都'].includes(formCity.arenaName) ){
+//                 // eslint-disable-next-line no-await-in-loop
+//                 await handleSubmit({})
+//             }
+//             count += 1
+//         }
+//     }
+// }
 
 watch(() => router.currentRoute.value.query,(newQ) => {
     getINfo(Number(newQ.arenaId))
 },{immediate: true,deep: true})
 
 onMounted(() => {
-    // const res: any = await getCurrentPosition()
-    // if( res.length ) center = res
+    // gettypeone(0)
     innitMap()
 })
 </script>
