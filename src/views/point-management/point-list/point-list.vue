@@ -187,7 +187,7 @@ const toRaceOperation = (record: allPointLists) => {
     match: record.name,
     compName: matchName,
     compId,
-    fightRound: record.fightRound,
+    fightNum: record.fightNum,
     start: record.checkInTime,
     end: record.checkInFinTime,
     checkInTime: record.checkInTime,

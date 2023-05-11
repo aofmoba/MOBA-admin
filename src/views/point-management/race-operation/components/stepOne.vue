@@ -106,7 +106,7 @@
     <div class="flex-items between">
         <div>
           <span class="font-md mcolor-1">已确认签到：{{ checkinsData.length }} / {{ useData.length }}</span>
-          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightRound || 0 }}人且可签到的队伍数{{ canCheck }}支</span>
+          <span class="font-md ml-30" style="color: rgba(90,96,127,0.64);">满{{ queryData?.fightNum || 0 }}人且可签到的队伍数{{ canCheck }}支</span>
         </div>
         <a-space>
           <a-button class="active submit" style="width: 284px; height: 54px;" :disabled="noFinishFilter()" @click="nextStep"><div style="font-size: 18px;line-height: 54px;font-weight: bold;"><a-spin v-if="finloading"/>完成，下一步</div></a-button>
@@ -139,7 +139,7 @@ let queryData: any = $ref()
 let useData: TableData[] = $ref([])
 let checkinsData: any = $ref([])
 let signloading: boolean = $ref(false)
-const canCheck = computed(()=> useData.filter((item: any) => item?.person >= queryData?.fightRound).length)
+const canCheck = computed(()=> useData.filter((item: any) => item?.person >= queryData?.fightNum).length)
 
 const allExpandData: any = $ref([]) // 保存查看的所有队伍成员
 let expandData: any = $ref([]) // 队伍选手
