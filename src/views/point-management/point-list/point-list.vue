@@ -52,7 +52,7 @@
             <template #cell="{ record }">{{ record.joinNum === 1 ?  '--' : record.joinNum }}</template>
           </a-table-column>
           <a-table-column
-            title="参赛人数"
+            title="参赛队伍"
             :width="117"
             >
             <template #cell="{ record }">{{ record.status === 1 ?  '--' : record.signNum }}</template>

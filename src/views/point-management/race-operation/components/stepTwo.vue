@@ -31,7 +31,7 @@
             {'marTop4': d == 3 && !(d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1)},
             {'second-line': d == sumData.length-2 && sumData[0][0].maxRound === sumData.length-1},
             {'champion': d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1},
-            {'laststyle':sumData.length>1}]"
+            {'laststyle':sumData.length>=1}]"
           >
             <div v-for="data,index in sum" :key="index" class="battle-col">
               <div class="battle-top flex flex-col items-end">
@@ -129,58 +129,58 @@ let pointId: string = $ref('')
 const rewardNum: string = $ref('1')
 let visible = $ref(false);
 const tree1: any = reactive([
-    {
-      pointId: 123456,
-      roundNum: 1,
-      redTeamId: '001',
-      blueTeamId: '002',
-      redScore: 2,
-      blueScore: 1,
-      winTeamId: '001',
-      startTime: 1682641273,
-      finishTime: 1682651273,
-      maxRound: 3,
-    },
-    {
-      pointId: 123456,
-      roundNum: 1,
-      redTeamId: '003',
-      blueTeamId: '004',
-      redScore: 1,
-      blueScore: 0,
-      winTeamId: '003',
-      startTime: 1682651273,
-      finishTime: 1682661273,
-      maxRound: 3,
-    },
-    {
-      pointId: 123456,
-      roundNum: 1,
-      redTeamId: '005',
-      blueTeamId: '006',
-      redScore: 3,
-      blueScore: 0,
-      winTeamId: '005',
-      startTime: 1682661273,
-      finishTime: 1682681273,
-      maxRound: 3,
-    },
-    {
-      pointId: 123456,
-      roundNum: 1,
-      redTeamId: '007',
-      blueTeamId: '008',
-      redScore: 1,
-      blueScore: 5,
-      winTeamId: '008',
-      startTime: 1682681273,
-      finishTime: 1682661273,
-      maxRound: 3,
-    },
-  ])
+  {
+    pointId: 123456,
+    roundNum: 1,
+    redTeamId: '001',
+    blueTeamId: '002',
+    redScore: 2,
+    blueScore: 1,
+    winTeamId: '001',
+    startTime: 1682641273,
+    finishTime: 1682651273,
+    maxRound: 3,
+  },
+  {
+    pointId: 123456,
+    roundNum: 1,
+    redTeamId: '003',
+    blueTeamId: '004',
+    redScore: 1,
+    blueScore: 0,
+    winTeamId: '003',
+    startTime: 1682651273,
+    finishTime: 1682661273,
+    maxRound: 3,
+  },
+  {
+    pointId: 123456,
+    roundNum: 1,
+    redTeamId: '005',
+    blueTeamId: '006',
+    redScore: 3,
+    blueScore: 0,
+    winTeamId: '005',
+    startTime: 1682661273,
+    finishTime: 1682681273,
+    maxRound: 3,
+  },
+  {
+    pointId: 123456,
+    roundNum: 1,
+    redTeamId: '007',
+    blueTeamId: '008',
+    redScore: 1,
+    blueScore: 5,
+    winTeamId: '008',
+    startTime: 1682681273,
+    finishTime: 1682661273,
+    maxRound: 3,
+  },
+])
   
 const tree2 = reactive([
-{
+    {
       pointId: 123456,
       roundNum: 2,
       redTeamId: '005',
@@ -351,7 +351,7 @@ const handleBeforeOk = () => {
 }
 
 let contentloading: boolean = $ref(false)
-// let allFightData = [...tree1,...tree2,...tree3]
+// const allFightData = [...tree1,...tree2]
 let allFightData: Array<getPointFightRes> | Array<any> = []
 const getPointFightDataFun = async () => {
   contentloading = true
@@ -402,7 +402,7 @@ const getPointFightDataFun = async () => {
       }
     }
   })
-  if( numArr[numArr.length-1].length === 2 ){
+  if( numArr[numArr.length-1].length === 2 && numArr[0][0].maxRound === numArr.length ){
     numArr.push([numArr[numArr.length-1][1]])
     numArr[numArr.length-1] = numArr[numArr.length-2].splice(1,1)
   }
@@ -446,7 +446,7 @@ const nextStep = async () => {
 }
 
 const intoActive = async () => {
-  pointId = JSON.parse(localStorage.getItem('matchinfo') || '').id
+  pointId = JSON.parse(localStorage.getItem('matchinfo') || '{}').id
   await getPointFightDataFun()
   const nowTime = new Date().getTime()
   const temp = allFightData.filter((item: getPointFightRes)=> item.startTime <= nowTime )
@@ -458,7 +458,7 @@ watch(currentStep,(newV: any,oldV: any)=>{
 },{immediate: true,deep: true})
 
 onMounted(() => {
-  pointId = JSON.parse(localStorage.getItem('matchinfo') || '').id
+  pointId = JSON.parse(localStorage.getItem('matchinfo') || '{}').id
   // console.log(getNameByIdFromArr(treeData.group,2));
 })
 

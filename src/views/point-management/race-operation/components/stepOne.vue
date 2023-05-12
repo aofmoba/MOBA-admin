@@ -192,18 +192,19 @@ const querySingalTeam = (data: object[]) =>{
 }
 
 const initData = async (id: string) => {
-    queryComPointCheckinList(id).then((res: any) => {
-      if( res.error_code === 0 ) {
-        if( !res.data.checkins ) res.data.checkins = []        
-        if( !res.data.noncheckins ) res.data.noncheckins = []        
-        useData = [...res.data.checkins,...res.data.noncheckins]
-        if( !useData.length ) { setLoading(false); return}
-        checkinsData = res.data.checkins
-        useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
-        // eslint-disable-next-line no-use-before-define
-        querySingalTeam( useData )
-      }
-    }).catch(()=>{setLoading(false)})
+  if( !id ) {setLoading(false); return;}
+  queryComPointCheckinList(id).then((res: any) => {
+    if( res.error_code === 0 ) {
+      if( !res.data.checkins ) res.data.checkins = []        
+      if( !res.data.noncheckins ) res.data.noncheckins = []        
+      useData = [...res.data.checkins,...res.data.noncheckins]
+      if( !useData.length ) { setLoading(false); return}
+      checkinsData = res.data.checkins
+      useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
+      // eslint-disable-next-line no-use-before-define
+      querySingalTeam( useData )
+    }
+  }).catch(()=>{setLoading(false)})
 }
 
 const teamCheckin = async (teamId: string) => {
@@ -249,13 +250,13 @@ const nextStep = async () => {
 onActivated(()=>{
   if( !loading.value ){
     queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
-    initData(queryData.id)
+    initData(queryData?.id)
   }
 })
 
 onMounted(() => {
     queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
-    initData(queryData.id)
+    initData(queryData?.id)
 })
 
 </script>

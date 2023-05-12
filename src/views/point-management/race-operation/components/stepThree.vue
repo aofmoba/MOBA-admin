@@ -194,6 +194,7 @@ const querySingalTeam = (data: object[]) =>{
 
 const initData = (id: string) => {
   setLoading(false)
+  // if( !id ) return
   // useData = data
   // queryComPointCheckinList(id).then((res: any) => {
   //   if( res.error_code === 0 ) {
@@ -221,13 +222,13 @@ const prevStep = () => {
 
 onActivated(()=>{
   if( !loading.value ){
-    queryData = JSON.parse(localStorage.getItem('matchinfo') || '')
+    queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
     initData(queryData.id)
   }
 })
 
 onMounted(() => {
-  queryData = JSON.parse(localStorage.getItem('matchinfo') || '')
+  queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
   initData(queryData.id)
 })
 
