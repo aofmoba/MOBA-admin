@@ -78,19 +78,15 @@
 </template>
 
 <script lang="ts" setup>
-import { watch, reactive, onMounted, getCurrentInstance } from 'vue'
+import { watch, onMounted, onActivated } from 'vue'
 import { FileItem, Message, ValidatedError } from '@arco-design/web-vue';
 import { LoginData } from '@/api/user';
 import { useRouter } from 'vue-router';
 import useLoading from '@/hooks/loading'
 import type { dateType } from '@/types/global'
-import { 
-  createCompetitionPoint,
-  createCompetitionPointData,
-  stepsData
-} from '@/api/competition'
+import { createCompetitionPoint } from '@/api/competition'
+import type { createCompetitionPointData, stepsData } from '@/api/competition'
 
-const { proxy } = getCurrentInstance() as any
 const router = useRouter();
 const { loading, setLoading } = useLoading(false);
 const fightNumList = ['5 V 5','3 V 3','1 V 1']
@@ -102,7 +98,8 @@ let showMore: boolean = $ref(false)
 let banneFile: FileItem | any = $ref()
 let logoFile: FileItem | any = $ref()
 const emit = defineEmits(['refresh'])
-const formPoint:createCompetitionPointData | any = $ref({
+const formPoint: createCompetitionPointData | any = $ref({
+    rankNum: 8, // 决赛出前多少名 当前默认为 8
     compId: '',
     name: '',
     detail:{
@@ -274,6 +271,11 @@ const createAnotherPoint = () => {
 const showMoreFun = () => {
   showMore = true
 }
+
+onActivated(()=>{
+  formPoint.compId = String(router.currentRoute.value.query.compId)
+})
+
 onMounted(() => {
   formPoint.compId = String(router.currentRoute.value.query.compId)
 })

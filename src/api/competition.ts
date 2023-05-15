@@ -66,6 +66,7 @@ export interface detailData {
 }
 
 export interface createCompetitionPointData {
+    rankNum: number; // 8,16,32,64
     compId: string; 
     name: string; 
     fightNum: number;  // 对战人数1,3,5：1v1,3v3, 5v5
@@ -185,7 +186,6 @@ export function queryPointTeamInfo(id: string) {
     return axios.post<queryPointTeamInfoRes>('/api/competition_team/info',{team_id: id});
 }
 
-export type battlePosition = 'AGAINST' | 'MIDDLE' | 'GROW' | 'MONSTER' | 'WALKER';
 
 /**
  * mainPos--队伍成员主玩位置
