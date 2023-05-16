@@ -11,6 +11,16 @@
       >
         <a-input v-model="formPoint.name" placeholder="请输入您的赛点名称" />
       </a-form-item>
+      <!-- <a-form-item
+        field="rankNum" label="赛点名次："
+        :rules="rules"
+        :validate-trigger="['blur']"
+      >
+          <a-input-number 
+            v-model="formPoint.rankNum" 
+            :hide-button="true" 
+          />
+      </a-form-item> -->
       <div class="item-group group1 flex">
         <a-form-item field="banner" label="赛点banner：">
           <div class="flex-col">
@@ -127,6 +137,17 @@ watch(()=>fightNumView,(newN,oldN)=>{
   else formPoint.teamMemberLimit = 7
 },{immediate:true,deep:true})
 
+const rules = [{
+  validator: (value: number, cb: (arg0: string) => void) => {
+    return new Promise(resolve => {
+      // eslint-disable-next-line no-bitwise
+      if ( !((value > 0) && ((value & (value - 1)) === 0)) ) {
+        cb('请输入2的整数次幂')
+      }
+      resolve(value)
+    })
+  }
+}];
 
 const changeBanner = (file: any) => {
   // eslint-disable-next-line no-multi-assign
