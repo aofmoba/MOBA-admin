@@ -1,5 +1,4 @@
 import { mergeConfig } from 'vite';
-import visualizer from 'rollup-plugin-visualizer'
 import baseConig from './vite.config.base';
 import configCompressPlugin from './plugin/compress';
 import configVisualizerPlugin from './plugin/visualizer';
@@ -18,6 +17,13 @@ export default mergeConfig(
       configImageminPlugin(),
     ],
     build: {
+      // minify : 'terser' , // npm add -D terser 去掉console.log
+      // terserOptions : {
+      //     compress : {
+      //         drop_console : true ,
+      //         drop_debugger : true ,
+      //     },
+      // }, 
       rollupOptions: {
         output: {
           manualChunks: {
