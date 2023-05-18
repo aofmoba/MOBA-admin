@@ -132,16 +132,18 @@ export function resetPointDrawSlots(data: resetPointDrawSlotsData) {
 
 
 export interface getPointFightRes {
-    pointId: string;
-    roundNum: number;
-    redTeamId: string;
-    blueTeamId: string;
-    redScore: number;
-    blueScore: number;
-    winTeamId: string;
-    startTime: number;
-    finishTime: number;
-    maxRound: number;
+    roundNum: number;       // 第几轮选择赛，1表示第一轮海选
+    blueTeamId: string;     // 蓝方赛事队伍Id
+    blueTeamName: string;   // 蓝方队伍名
+    blueScore: number;      // 蓝方得分数，如果有的话
+    redTeamId: string;      // 红方赛事队伍id
+    redTeamName: string;    // 红方队伍名
+    redScore: number;       // 红方得分数，如果有的话
+    startTime: number;      // 战斗开始时间戳
+    finishTime: number;     // 战斗结束时间戳
+    teamNum: number;        // 赛点剩余队伍数
+    winTeamId: string;      // 胜方队伍Id
+    group: number;          // 所在组，默认为0，输的次数越多，值越大
 }
 
 // 获取抽签对战信息

@@ -21,53 +21,62 @@
         <div v-if="contentloading" class="pre100 flex-center">
           <a-spin :size="38" />
         </div>
-        <div v-else class="flex">
-          <div 
-            v-for="sum,d in sumData" 
-            :key="d" 
-            :class="['col-wrap',
-            {'marTop2': d == 1},
-            {'marTop3': d == 2 || (d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1) },
-            {'marTop4': d == 3 && !(d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1)},
-            {'second-line': d == sumData.length-2 && sumData[0][0].maxRound === sumData.length-1},
-            {'champion': d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1},
-            {'laststyle':sumData.length>=1}]"
-          >
-            <div v-for="data,index in sum" :key="index" class="battle-col">
-              <div class="battle-top flex flex-col items-end">
-                <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
-                  <a-button>更多操作 <icon-down/></a-button>
-                  <template #content>
-                    <a-doption>改判</a-doption>
-                    <a-doption>重赛</a-doption>
-                    <a-doption>切换红蓝方</a-doption>
-                  </template>
-                </a-dropdown>
-                <ul>
-                  <li class="flex">
-                    <div v-if="data.redTeamId" class="d1">{{ data.redTeamId }}</div>
-                    <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
-                    <div class="d2 flex-items between white-nowrap">
-                      <div>{{ data.redTeamId }}</div>
-                      <span>{{ data.redScore }}</span>
+        <div v-else class="fight-team">
+          <div class="winTeam">
+            <div class="flex-items"><img style="width: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/loseTeam.svg" alt="">胜者组</div>
+            <div class="flex">
+              <div 
+                v-for="sum,d in sumData" 
+                :key="d" 
+                :class="['col-wrap',
+                {'marTop2': d == 1},
+                {'marTop3': d == 2 || (d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1) },
+                {'marTop4': d == 3 && !(d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1)},
+                {'second-line': d == sumData.length-2 && sumData[0][0].maxRound === sumData.length-1},
+                {'champion': d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1},
+                {'laststyle':sumData.length>=1}]"
+              >
+                <div v-for="data,index in sum" :key="index" class="battle-col">
+                  <div class="battle-top flex flex-col items-end">
+                    <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
+                      <a-button>更多操作 <icon-down/></a-button>
+                      <template #content>
+                        <a-doption>改判</a-doption>
+                        <a-doption>重赛</a-doption>
+                        <a-doption>切换红蓝方</a-doption>
+                      </template>
+                    </a-dropdown>
+                    <ul>
+                      <li class="flex">
+                        <div v-if="Number(data.redTeamId)" class="d1">{{ data.redIndex }}</div>
+                        <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                        <div class="d2 flex-items between white-nowrap">
+                          <div>{{ data.redTeamName }}</div>
+                          <span>{{ data.redScore }}</span>
+                        </div>
+                      </li>
+                      <li class="flex">
+                        <div v-if="Number(data.blueTeamId)" class="d1">{{ data.blueIndex }}</div>
+                        <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                        <div class="d2 flex-items between white-nowrap">
+                          <div>{{ data.blueTeamName }}</div>
+                          <span>{{ data.blueScore }}</span>
+                        </div>
+                      </li>
+                    </ul>
+                    <div class="status-wrap">
+                      <div v-if="computedStatus(data.startTime,data.finishTime) === 1" class="status" style="color:#4458FE">未开始</div>
+                      <div v-if="computedStatus(data.startTime,data.finishTime) === 2" class="status" style="color:#FF2855">进行中</div>
+                      <div v-if="computedStatus(data.startTime,data.finishTime) === 0" class="status">{{ vertTime(data.finishTime) + ' 已结束' }}</div>
                     </div>
-                  </li>
-                  <li class="flex">
-                    <div v-if="data.blueTeamId" class="d1">{{ data.blueTeamId }}</div>
-                    <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
-                    <div class="d2 flex-items between white-nowrap">
-                      <div>{{ data.blueTeamId }}</div>
-                      <span>{{ data.blueScore }}</span>
-                    </div>
-                  </li>
-                </ul>
-                <div class="status-wrap">
-                  <div v-if="computedStatus(data.startTime,data.finishTime) === 1" class="status" style="color:#4458FE">未开始</div>
-                  <div v-if="computedStatus(data.startTime,data.finishTime) === 2" class="status" style="color:#FF2855">进行中</div>
-                  <div v-if="computedStatus(data.startTime,data.finishTime) === 0" class="status">{{ vertTime(data.finishTime) + ' 已结束' }}</div>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div class="loseTeam">
+            <div class="flex-items"><img style="width: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/loseTeam.svg" alt="">败者组</div>
+            <div></div>
           </div>
         </div>
       </div>
@@ -329,10 +338,6 @@ const computedStatus = (start: number,end: number) => {
   if( now >= start && now < end ) return 2
   if( now >= end ) return 0
 }
-// const getNameByIdFromArr = (arr: any, id: any) => {
-  // return []
-  // return getFlatArr(arr).find((item: any) => item.id === id).name;
-// }
 
 const handleCancel = () => {
   visible = false;
@@ -350,16 +355,26 @@ const handleBeforeOk = () => {
   }).finally(()=>{setLoading(false)})
 }
 
-let contentloading: boolean = $ref(false)
 // const allFightData = [...tree1,...tree2]
 let allFightData: Array<getPointFightRes> | Array<any> = []
+const getTeamIndex = (signData: any,fightData: Array<getPointFightRes>) => {
+  allFightData = fightData.map((ele: getPointFightRes) => ({
+    ...ele,
+    blueIndex: Number(ele.blueTeamId) ? signData.filter((item:any)=> item.teamId === ele.blueTeamId)[0].indexId : -1,
+    redIndex: Number(ele.redTeamId) ? signData.filter((item:any)=> item.teamId === ele.redTeamId)[0].indexId : -1
+  }))
+}
+
+
+
+let signTeamNum: Array<{teamId: string;indexId: string}> = []
+let contentloading: boolean = $ref(false)
 const getPointFightDataFun = async () => {
   contentloading = true
-  contentloading = false
   const res: any = await getPointFightData(pointId).catch(()=>{contentloading = false})
   if( !res.data ) {contentloading = false; return;}
-  // eslint-disable-next-line no-multi-assign
-  allFightData = res.data
+  signTeamNum = JSON.parse(localStorage.getItem('signTeamNum') || '[]')
+  getTeamIndex(signTeamNum, res.data)
   let numArr: getPointFightRes[][] | any[][] = []
   const lenArr: number[] = []
   let oneLen = 0
@@ -459,7 +474,6 @@ watch(currentStep,(newV: any,oldV: any)=>{
 
 onMounted(() => {
   pointId = JSON.parse(localStorage.getItem('matchinfo') || '{}').id
-  // console.log(getNameByIdFromArr(treeData.group,2));
 })
 
 </script>
@@ -514,8 +528,33 @@ onMounted(() => {
   }
   .tabs-content{
     flex: 1;
-    padding: 30px;
+    padding: 30px 10px;
     background: rgba(218,224,242,0.1);
+    .fight-team{
+      .winTeam>div:first-child,.loseTeam>div:first-child{
+        margin-bottom: 12px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #3A3F63;
+        line-height: 28px;
+        img{margin-right: 6px;}
+      }
+      .winTeam>div:first-child{
+        color: #4458FE;
+        img{
+          filter: invert(46%) sepia(76%) saturate(7060%) hue-rotate(230deg) brightness(101%) contrast(99%);
+        }
+      }
+      .loseTeam{margin-top: 30px}
+      .winTeam>div:last-child{
+        padding: 22px 20px;
+        background-color: rgba(68, 88, 254, 0.03);
+      }
+      .loseTeam>div:last-child{
+        padding: 22px 20px;
+        background-color: rgba(58, 63, 99, 0.03);
+      }
+    }
   }
 }
 .battle-col{

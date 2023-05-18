@@ -20,9 +20,22 @@ export function refreshToken() {
 }
 
 export function logout() {
-  return axios.post<LoginRes>('/api/user/logout');
+  return axios.post('/api/user/logout');
 }
 
 export function getUserInfo() {
   return axios.post<UserState>('/api/user/info',{accessToken: getToken()});
+}
+
+export function getWalletRandom(data: string) {
+  return axios.post<UserState>('/api/wallet/get_random',{address: data});
+}
+
+export interface walletLoginData {
+  address: string;
+  signature: string;
+}
+
+export function walletLogin(data: walletLoginData) {
+  return axios.post<LoginRes>('/api/wallet/login' ,data);
 }

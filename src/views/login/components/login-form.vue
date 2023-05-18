@@ -1,7 +1,7 @@
 <template>
   <div class="form-group">
     <div class="form-title">AOF后台管理系统</div>
-    <a-tabs default-active-key="1">
+    <a-tabs default-active-key="1" @change="tabChange">
       <a-tab-pane key="1" title="账号登录">
         <a-form ref="formRef" :model="formLogin" @submit="handleSubmit">
           <a-form-item         
@@ -29,13 +29,13 @@
           </a-form-item>
         </a-form>
       </a-tab-pane>
-      <a-tab-pane key="2" title="钱包登录" :disabled="true">
+      <a-tab-pane key="2" title="钱包登录" :disabled="false">
         <div class="metamask flex-center">
           <img src="https://moba-project.s3-accelerate.amazonaws.com/admin/metamask.jpg" alt="">
           <div>METAMASK</div>
         </div>
         <div class="mobile-w" style="padding-bottom: 50px;">
-          <a-button class="active large " style="margin-left: -2px;" :disabled="loading" @click="connectSubmit"><div><a-spin v-if="loading"></a-spin> 登录</div></a-button>
+          <a-button class="active large " style="margin-left: -2px;" :disabled="wloading" @click="connectSubmit"><div><a-spin v-if="wloading"></a-spin> 登录</div></a-button>
         </div>
       </a-tab-pane>
     </a-tabs>
@@ -49,20 +49,24 @@
   import { staticData, useUserStore } from '@/store';
   import { storeToRefs } from 'pinia';
   import useLoading from '@/hooks/loading';
-  import { LoginData } from '@/api/user';
+  import { LoginData, getWalletRandom} from '@/api/user';
   import { setTimestamp, clearAllLocal, getAddress } from '@/utils/auth';
   // eslint-disable-next-line import/extensions
   import Web3 from 'web3/dist/web3.min.js'
+  import { Sign } from '@/utils/web3/web3'
 
   const userStore = useUserStore();
   const router = useRouter();
   const { loading, setLoading } = useLoading(false);
+  const { loading: wloading, setLoading: setWLoading } = useLoading(false);
   const comStore = staticData();
   const { userAddress } = storeToRefs(comStore);
   const formLogin = reactive({
     user_name: '',
     password: ''
   });
+
+  const tabChange = (key: string | number) => {}
 
   const handleSubmit = async ({ errors,values}: {
     values: Record<string, LoginData>,
@@ -86,16 +90,33 @@
   };
 
   const connectSubmit = async () => {
-    Message.info('Sorry, this feature is still under development...')
-    // const { ethereum } = window as any // 获取小狐狸实例
-    // if (!ethereum) {
-    //   // noInVisible.value = true;
-    // } else {
-    //   const account = await getAddress()
-    //   if( account ){
-    //     console.log(account)
-    //   }
-    // }
+    // Message.info('Sorry, this feature is still under development...')
+    setWLoading(true);
+    try {
+      const { ethereum } = window as any // 获取小狐狸实例
+      if (!ethereum) {
+        setWLoading(false);
+        Message.info('请安装Metamask，安装完成后，刷新页面即可使用')
+      } else {
+        const account: any = await getAddress()
+        if( account ){
+          const result: any = await getWalletRandom(String(account))
+          const signature: any = await Sign(result.data,account)
+          if( signature ){
+            await userStore.walletLogin({address: String(account), signature: String(signature) })
+            setTimestamp(new Date().getTime())
+            const { redirect } = router.currentRoute.value.query;
+            router.push({name: (redirect as string) || 'newmatch'});
+            Message.success('success')
+            setWLoading(false);
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setWLoading(false);
+    }
   };
 
   onMounted(() => {

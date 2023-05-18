@@ -115,6 +115,7 @@ axios.interceptors.response.use(
         removeRouteListener();
         router.push({name: 'login'})
       }else{
+        console.log(res)
         switch (res.error_code) {
           case 1003: 
             Message.error({
@@ -123,10 +124,17 @@ axios.interceptors.response.use(
             })
             break;
           case 1004: 
-            Message.error({
-              content: '参数格式不对',
-              duration: 5 * 1000,
-            })
+            if( res?.msg === 'need call get_random first!' ){
+              Message.error({
+                content: '签名失败，请在10s内完成签名',
+                duration: 5 * 1000,
+              })
+            }else{
+              Message.error({
+                content: '参数格式不对',
+                duration: 5 * 1000,
+              })
+            }
             break;
           case 1005: 
             Message.error({

@@ -49,7 +49,7 @@
             title="报名人数"
             :width="129"
             >
-            <template #cell="{ record }">{{ record.joinNum === 1 ?  '--' : record.joinNum }}</template>
+            <template #cell="{ record }">{{ record.status === 1 ?  '--' : record.joinNum }}</template>
           </a-table-column>
           <a-table-column
             title="参赛队伍"
@@ -67,7 +67,7 @@
           <a-table-column title="操作" :width="191">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="![1,2].includes(record.status)" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="![1,2,0].includes(record.status)" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
                 <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="exportXLSX(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;" >导出报名</div></a-button>
                 <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;" @click="deletePointFun(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
               </a-space>

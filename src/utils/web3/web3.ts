@@ -231,7 +231,21 @@ const getPeroid = (abi: any[], address: string) => {
 }
 
 
-export default {
+// 获取签名
+const Sign = (message: string, account: string) => {
+  return new Promise((resolve, reject) => {
+      const web3 = new Web3((Web3 as any).givenProvider);
+      web3.eth.personal.sign(JSON.stringify(message), account)
+          .then((res: any) => {
+              resolve(res)
+          })
+          .catch((err: any) => {
+              resolve(0)
+          })
+  })
+}
+
+export {
   login,
   hasMetaMask,
   totolsuppl,
@@ -244,5 +258,6 @@ export default {
   ERC20balanceOf,
   balanceOfBatch,
   getPeroid,
+  Sign,
   contracts
 };

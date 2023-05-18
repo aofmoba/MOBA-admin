@@ -118,7 +118,7 @@ const { loading, setLoading } = useLoading(true);
 const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
-const useData: TableData[] = $ref([]);
+let useData: TableData[] = $ref([]);
 const datas: TableData[] = reactive([{
     id: 12345,
     rank: 1,
@@ -192,13 +192,26 @@ const querySingalTeam = (data: object[]) =>{
   })
 }
 
+
+
+const getTeamIndex = (signData: any,resData: any) => {
+  useData = resData.map((ele: any) => ({
+    ...ele,
+    blueIndex: Number(ele.blueTeamId) ? signData.filter((item:any)=> item.teamId === ele.blueTeamId)[0].indexId : -1,
+    redIndex: Number(ele.redTeamId) ? signData.filter((item:any)=> item.teamId === ele.redTeamId)[0].indexId : -1
+  }))
+}
+
+
+
+const signTeamNum: Array<{teamId: string;indexId: string}> = []
 const initData = (id: string) => {
   setLoading(false)
   // if( !id ) return
-  // useData = data
   // queryComPointCheckinList(id).then((res: any) => {
   //   if( res.error_code === 0 ) {
-  //     useData = res.data
+  //     signTeamNum = JSON.parse(localStorage.getItem('signTeamNum') || '[]')
+  //     getTeamIndex(signTeamNum, res.data)
   //     if( !useData.length ) { setLoading(false); return}
   //     useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
   //     // eslint-disable-next-line no-use-before-define

@@ -67,7 +67,7 @@
         <template #columns>
           <a-table-column
             title="队伍编号"
-            data-index="teamId"
+            data-index="indexId"
             :width="133"
           />
           <a-table-column
@@ -192,6 +192,7 @@ const querySingalTeam = (data: object[]) =>{
 }
 
 const initData = async (id: string) => {
+  localStorage.removeItem('signTeamNum')
   if( !id ) {setLoading(false); return;}
   queryComPointCheckinList(id).then((res: any) => {
     if( res.error_code === 0 ) {
@@ -201,6 +202,7 @@ const initData = async (id: string) => {
       if( !useData.length ) { setLoading(false); return}
       checkinsData = res.data.checkins
       useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
+      localStorage.setItem('signTeamNum',JSON.stringify(useData))
       // eslint-disable-next-line no-use-before-define
       querySingalTeam( useData )
     }

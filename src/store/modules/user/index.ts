@@ -3,6 +3,7 @@ import {
   login as userLogin,
   logout as userLogout,
   refreshToken as userRefresh,
+  walletLogin,
   getUserInfo,
 } from '@/api/user';
 import { setToken, clearToken, clearAllLocal } from '@/utils/auth';
@@ -58,6 +59,16 @@ const useUserStore = defineStore('user', {
     async login(loginForm: any) {
       try {
         const res = await userLogin(loginForm);
+        setToken(res.data.accessToken);
+      } catch (err) {
+        clearToken();
+        throw err;
+      }
+    },
+
+    async walletLogin(loginForm: any) {
+      try {
+        const res = await walletLogin(loginForm);
         setToken(res.data.accessToken);
       } catch (err) {
         clearToken();
