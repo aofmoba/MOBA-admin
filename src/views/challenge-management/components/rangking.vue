@@ -17,7 +17,7 @@
         <div class="title">奖励</div>
         <ul>
           <a-spin class="pre100" :loading="loading1">
-            <li v-for="item,i in rewardsInfo?.rewards" :key="i">
+            <li v-for="item,i in rewardsInfo" :key="i">
               <div v-if="item.propList[0].id === 1" class="mx-auto"><img class="pre100" src="https://moba-project.s3-accelerate.amazonaws.com/admin/reward-1.webp" alt=""></div>
               <div v-else-if="item.propList[0].id === 2" class="mx-auto"><img class="pre100" src="https://moba-project.s3-accelerate.amazonaws.com/admin/reward-2.webp" alt=""></div>
               <div v-else-if="item.propList[0].id === 3" class="mx-auto"><img class="pre100" src="https://moba-project.s3-accelerate.amazonaws.com/admin/reward-3.webp" alt=""></div>
@@ -51,7 +51,7 @@
 import { onMounted, ref, watch } from "vue";
 import useLoading from '@/hooks/loading'
 import {  
-  ArenaLists,
+  singleReward,
   queryArenaInfo,
   queryRanks,
   ranksLists,
@@ -67,7 +67,8 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  arenaid: Number
+  arenaid: Number,
+  rewards: Array
 })
 const dialogTableVisible = ref(false)
 let rankingList: Array<ranksLists> = $ref([])
@@ -78,15 +79,15 @@ const cancelHandle = () => {
   emit('change-rang',false)
 }
 
-let rewardsInfo: ArenaLists | any = $ref()
+let rewardsInfo: singleReward | any = $ref([])
 const getRewards = async() => {
   rankingList = []
-  rewardsInfo = {}
+  rewardsInfo = []
   // eslint-disable-next-line no-multi-assign
   loading1 = loading2 = true
   if( props.arenaid ){
     queryArenaInfo(Number(props.arenaid)).then((res: any) => {
-      if( res.error_code === 0 ) rewardsInfo = res.data
+      if( res.error_code === 0 ) rewardsInfo = res.data.rewards || props.rewards
     }).finally(()=>{loading1=false})
     queryRanks({arena_id: Number(props.arenaid),rank_type: 0}).then((res: any) => {
       if( res.error_code === 0 ) {

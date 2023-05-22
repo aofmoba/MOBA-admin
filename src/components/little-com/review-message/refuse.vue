@@ -21,6 +21,8 @@
 
 <script lang="ts" setup>
 import { onMounted, watch } from 'vue'
+import { approveArena, approvePoint } from '@/api/review';
+import Message from '@arco-design/web-vue/es/message';
 
 const emit = defineEmits(['cloosehandler'])
 const props = defineProps({
@@ -46,32 +48,20 @@ watch(()=>props.showbol,(newV,oldV)=>{
 
 
 let delLoading: boolean = $ref(false)
-const isAgreeHandler = () => {
+const isAgreeHandler = async () => {
+  if( !textVale ) { Message.info('请输入您拒绝的理由'); return } 
   delLoading = true
-  if( props.actiontype === '赛事' ){
-    console.log('赛事拒绝');
-    // eslint-disable-next-line no-multi-assign
-    delLoading = sureDialog = false
-    emit('cloosehandler',false)
-    // deleteArena(refuseid).then((res:any)=>{
-    //   if( res.error_code === 0) {
-    //     onPageChange(1)
-    //     sureDialog = false
-    //     Message.success('success')
-    //   }
-    // }).finally(()=>{delLoading = false})
-  }else if( props.actiontype === '擂台' ){
-    console.log('擂台拒绝');
-    // eslint-disable-next-line no-multi-assign
-    delLoading = sureDialog = false
-    emit('cloosehandler',false)
-    // deleteArena(refuseid).then((res:any)=>{
-    //   if( res.error_code === 0) {
-    //     onPageChange(1)
-    //     sureDialog = false
-    //     Message.success('success')
-    //   }
-    // }).finally(()=>{delLoading = false})
+  try {
+    if( props.actiontype === '擂台') { // 同意
+      await approveArena({id: props.refuseid || 0, accept: 2, reason: textVale}).finally(()=>{delLoading = false})
+    }else if( props.actiontype === '赛点') { // 同意
+      await approvePoint({id: String(props.refuseid), accept: 2, reason: textVale}).finally(()=>{delLoading = false})
+    }
+    sureDialog = false
+    Message.success('success')
+    emit('cloosehandler',true)
+  } catch (error) {
+    delLoading = false
   }
 }
 

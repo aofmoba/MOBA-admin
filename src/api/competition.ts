@@ -1,5 +1,7 @@
 import axios from 'axios';
+import { useUserStore } from '@/store';
 
+const userStore = useUserStore();
 export interface iconType{
     itemId: number,
     itemCount: number,
@@ -35,11 +37,16 @@ export interface competitionInfo {
     id: string; 
     type: number;
     name: number;
-    startTime: number;
-    finishTime: number;
-    pointNum: number; // 赛点数量
-    signNum: number; // 报名队伍数
+    startTime: number; // 钱包登录不返回
+    finishTime: number; // 钱包登录不返回
+    pointNum: number; // 赛点数量 钱包登录不返回
+    signNum: number; // 报名队伍数 钱包登录不返回
     detailInfo: Array<detailInfoObject>;
+    address?: string; // 钱包登录用户 - 创建者钱包地址
+    // eslint-disable-next-line camelcase
+    review_status?: string; // 钱包登录用户 - 0：待审核，1：审核通过，2：审核不通过
+    // eslint-disable-next-line camelcase
+    reject_reason?: string; // 钱包登录用户 - 审核不通过原因
 }
 
 export interface comListRes {
@@ -48,11 +55,17 @@ export interface comListRes {
 }
 // 创建赛事
 export function createCompetition(data: createCompetitionData) {
-    return axios.post('/api/competition/create',data);
+    if( userStore.permissions[0] !== 'guest' ){
+        return axios.post('/api/competition/create',data);
+    }
+    return axios.post('/api/wallet/create_competition',data);
 }
-// 赛事列表
+// 查看赛事列表
 export function queryCompetitionList(data: comListData) {
-    return axios.post<comListRes>('/api/competition/list',data);
+    // if( userStore.permissions[0] !== 'guest' ){
+        return axios.post<comListRes>('/api/competition/list',data);
+    // }
+    // return axios.post<comListRes>('/api/wallet/competition_list',data);
 }
 
 export interface stepsData {
@@ -80,18 +93,24 @@ export interface createCompetitionPointData {
     fightFinTime: number;
     teamNumLimit: number; // 报名队伍数 默认不限制传0
     teamMemberLimit: number; // 队伍人数 
-    detail: detailData;
+    status: number; // 0：为结束 1：已结束
+    address?: string; // 钱包登录用户 - 创建者钱包地址
+    // eslint-disable-next-line camelcase
+    review_status?: string; // 钱包登录用户 - 0：待审核，1：审核通过，2：审核不通过
+    // eslint-disable-next-line camelcase
+    reject_reason?: string; // 钱包登录用户 - 审核不通过原因
 }
 
 export interface comPointListData extends comListData{
-    compId: string;
+    compId?: string;
+    isReview?: boolean; // 是否是审核列表
 }
 
 export interface competitionPointInfo extends createCompetitionPointData {
     id: number;
-    joinNum: number; // 报名人数
-    signNum: number; // 参赛人数
-    detailInfo: detailData;
+    joinNum: number; // 报名人数 钱包登录不返回
+    signNum: number; // 参赛人数 钱包登录不返回
+    detailInfo: detailData; // 钱包登录返回null
 }
 
 export interface comPointListRes {
@@ -101,11 +120,17 @@ export interface comPointListRes {
 
 // 创建赛点
 export function createCompetitionPoint(data: createCompetitionPointData) {
-    return axios.post('/api/competition_point/create',data);
+    if( userStore.permissions[0] !== 'guest' ){
+        return axios.post('/api/competition_point/create',data);
+    }
+    return axios.post('/api/wallet/create_competition_point',data);
 }
-// 赛点列表
+// 查看赛点列表
 export function queryCompetitionPointList(data: comPointListData) {
-    return axios.post<comPointListRes>('/api/competition_point/list',data);
+    if( userStore.permissions[0] !== 'guest' && !data?.isReview ){
+        return axios.post<comPointListRes>('/api/competition_point/list',data);
+    }
+    return axios.post<comPointListRes>('/api/wallet/point_list',{pageno: data.pageno,pagesize: data.pagesize});
 }
 
 export interface comPointCheckinListRes {

@@ -51,7 +51,8 @@
           />
           <a-table-column title="状态" :width="114">
             <template #cell="{ record }">
-              <div v-if="Math.abs(record.status) == 1" style="color: #4458FE;">未开始</div>
+              <div v-if="record.status === -1" style="color: #858EBD;">审核中</div>
+              <div v-if="record.status == 1" style="color: #4458FE;">未开始</div>
               <div v-else-if="record.status == 2" style="color: #FF2855;">进行中</div>
               <div v-else style="color: #3A3F63;">已结束</div>
             </template>
@@ -93,7 +94,6 @@ const pagination: any = $ref({
 // eslint-disable-next-line consistent-return
 const computedStatus = (start: number,end: number) => {
   const now = Math.floor(new Date().getTime() / 1000)
-  if( !start && !end ) return -1
   if( now < start ) return 1
   if( now >= start && now < end ) return 2
   if( now >= end ) return 0

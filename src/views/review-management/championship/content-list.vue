@@ -15,7 +15,7 @@
         column-resizable
         :bordered="{ cell: false }"
         :scroll="{y:tableHeight}"
-        :data="useDate"
+        :data="useData"
         :loading="loading"
         :pagination="pagination" 
         @page-change="onPageChange"
@@ -37,7 +37,7 @@
           />
           <a-table-column
             title="申请人"
-            data-index="applicant"
+            data-index="address"
           />
           <a-table-column
             title="赛点名称"
@@ -52,7 +52,7 @@
             title="参与人数"
             :width="167"
           >
-            <template #cell="{ record }">{{ [-1,1,2].includes(record.status) ?  '--' : record.playerNum }}</template>
+            <template #cell="{ record }">{{ [-1,1,2].includes(record.status) ?  '--' : record.joinNum }}</template>
           </a-table-column>
           <a-table-column title="状态" :width="104">
             <template #cell="{ record }">
@@ -80,9 +80,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive } from "vue"
+import { onMounted, onActivated } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { vertTime } from '@/utils/computed'
+import { queryCompetitionPointList } from '@/api/competition';
+import type { comPointListRes, competitionPointInfo } from '@/api/competition';
 import ReviewMessage from '@/components/little-com/review-message/sure.vue'
 import RefuseMessage from '@/components/little-com/review-message/refuse.vue'
 
@@ -90,7 +93,7 @@ const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
 let tableHeight: number = $ref(0)
-let useDate:any = $ref([]);
+let useData: competitionPointInfo[] = $ref([]);
 const pagination: any = $ref({
   type: 'pagination',
   page: 1,
@@ -98,9 +101,41 @@ const pagination: any = $ref({
   pageSize: 10,
 })
 
+// eslint-disable-next-line consistent-return
+const computedStatus = (rstatus: number,start: number,end: number) => {
+  if( Number(rstatus) === 0 ) return -1
+  if( Number(rstatus) === 2 ) return 1
+  const now = Math.floor(new Date().getTime() / 1000)
+  if( now < start ) return 2
+  if( now >= start && now < end ) return 3
+  if( now >= end ) return 0
+}
+
+
+// eslint-disable-next-line consistent-return
+const getData = async () => {
+  const result: comPointListRes | any = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize, isReview: true}).catch(()=>setLoading(false))
+  if( result.data.list ){
+    pagination.total = result.data.total
+    const temp: competitionPointInfo[] = result.data.list.map((item: any) => ({
+      ...item,
+      validtime: `${vertTime(item.signTime)}-${vertTime(item.fightFinTime)}`,
+      status: computedStatus(item.review_status,item.signTime,item.fightFinTime)
+    }))
+    return {total: result.data.total,list: temp}
+  }
+}
+
+
 // pagination
 const onPageChange = async (current: number) => {
   pagination.current = current;
+  setLoading(true)
+  // eslint-disable-next-line no-nested-ternary
+  const tempData: comPointListRes = await getData() || {total: 0,list:[]}
+  useData = tempData.list
+  pagination.total = tempData.total
+  setLoading(false)
 };
 
 let sureNum: number = $ref()
@@ -111,40 +146,44 @@ let refuseDialog: boolean = $ref(false)
 const sureHandler = (record: any,type: number) => {
   if( record.status !== -1 ) return
   if( type === 1 ){ // 同意
-    actionType = '赛事'
-    sureNum = record.id
+    actionType = '赛点'
+    sureNum = Number(record.id)
     sureDialog = true
   }else if ( type === 0 ){ // 拒绝
-    actionType = '赛事'
-    refuseid = record.id
+    actionType = '赛点'
+    refuseid = Number(record.id)
     refuseDialog = true
   }
 }
 
+
+
+const initData = async () => {
+  pagination.current = 1
+  pagination.pageSize = 10
+  const tempData:comPointListRes = await getData() || {total: 0,list:[]}
+  useData = tempData.list
+  pagination.total = tempData.total
+  setLoading(false)
+}
+
 const clooseSurehandler = (res: boolean ) => {
   actionType = ''
-  sureDialog = res
+  sureDialog = false
+  if( res ) initData()
 }
 const clooseRefusehandler = (res: boolean ) => {
   actionType = ''
-  refuseDialog = res
+  refuseDialog = false
+  if( res ) initData()
 }
 
 
-
-
-const initData = () => {
-  setLoading(false)
-  useDate = []
-  // useDate = reactive(Array(10).fill(null).map((_, index) => ({
-  //   id: Number(`1234567${index}`),
-  //   applicant: '申请人昵称',
-  //   name: '中国-四川-成都',
-  //   validtime: '2023-01-3015:30-2023-01-30 16:30',
-  //   playerNum: 10,
-  //   status: index-1
-  // })));
-}
+onActivated(()=>{
+  if( !loading.value ){
+    initData()
+  }
+})
 
 onMounted(() => {
   setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)

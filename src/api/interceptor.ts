@@ -115,7 +115,6 @@ axios.interceptors.response.use(
         removeRouteListener();
         router.push({name: 'login'})
       }else{
-        console.log(res)
         switch (res.error_code) {
           case 1003: 
             Message.error({

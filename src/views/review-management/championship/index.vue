@@ -1,6 +1,6 @@
 <template>
     <div class="community-container other-form wrapbg">
-      <Mtitle title="赛事审核" />
+      <Mtitle title="赛点审核" />
       <ContentList />
     </div>
   </template>

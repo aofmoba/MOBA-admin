@@ -8,6 +8,6 @@ export default {
     order: 1,
     requiresAuth: true,
     hideChildrenInMenu: true,
-    roles: ['user','admin'],
+    roles: ['*'],
   },
 };

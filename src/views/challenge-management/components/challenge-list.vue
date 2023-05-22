@@ -210,13 +210,10 @@ const changeTable = async (index: number) => {
   setLoading(false)
 }
 
-interface allArenaLists extends ArenaLists {
-  validtime: string
-  status: number,
-}
+
 let sureDelete: boolean = $ref(false)
 let delNum: number = $ref()
-const deleteArenaFun = (record: allArenaLists) => {
+const deleteArenaFun = (record: any) => {
   if( record.status === 1 || record.status === -1 ){
     delNum = record.arenaId
     sureDelete = true

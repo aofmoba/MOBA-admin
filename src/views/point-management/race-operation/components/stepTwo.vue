@@ -11,72 +11,113 @@
       </div>
     </div>
     <div v-else class="tabs-container">
-      <ul class="tabs-nav-list">
-        <li class="flex-center tab-active">128晋64 <span>64强</span></li>
-        <li class="flex-center">64晋32 <span>32强</span></li>
-        <li class="flex-center">4晋2 <span>冠亚</span></li>
+      <ul class="tabs-nav-list" :class="{'noscroll':tabcards.length <= 2}">
+        <li v-for="num in tabcards" :key="num" :class="['flex-center',{'tab-active': winData[winData.length-1][0].teamNum === num}]">{{ num }}晋{{ num / 2 }} <span>{{ num / 2 }}强</span></li>
+        <li :class="['flex-center',{'tab-active': winData[winData.length-1][0].teamNum === tabcards[tabcards.length-1]/2}]">冠亚争夺 <span>冠亚</span></li>
         <li class="flex-center">季殿争夺 <span>季殿</span></li>
       </ul>
-      <div class="tabs-content" style="overflow-x: auto;">
+      <div class="tabs-content">
         <div v-if="contentloading" class="pre100 flex-center">
           <a-spin :size="38" />
         </div>
         <div v-else class="fight-team">
-          <div class="winTeam">
-            <div class="flex-items"><img style="width: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/loseTeam.svg" alt="">胜者组</div>
-            <div class="flex">
-              <div 
-                v-for="sum,d in sumData" 
-                :key="d" 
-                :class="['col-wrap',
-                {'marTop2': d == 1},
-                {'marTop3': d == 2 || (d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1) },
-                {'marTop4': d == 3 && !(d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1)},
-                {'second-line': d == sumData.length-2 && sumData[0][0].maxRound === sumData.length-1},
-                {'champion': d == sumData.length-1 && sumData[0][0].maxRound === sumData.length-1},
-                {'laststyle':sumData.length>=1}]"
-              >
-                <div v-for="data,index in sum" :key="index" class="battle-col">
-                  <div class="battle-top flex flex-col items-end">
-                    <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
-                      <a-button>更多操作 <icon-down/></a-button>
-                      <template #content>
-                        <a-doption>改判</a-doption>
-                        <a-doption>重赛</a-doption>
-                        <a-doption>切换红蓝方</a-doption>
-                      </template>
-                    </a-dropdown>
-                    <ul>
-                      <li class="flex">
-                        <div v-if="Number(data.redTeamId)" class="d1">{{ data.redIndex }}</div>
-                        <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
-                        <div class="d2 flex-items between white-nowrap">
-                          <div>{{ data.redTeamName }}</div>
-                          <span>{{ data.redScore }}</span>
-                        </div>
-                      </li>
-                      <li class="flex">
-                        <div v-if="Number(data.blueTeamId)" class="d1">{{ data.blueIndex }}</div>
-                        <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
-                        <div class="d2 flex-items between white-nowrap">
-                          <div>{{ data.blueTeamName }}</div>
-                          <span>{{ data.blueScore }}</span>
-                        </div>
-                      </li>
-                    </ul>
-                    <div class="status-wrap">
-                      <div v-if="computedStatus(data.startTime,data.finishTime) === 1" class="status" style="color:#4458FE">未开始</div>
-                      <div v-if="computedStatus(data.startTime,data.finishTime) === 2" class="status" style="color:#FF2855">进行中</div>
-                      <div v-if="computedStatus(data.startTime,data.finishTime) === 0" class="status">{{ vertTime(data.finishTime) + ' 已结束' }}</div>
+          <div class="fight-team-wrap">
+            <div class="winTeam">
+              <div class="flex-items"><img style="width: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/loseTeam.svg" alt="">胜者组</div>
+              <div class="flex">
+                <div 
+                  v-for="sum,d in winData" 
+                  :key="d" 
+                  :class="['col-wrap','laststyle',
+                  `marTop${d}`,
+                  {'second-line': d == winData.length-2 && winData[winData.length-1][0].teamNum === 2},
+                  {'champion': d == winData.length-1 && winData[winData.length-1][0].teamNum === 2}]"
+                >
+                  <div v-for="data,index in sum" :key="index" class="battle-col">
+                    <div class="battle-top flex flex-col items-end">
+                      <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
+                        <a-button>更多操作 <icon-down/></a-button>
+                        <template #content>
+                          <a-doption>改判</a-doption>
+                          <a-doption>重赛</a-doption>
+                          <a-doption>切换红蓝方</a-doption>
+                        </template>
+                      </a-dropdown>
+                      <ul>
+                        <li class="flex">
+                          <div v-if="Number(data.redTeamId)" class="d1">{{ data.redIndex }}</div>
+                          <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                          <div class="d2 flex-items between white-nowrap">
+                            <div>{{ data.redTeamName }}</div>
+                            <span>{{ data.redScore }}</span>
+                          </div>
+                        </li>
+                        <li class="flex">
+                          <div v-if="Number(data.blueTeamId)" class="d1">{{ data.blueIndex }}</div>
+                          <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                          <div class="d2 flex-items between white-nowrap">
+                            <div>{{ data.blueTeamName }}</div>
+                            <span>{{ data.blueScore }}</span>
+                          </div>
+                        </li>
+                      </ul>
+                      <div class="status-wrap">
+                        <div v-if="computedStatus(data.startTime,data.finishTime) === 1" class="status" style="color:#4458FE">未开始</div>
+                        <div v-if="computedStatus(data.startTime,data.finishTime) === 2" class="status" style="color:#FF2855">进行中</div>
+                        <div v-if="computedStatus(data.startTime,data.finishTime) === 0" class="status">{{ vertTime(data.finishTime) + ' 已结束' }}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="loseTeam">
-            <div class="flex-items"><img style="width: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/loseTeam.svg" alt="">败者组</div>
-            <div></div>
+            <div v-if="loseData.length" class="loseTeam">
+              <div class="flex-items"><img style="width: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/loseTeam.svg" alt="">败者组</div>
+              <div class="flex">
+                <div 
+                  v-for="sum,d in loseData" 
+                  :key="d" 
+                  :class="['col-wrap','laststyle',
+                  `marTop${d-emptyNum}`]"
+                >
+                  <div v-for="data,index in sum" :key="index" class="battle-col">
+                    <div class="battle-top flex flex-col items-end">
+                      <a-dropdown class="action-doption" :popup-max-height="false" @select="handleSelect">
+                        <a-button>更多操作 <icon-down/></a-button>
+                        <template #content>
+                          <a-doption>改判</a-doption>
+                          <a-doption>重赛</a-doption>
+                          <a-doption>切换红蓝方</a-doption>
+                        </template>
+                      </a-dropdown>
+                      <ul>
+                        <li class="flex">
+                          <div v-if="Number(data.redTeamId)" class="d1">{{ data.redIndex }}</div>
+                          <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                          <div class="d2 flex-items between white-nowrap">
+                            <div>{{ data.redTeamName }}</div>
+                            <span>{{ data.redScore }}</span>
+                          </div>
+                        </li>
+                        <li class="flex">
+                          <div v-if="Number(data.blueTeamId)" class="d1">{{ data.blueIndex }}</div>
+                          <div v-else class="d1 empty"><img src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/bye.svg" alt=""></div>
+                          <div class="d2 flex-items between white-nowrap">
+                            <div>{{ data.blueTeamName }}</div>
+                            <span>{{ data.blueScore }}</span>
+                          </div>
+                        </li>
+                      </ul>
+                      <div class="status-wrap">
+                        <div v-if="computedStatus(data.startTime,data.finishTime) === 1" class="status" style="color:#4458FE">未开始</div>
+                        <div v-if="computedStatus(data.startTime,data.finishTime) === 2" class="status" style="color:#FF2855">进行中</div>
+                        <div v-if="computedStatus(data.startTime,data.finishTime) === 0" class="status">{{ vertTime(data.finishTime) + ' 已结束' }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -110,7 +151,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, onActivated, watch } from "vue"
+import { onMounted, reactive, computed, watch } from "vue"
 import { useRouter } from 'vue-router'
 import { staticData } from '@/store';
 import { storeToRefs } from 'pinia';
@@ -122,6 +163,8 @@ import {
 } from '@/api/competition';
 import type { getPointFightRes } from '@/api/competition';
 import { Message } from "@arco-design/web-vue";
+import { getWinBinaryArr, getLoseBinaryArr  } from '../filter/stepTwo'
+// import { alltest  } from '../filter/testData'
 
 const props = defineProps({
   checknum: {
@@ -129,6 +172,7 @@ const props = defineProps({
     default: 0
   }
 })
+const myTabRef: any = $ref()
 const comStore = staticData();
 const { currentStep } = storeToRefs(comStore);
 const { loading, setLoading } = useLoading(false);
@@ -137,199 +181,18 @@ const router = useRouter()
 let pointId: string = $ref('')
 const rewardNum: string = $ref('1')
 let visible = $ref(false);
-const tree1: any = reactive([
-  {
-    pointId: 123456,
-    roundNum: 1,
-    redTeamId: '001',
-    blueTeamId: '002',
-    redScore: 2,
-    blueScore: 1,
-    winTeamId: '001',
-    startTime: 1682641273,
-    finishTime: 1682651273,
-    maxRound: 3,
-  },
-  {
-    pointId: 123456,
-    roundNum: 1,
-    redTeamId: '003',
-    blueTeamId: '004',
-    redScore: 1,
-    blueScore: 0,
-    winTeamId: '003',
-    startTime: 1682651273,
-    finishTime: 1682661273,
-    maxRound: 3,
-  },
-  {
-    pointId: 123456,
-    roundNum: 1,
-    redTeamId: '005',
-    blueTeamId: '006',
-    redScore: 3,
-    blueScore: 0,
-    winTeamId: '005',
-    startTime: 1682661273,
-    finishTime: 1682681273,
-    maxRound: 3,
-  },
-  {
-    pointId: 123456,
-    roundNum: 1,
-    redTeamId: '007',
-    blueTeamId: '008',
-    redScore: 1,
-    blueScore: 5,
-    winTeamId: '008',
-    startTime: 1682681273,
-    finishTime: 1682661273,
-    maxRound: 3,
-  },
-])
-  
-const tree2 = reactive([
-    {
-      pointId: 123456,
-      roundNum: 2,
-      redTeamId: '005',
-      blueTeamId: '008',
-      redScore: 5,
-      blueScore: 6,
-      winTeamId: '008',
-      startTime: 0,
-      finishTime: 0,
-      maxRound: 2,
-    },
-    {
-      pointId: 123456,
-      roundNum: 2,
-      redTeamId: '001',
-      blueTeamId: '003',
-      redScore: 5,
-      blueScore: 1,
-      winTeamId: '001',
-      startTime: 0,
-      finishTime: 0,
-      maxRound: 2,
-    },
-])
+let winData: getPointFightRes[][] | any[][] = $ref([])
+let loseData: getPointFightRes[][] | any[][] = $ref([])
 
-const tree3 = reactive([
-    {
-      pointId: 123456,
-      roundNum: 3,
-      redTeamId: '001',
-      blueTeamId: '008',
-      redScore: 5,
-      blueScore: 1,
-      winTeamId: '001',
-      startTime: 0,
-      finishTime: 0,
-      maxRound: 1,
-    },
-    {
-      pointId: 123456,
-      roundNum: 3,
-      redTeamId: '003',
-      blueTeamId: '005',
-      redScore: 0,
-      blueScore: 6,
-      winTeamId: '005',
-      startTime: 0,
-      finishTime: 0,
-      maxRound: 1,
-    },
-])
-const tree4 = reactive([
-    {
-      pointId: 123456,
-      roundNum: 3,
-      redTeamId: '003',
-      blueTeamId: '005',
-      redScore: 0,
-      blueScore: 6,
-      winTeamId: '005',
-      startTime: 0,
-      finishTime: 0,
-      maxRound: 1,
-    },
-])
-const tree5 = reactive([
-    {
-      pointId: 123456,
-      roundNum: 4,
-      redTeamId: '003',
-      blueTeamId: '005',
-      redScore: 0,
-      blueScore: 6,
-      winTeamId: '005',
-      startTime: 10000,
-      finishTime: 10000,
-      maxRound: 1,
-    },
-])
-const tree6 = reactive([
-    {
-      pointId: 123456,
-      roundNum: 5,
-      redTeamId: '003',
-      blueTeamId: '005',
-      redScore: 0,
-      blueScore: 6,
-      winTeamId: '005',
-      startTime: 10000,
-      finishTime: 10000,
-      maxRound: 1,
-    },
-])
-let sumData: getPointFightRes[][] | any[][] = $ref([])
-
-const treeData: any = reactive({
-  level: 3,
-  group:[{
-    level: 2,
-    group: [{
-      level: 1,
-      groupA: {name:'队伍名称在此a',num:73,score:1},
-      groupB: {name:'队伍名称在此a1',num:73,score:1},
-      children: [{name:'队伍名称在此a',num:73,score:1}]
-    },{
-      level: 1,
-      groupA: {name:'队伍名称在此b',num:73,score:1},
-      groupB: {name:'队伍名称在此b1',num:73,score:1},
-      children: [{name:'队伍名称在此b',num:73,score:1}]
-    }],
-    children: [{name:'队伍名称在此a',num:73,score:1}]
+const tabcards = computed(() => {
+  const indexArr = [];
+  let { teamNum } = winData[0][0];
+  while( teamNum >= 4 ){
+    indexArr.push(teamNum);
+    teamNum /= 2;
   }
-  ,{
-    level: 2,
-    group: [{
-      level: 1,
-      groupA: {name:'队伍名称在此c',num:73,score:1},
-      groupB: {name:'队伍名称在此c1',num:73,score:1},
-      children: [{name:'队伍名称在此c',num:73,score:1}]
-    },{
-      level: 1,
-      groupA: {name:'队伍名称在此d',num:73,score:1},
-      groupB: {name:'队伍名称在此d1',num:73,score:1},
-      children: [{name:'队伍名称在此d',num:73,score:1}]
-    }],
-    children: [{name:'队伍名称在此a',num:73,score:1}]
-  }
-  ],
-  children: [{name:'队伍名称在此c',num:73,score:1}]
+  return indexArr;
 })
-
-const getFlatArr = (arr:any) => {
-  return arr.reduce((a: any, item: any) => {
-    let flatArr = [...a, item];
-    if (item.children) {
-      flatArr = [...flatArr, ...getFlatArr(item.children)];
-    }
-    return flatArr;
-  }, []);
-}
 
 // eslint-disable-next-line consistent-return
 const computedStatus = (start: number,end: number) => {
@@ -355,9 +218,9 @@ const handleBeforeOk = () => {
   }).finally(()=>{setLoading(false)})
 }
 
-// const allFightData = [...tree1,...tree2]
+// let allFightData = alltest
 let allFightData: Array<getPointFightRes> | Array<any> = []
-const getTeamIndex = (signData: any,fightData: Array<getPointFightRes>) => {
+const getTeamIndex = (signData: any,fightData: Array<getPointFightRes> | any) => {
   allFightData = fightData.map((ele: getPointFightRes) => ({
     ...ele,
     blueIndex: Number(ele.blueTeamId) ? signData.filter((item:any)=> item.teamId === ele.blueTeamId)[0].indexId : -1,
@@ -366,7 +229,7 @@ const getTeamIndex = (signData: any,fightData: Array<getPointFightRes>) => {
 }
 
 
-
+let emptyNum = $ref(0)
 let signTeamNum: Array<{teamId: string;indexId: string}> = []
 let contentloading: boolean = $ref(false)
 const getPointFightDataFun = async () => {
@@ -375,53 +238,22 @@ const getPointFightDataFun = async () => {
   if( !res.data ) {contentloading = false; return;}
   signTeamNum = JSON.parse(localStorage.getItem('signTeamNum') || '[]')
   getTeamIndex(signTeamNum, res.data)
-  let numArr: getPointFightRes[][] | any[][] = []
-  const lenArr: number[] = []
-  let oneLen = 0
-  allFightData.forEach((item: any)=>{
-      if( !lenArr.includes(item.roundNum) ){
-        lenArr.push(item.roundNum)
-      }
-      if( item.roundNum === 1 ){
-        oneLen +=1
-      }
-  })
-  numArr = reactive(Array(lenArr.length).fill(null).map((_, index) => ([])));
-  // eslint-disable-next-line no-restricted-properties
-  lenArr.forEach((item: any,i)=>{
-    // eslint-disable-next-line no-restricted-properties
-    numArr[i] = reactive(Array(Math.floor(oneLen/Math.pow(2,item-1))).fill(null).map((_, index) => ({
-      pointId: null,
-      roundNum: item,
-      redTeamId: null,
-      blueTeamId: null,
-      redScore: 0,
-      blueScore: 0,
-      winTeamId: null,
-      startTime: null,
-      finishTime: null,
-      maxRound: null,
-    })));
-  })
-  allFightData.forEach((item: getPointFightRes,i) => {
-    const tempIndex = numArr.findIndex((da: Array<getPointFightRes>) => da[0].roundNum === item.roundNum )
-    if( tempIndex >= 0 ){
-      if( item.roundNum !== 1 ){
-        const oneIndex = numArr[0].findIndex((one: any) => one.winTeamId === item.redTeamId || one.winTeamId === item.blueTeamId )
-        if( oneIndex >= 0 ){
-          // eslint-disable-next-line no-restricted-properties
-          numArr[tempIndex].splice(Math.ceil(oneIndex/Math.pow(2,item.roundNum-1)),1,item)
-        }
-      }else{
-        numArr[tempIndex].splice(i,1,item)
-      }
-    }
-  })
-  if( numArr[numArr.length-1].length === 2 && numArr[0][0].maxRound === numArr.length ){
-    numArr.push([numArr[numArr.length-1][1]])
-    numArr[numArr.length-1] = numArr[numArr.length-2].splice(1,1)
+  winData = getWinBinaryArr(allFightData)
+  loseData = getLoseBinaryArr(allFightData)
+  // 处理最后4名队伍在战胜组水平排列
+  if( winData[winData.length-1].length === 2 && winData[winData.length-1][0].teamNum === 2 ){
+    winData.push([winData[winData.length-1][1]])
+    winData[winData.length-2].splice(1,1)
   }
-  sumData = numArr
+  if( loseData.length ){
+    let emptyLose = winData[0][0].teamNum
+    const loseTeamNum = loseData[0][0].teamNum
+    while( emptyLose > loseTeamNum ){
+      loseData.unshift([]);
+      emptyLose /= 2
+    }
+    emptyNum = loseData.filter((item: any) => !item.length).length
+  }
   contentloading = false
 }
 
@@ -479,20 +311,49 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+.border-right{
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 1px;
+  height: 44px;
+  margin-top: -22px;
+  border-left: 1px solid #DAE0F2;
+}
+
 .tabs-container{
   display: flex;
   flex-direction: column;
   height: 100%;
   transition: all .1s ease;
   .tabs-nav-list{
+    position: relative;
     display: flex;
     height: 86px;
     border: 1px solid #DAE0F2;
+    overflow-x: overlay;
+    background-color: 'transparent';
+    transition: background-color .4s;
+    -webkit-background-clip: text;
+    &:not(.noscroll):hover{background: rgb(183, 183, 183);}
+    &::-webkit-scrollbar{
+        width: 10px;
+        height: 8px;
+    }
+    &::-webkit-scrollbar-track-piece,&::-webkit-scrollbar-corner{
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb{
+        border-radius: 7px;
+        background-color: inherit;
+    }
     li{
       position: relative;
-      flex: 1;
+      min-width: 270px;
       font-size: 20px;
       color: #3A3F63;
+      background-color: #fff;
       span{
         display: inline-block;
         width: 50px;
@@ -506,14 +367,7 @@ onMounted(() => {
         text-align: center;
       }
       &:not(:last-child)::after{
-        content: '';
-        position: absolute;
-        top: 50%;
-        right: 0;
-        width: 1px;
-        height: 44px;
-        margin-top: -22px;
-        border-left: 1px solid #DAE0F2;
+        &:extend(.border-right);
       }
       &.tab-active{
         color: #fff;
@@ -522,7 +376,12 @@ onMounted(() => {
         &::after{border-left: none;}
       }
       &:not(.tab-active):hover{
-        background: rgba(68, 88, 254, .1);
+        background: RGBA(236, 238, 254, 1);
+      }
+    }
+    &.noscroll{
+      li::after{
+        &:extend(.border-right);
       }
     }
   }
@@ -531,6 +390,11 @@ onMounted(() => {
     padding: 30px 10px;
     background: rgba(218,224,242,0.1);
     .fight-team{
+      overflow-x: auto;
+      .fight-team-wrap{
+        width: max-content;
+        min-width: 100%;
+      }
       .winTeam>div:first-child,.loseTeam>div:first-child{
         margin-bottom: 12px;
         font-size: 20px;
@@ -545,7 +409,7 @@ onMounted(() => {
           filter: invert(46%) sepia(76%) saturate(7060%) hue-rotate(230deg) brightness(101%) contrast(99%);
         }
       }
-      .loseTeam{margin-top: 30px}
+      .loseTeam{margin-top: 30px;}
       .winTeam>div:last-child{
         padding: 22px 20px;
         background-color: rgba(68, 88, 254, 0.03);
@@ -635,7 +499,10 @@ onMounted(() => {
   position: absolute;
   background-color:#DAE0F2;
 }
+
 .col-wrap{
+  min-width: 180px;
+  width: 180px;
   .battle-col{
     height: auto;
     position: relative;
@@ -649,11 +516,10 @@ onMounted(() => {
     }
     &:nth-child(odd)::after{
       top: calc( (100% + 20px) / 2 + 60px );
-      right: -64px;
-      width: 32px;
+      right: -96px;
+      width: 64px;
       height: 1px;
       &:extend(.commonstyle);
-      // opacity: .7;
     }
     .battle-top,.battle-bot{
       position: relative;
@@ -667,18 +533,74 @@ onMounted(() => {
       }
     }
   }
+  &:first-child .battle-col:nth-child(odd)::after{
+      right: -64px;
+      width: 32px;
+  }
   &:last-child .battle-top::before{display: none;}
   &:last-child .battle-top::after{display: none;}
 }
+
+.loseTeam .col-wrap .battle-col {
+  &:nth-child(odd)::after{
+    right: -96px;
+    width: 64px;
+  }
+}
+
+
 .col-wrap{
   margin-right: 64px;
   &:not(:first-child){margin-right: 96px;}
-  &.marTop2{margin-top: 69.5px;.battle-col{margin-top: 157px;&:nth-child(odd)::before{height: calc(100% + 157px);};&::after{top: calc( (100% + 157px) / 2 + 60px );right: -96px;width: 64px;}}}
-  &.marTop3{margin-top: 207px;.battle-col{margin-top: 431px;&:nth-child(odd)::before{height: calc(100% + 431px);};&::after{top: calc( (100% + 431px) / 2 + 69.5px );right: -96px;width: 64px;}}}
-  &.marTop4{margin-top: 490px;.battle-col{margin-top: 980px;}}
+  &.marTop1{
+    margin-top: 69.5px;
+    .battle-col{
+      margin-top: 157px;
+      &:nth-child(odd)::before{height: calc(100% + 157px);};&::after{top: calc( (100% + 157px) / 2 + 60px );}
+    }}
+  &.marTop2{
+    margin-top: 207px;
+    .battle-col{
+      margin-top: 431px;
+      &:nth-child(odd)::before{height: calc(100% + 431px);};&::after{top: calc( (100% + 431px) / 2 + 69.5px );}
+    }}
+  &.marTop3{
+    margin-top: 492px;
+    .battle-col{
+      margin-top: 979px;
+      &:nth-child(odd)::before{height: calc(100% + 979px);};&::after{top: calc( (100% + 979px) / 2 + 69.5px );}
+    }
+  }
+  &.marTop4{
+    margin-top: 1050px;
+    .battle-col{
+      margin-top: 2075px;
+      &:nth-child(odd)::before{height: calc(100% + 2075px);};&::after{top: calc( (100% + 2075px) / 2 + 69.5px );}
+    }
+  }
+  &.marTop5{
+    margin-top: 2156px;
+    .battle-col{
+      margin-top: 4267px;
+      &:nth-child(odd)::before{height: calc(100% + 4267px);};&::after{top: calc( (100% + 4267px) / 2 + 69.5px );}
+    }
+  }
+  &.marTop6{
+    margin-top: 4359px;
+    .battle-col{
+      margin-top: 8650px;
+      &:nth-child(odd)::before{height: calc(100% + 8650px);};&::after{top: calc( (100% + 8650px) / 2 + 69.5px );}
+    }
+  }
+  &.marTop7{
+    margin-top: 8752px;
+    .battle-col{
+      margin-top: 17464px;
+      &:nth-child(odd)::before{height: calc(100% + 17464px);};&::after{top: calc( (100% + 17464px) / 2 + 69.5px );}
+    }
+  }
   &.laststyle{
     &:last-child{
-      // .battle-col{margin-top: 450px;}
       .battle-col{
         &::before,&::after{display:none;}
         .battle-top,.battle-bot{&::before{display:none}}
@@ -695,6 +617,27 @@ onMounted(() => {
   &.champion{
     margin-right: 0;
     .battle-col{margin-top: 980px;}
+    &.marTop2:last-child{ // 如果这是最后一列
+      margin-top: 69.5px;
+    }
+    &.marTop3:last-child{ // 如果这是最后一列
+      margin-top: 207px;
+    }
+    &.marTop4:last-child{ // 如果这是最后一列
+      margin-top: 492px;
+    }
+    &.marTop5:last-child{ // 如果这是最后一列
+      margin-top: 1050px;
+    }
+    &.marTop6:last-child{ // 如果这是最后一列
+      margin-top: 2156px;
+    }
+    &.marTop7:last-child{ // 如果这是最后一列
+      margin-top: 4359px;
+    }
+    &.marTop8:last-child{ // 如果这是最后一列
+      margin-top: 8752px;
+    }
   }
 }
 </style> 

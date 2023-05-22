@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrap other-form m-30">
     <a-space style="margin-bottom: 40px;">
-      <a-input :style="{width:'355px'}" placeholder="输入赛事或赛点名称" />
+      <a-input :style="{width:'355px'}" placeholder="输入擂台名称" />
       <a-button class="active" style="width: 80px; height: 36px; margin-left: 12px;"><div style="font-size: 16px;font-weight: bold;line-height: 36px;">查询</div></a-button>
     </a-space>
     <div ref="tableRef" class="content-table">
@@ -9,7 +9,7 @@
         column-resizable
         :bordered="{ cell: false }"
         :scroll="{y:tableHeight}"
-        :data="useDate"
+        :data="useData"
         :loading="loading"
         :pagination="pagination" 
         @page-change="onPageChange"
@@ -25,13 +25,13 @@
         </template>
         <template #columns>
           <a-table-column
-            title="赛事ID"
-            data-index="id"
+            title="擂台ID"
+            data-index="arenaId"
             :width="118"
           />
           <a-table-column
             title="申请人"
-            data-index="applicant"
+            data-index="address"
           />
           <a-table-column
             title="夺旗所在地点"
@@ -64,7 +64,7 @@
                 <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="sureHandler(record,0)"><div style="width: 100px;font-size: 14px;line-height: 29px;">拒绝</div></a-button>
               </a-space>
               <a-space v-if="![-1,1,2].includes(record.status)" style="display: flex; flex-direction: column;">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click=" showRangking(record.id)"><div style="font-size: 14px;line-height: 32px;">查看排行榜</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="showRangking(record)"><div style="font-size: 14px;line-height: 32px;">查看排行榜</div></a-button>
                 <a-button v-if="record.status === 3" class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="sureHandler(record,2)"><div style="width: 100px;font-size: 14px;line-height: 29px;">结束比赛</div></a-button>
               </a-space>
             </template>
@@ -73,15 +73,18 @@
       </a-table>
     </div>
   </div>
-  <Ranking :showbol="visible" :arenaid="ranksID" @change-rang="changeRang" />
+  <Ranking :showbol="visible" :arenaid="ranksID" :rewards="ranksRewards" @change-rang="changeRang" />
   <ReviewMessage :showbol="sureDialog" :actiontype="actionType" :sureid="sureNum" @cloosehandler="clooseSurehandler"/>
   <RefuseMessage :showbol="refuseDialog" :actiontype="actionType" :refuseid="refuseid" @cloosehandler="clooseRefusehandler"/>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue"
+import { onMounted, onActivated } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { vertTime } from '@/utils/computed'
+import { queryArenaList } from '@/api/challenge';
+import type { ArenaLists, ArenaListsRes } from '@/api/challenge';
 import Ranking from '@/views/challenge-management/components/rangking.vue'
 import ReviewMessage from '@/components/little-com/review-message/sure.vue'
 import RefuseMessage from '@/components/little-com/review-message/refuse.vue'
@@ -90,7 +93,7 @@ const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const tableRef: any = $ref(null)
 let tableHeight: number = $ref(0)
-let useDate:any = $ref([]);
+let useData: ArenaLists[] = $ref([]);
 const pagination: any = $ref({
   type: 'pagination',
   page: 1,
@@ -99,9 +102,16 @@ const pagination: any = $ref({
 })
 
 
+
 // pagination
 const onPageChange = async (current: number) => {
   pagination.current = current;
+  setLoading(true)
+  // eslint-disable-next-line no-use-before-define
+  const tempData = await getData() || {total: 0,data:[]}
+  useData = tempData.data
+  pagination.total = tempData.total
+  setLoading(false)
 };
 
 
@@ -114,38 +124,52 @@ const sureHandler = (record: any,type: number) => {
   if( record.status === -1 || record.status === 3 ){
     if( type === 0 ){ // 拒绝
       actionType = '擂台'
-      refuseid = record.id
+      refuseid = record.arenaId
       refuseDialog = true
     }else{ // 1：同意 2：结束比赛
       actionType = type === 1 ? '擂台' : '结束比赛'
-      sureNum = record.id
+      sureNum = record.arenaId
       sureDialog = true
     }
   }
 }
-const clooseSurehandler = (res: boolean ) => {
-  actionType = ''
-  sureDialog = res
-}
-const clooseRefusehandler = (res: boolean ) => {
-  actionType = ''
-  refuseDialog = res
+
+
+// eslint-disable-next-line consistent-return
+const computedStatus = (rstatus: number,start: number,end: number) => {
+  if( Number(rstatus) === 0 ) return -1
+  if( Number(rstatus) === 2 ) return 1
+  const now = Math.floor(new Date().getTime() / 1000)
+  if( now < start ) return 2
+  if( now >= start && now < end ) return 3
+  if( now >= end ) return 0
 }
 
 
-const initData = () => {
+// eslint-disable-next-line consistent-return
+const getData = async () => {
+  const result: ArenaListsRes | any = await queryArenaList({pageno: pagination.current,pagesize: pagination.pageSize}).catch(()=>setLoading(false))
+  if( result.data.list ){
+    pagination.total = result.data.total
+    const temp: ArenaLists[] = result.data.list.map((item: any) => ({
+      ...item,
+      validtime: `${vertTime(item.startTime)}-${vertTime(item.finTime)}`,
+      status: computedStatus(item.review_status,item.startTime,item.finTime)
+    }))
+    return {total: result.data.total,data: temp}
+  }
+}
+
+
+
+const initData = async () => {
+  pagination.current = 1
+  pagination.pageSize = 10
+  const tempData = await getData() || {total: 0,data:[]}
+  useData = tempData.data
+  pagination.total = tempData.total
   setLoading(false)
-  useDate = []
-  // useDate = reactive(Array(10).fill(null).map((_, index) => ({
-  //   id: Number(`1234567${index}`),
-  //   applicant: '申请人昵称',
-  //   name: '中国-四川-成都',
-  //   validtime: '2023-01-3015:30-2023-01-30 16:30',
-  //   playerNum: 10,
-  //   status: index-1
-  // })));
 }
-
 
 
 let visible: boolean = $ref(false)
@@ -153,10 +177,29 @@ const changeRang = (data: boolean) => {
   visible = data
 }
 let ranksID: number = $ref()
-const showRangking = (id: number) => {
+let ranksRewards: any = $ref([])
+const showRangking = (data: any) => {
     visible = true
-    ranksID = id
+    ranksID = data.arenaId
+    ranksRewards = data.rewards
 }
+
+const clooseSurehandler = (res: boolean ) => {
+  actionType = ''
+  sureDialog = false
+  if( res ) initData()
+}
+const clooseRefusehandler = (res: boolean ) => {
+  actionType = ''
+  refuseDialog = false
+  if( res ) initData()
+}
+
+onActivated(()=>{
+  if( !loading.value ){
+    initData()
+  }
+})
 
 onMounted(() => {
   setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)

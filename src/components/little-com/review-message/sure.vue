@@ -24,6 +24,8 @@
 
 <script lang="ts" setup>
 import { onMounted, watch } from 'vue'
+import { approveArena, approvePoint, approveComp } from '@/api/review';
+import Message from '@arco-design/web-vue/es/message';
 
 const emit = defineEmits(['cloosehandler'])
 const props = defineProps({
@@ -48,37 +50,21 @@ watch(()=>props.showbol,(newV,oldV)=>{
 
 
 let delLoading: boolean = $ref(false)
-const isAgreeHandler = () => {
+const isAgreeHandler = async() => {
   delLoading = true
-  if( props.actiontype === '擂台') { // 同意
-    console.log('擂台同意');
-    // eslint-disable-next-line no-multi-assign
-    delLoading = sureDialog = false
-    emit('cloosehandler',false)
-    // deleteArena(sureid).then((res:any)=>{
-    //   if( res.error_code === 0) {
-    //     onPageChange(1)
-    //     sureDialog = false
-    //     Message.success('success')
-    //   }
-    // }).finally(()=>{delLoading = false})
-  }else if( props.actiontype === '赛事') { // 同意
-    console.log('赛事同意');
-    // eslint-disable-next-line no-multi-assign
-    delLoading = sureDialog = false
-    emit('cloosehandler',false)
-    // deleteArena(sureid).then((res:any)=>{
-    //   if( res.error_code === 0) {
-    //     onPageChange(1)
-    //     sureDialog = false
-    //     Message.success('success')
-    //   }
-    // }).finally(()=>{delLoading = false})
-  }else if( props.actiontype === '结束比赛' ){ // 结束比赛
-    console.log('结束比赛');
-    // eslint-disable-next-line no-multi-assign
-    delLoading = sureDialog = false
-    emit('cloosehandler',false)
+  try {
+    if( props.actiontype === '擂台') { // 同意
+      await approveArena({id: props.sureid || 0, accept: 1}).finally(()=>{delLoading = false})
+    }else if( props.actiontype === '赛点') { // 同意
+      await approvePoint({id: String(props.sureid), accept: 1}).finally(()=>{delLoading = false})
+    }else if( props.actiontype === '结束比赛' ){ // 结束比赛
+      delLoading = false
+    }
+    sureDialog = false
+    Message.success('success')
+    emit('cloosehandler', true)
+  } catch (error) {
+    delLoading = false
   }
 }
 

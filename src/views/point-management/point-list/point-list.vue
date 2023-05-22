@@ -59,6 +59,7 @@
           </a-table-column>
           <a-table-column title="状态" :width="114">
             <template #cell="{ record }">
+              <div v-if="record.status === -1" style="color: #858EBD;">审核中</div>
               <div v-if="record.status == 1" style="color: #4458FE;">未开始</div>
               <div v-else-if="record.status == 2" style="color: #FF2855;">进行中</div>
               <div v-else style="color: #3A3F63;">已结束</div>
@@ -67,7 +68,7 @@
           <a-table-column title="操作" :width="191">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="![1,2,0].includes(record.status)" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="![1,2].includes(record.status)" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
                 <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="exportXLSX(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;" >导出报名</div></a-button>
                 <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;" @click="deletePointFun(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
               </a-space>
@@ -139,7 +140,6 @@ const exportXLSX = (teamdata: any) => {
 // eslint-disable-next-line consistent-return
 const computedStatus = (start: number,end: number) => {
   const now = Math.floor(new Date().getTime() / 1000)
-  if( !start && !end ) return -1
   if( now < start ) return 1
   if( now >= start && now < end ) return 2
   if( now >= end ) return 0
