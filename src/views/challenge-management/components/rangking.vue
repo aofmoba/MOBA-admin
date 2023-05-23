@@ -86,9 +86,14 @@ const getRewards = async() => {
   // eslint-disable-next-line no-multi-assign
   loading1 = loading2 = true
   if( props.arenaid ){
-    queryArenaInfo(Number(props.arenaid)).then((res: any) => {
-      if( res.error_code === 0 ) rewardsInfo = res.data.rewards || props.rewards
-    }).finally(()=>{loading1=false})
+    if( props.rewards?.length ){ // 已传递奖励信息
+      rewardsInfo = props.rewards
+      loading1=false
+    }else{
+      queryArenaInfo(Number(props.arenaid)).then((res: any) => {
+        if( res.error_code === 0 ) rewardsInfo = res.data.rewards
+      }).finally(()=>{loading1=false})
+    }
     queryRanks({arena_id: Number(props.arenaid),rank_type: 0}).then((res: any) => {
       if( res.error_code === 0 ) {
         if( !res.data.length ) loading2 = false

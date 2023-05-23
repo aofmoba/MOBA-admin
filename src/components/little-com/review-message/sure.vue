@@ -59,6 +59,8 @@ const isAgreeHandler = async() => {
       await approvePoint({id: String(props.sureid), accept: 1}).finally(()=>{delLoading = false})
     }else if( props.actiontype === '结束比赛' ){ // 结束比赛
       delLoading = false
+      Message.info('Sorry, this feature is still under development...')
+      return
     }
     sureDialog = false
     Message.success('success')

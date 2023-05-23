@@ -54,23 +54,27 @@
             title="参与人数"
             :width="167"
           >
-            <template #cell="{ record }">{{ record.status === 1 ?  '--' : record.playerNum }}</template>
+            <template #cell="{ record }">{{ [-1,1,2].includes(record.status) ?  '--' : record.playerNum }}</template>
           </a-table-column>
           <a-table-column title="状态" :width="104">
             <template #cell="{ record }">
               <div v-if="record.status === -1" style="color: #858EBD;">审核中</div>
-              <div v-if="record.status == 1" style="color: #4458FE;">未开始</div>
-              <div v-else-if="record.status == 2" style="color: #FF2855;">进行中</div>
+              <div v-else-if="record.status === 1" class="flex-center" style="color: #FFA925;">
+                已拒绝
+                <img class="cursor-pointer refuse-img" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/question.svg" alt="" @click="sureHandler(record.reject_reason)">
+              </div>
+              <div v-else-if="record.status === 2" style="color: #4458FE;">未开始</div>
+              <div v-else-if="record.status === 3" style="color: #FF2855;">进行中</div>
               <div v-else style="color: #3A3F63;">已结束</div>
             </template>
           </a-table-column>
           <a-table-column title="操作">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
-                <a-button v-if="record" class="active noboxshadow" style="width: 103px; height: 32px;" @click="showRangking(record)">
-                  <div style="font-size: 14px;line-height: 32px;">{{ [-1,1].includes(record.status) ? '编辑':'查看排行榜' }}</div>
+                <a-button v-if="record" class="active noboxshadow" :disabled="record.status === 1" style="width: 103px; height: 32px;" @click="showRangking(record)">
+                  <div style="font-size: 14px;line-height: 32px;">{{ [-1,1,2].includes(record.status) ? '编辑':'查看排行榜' }}</div>
                 </a-button>
-                <a-button class="default" :disabled="[-1,1].includes(record.status) ? false : true" style="width: 103px; height: 32px; margin-top: 10px;" @click="deleteArenaFun(record)"><div style="width: 98.5px;font-size: 14px;line-height: 27.5px;">删除</div></a-button>
+                <a-button class="default" :disabled="[-1,1,2].includes(record.status) ? false : true" style="width: 103px; height: 32px; margin-top: 10px;" @click="deleteArenaFun(record)"><div style="width: 98.5px;font-size: 14px;line-height: 27.5px;">删除</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -98,7 +102,8 @@
       <div class="cancel blue-1 cursor-pointer" @click="sureDelete = false">取消</div>
     </template>
   </a-modal>
-  <Ranking :showbol="visible" :arenaid="ranksID" @change-rang="changeRang" />
+  <Ranking :showbol="visible" :arenaid="ranksID" :rewards="ranksRewards" @change-rang="changeRang" />
+  <RefuseMessage :showbol="refuseDialog" title="拒绝原因" :reason="rejectReason" @cloosehandler="clooseRefusehandler"/>
 </template>
 
 <script lang="ts" setup>
@@ -111,6 +116,7 @@ import { Message } from '@arco-design/web-vue';
 import { queryArenaList, deleteArena } from '@/api/challenge';
 import type { ArenaLists, ArenaListsRes } from '@/api/challenge';
 import { RoleType } from "@/store/modules/user/types";
+import RefuseMessage from '@/components/little-com/review-message/refuse.vue'
 import Ranking from './rangking.vue'
 
 const router = useRouter()
@@ -143,11 +149,14 @@ const pagination: any = $ref({
   pageSize: 10,
 })
 
+
 // eslint-disable-next-line consistent-return
-const computedStatus = (start: number,end: number) => {
+const computedStatus = (start: number,end: number,rstatus: number) => {
+  if( Number(rstatus) === 0 ) return -1
+  if( Number(rstatus) === 2 ) return 1
   const now = Math.floor(new Date().getTime() / 1000)
-  if( now < start ) return 1
-  if( now >= start && now < end ) return 2
+  if( now < start ) return 2
+  if( now >= start && now < end ) return 3
   if( now >= end ) return 0
 }
 
@@ -160,7 +169,7 @@ const getData = async (type: number) => {
     const temp: ArenaLists[] = result.data.list.map((item: any) => ({
       ...item,
       validtime: `${vertTime(item.startTime)}-${vertTime(item.finTime)}`,
-      status: computedStatus(item.startTime,item.finTime)
+      status: computedStatus(item.startTime,item.finTime,item.review_status)
     }))
     return {total: result.data.total,data: temp}
   }
@@ -214,7 +223,7 @@ const changeTable = async (index: number) => {
 let sureDelete: boolean = $ref(false)
 let delNum: number = $ref()
 const deleteArenaFun = (record: any) => {
-  if( record.status === 1 || record.status === -1 ){
+  if( [-1,1,2].includes(record.status) ){
     delNum = record.arenaId
     sureDelete = true
   }
@@ -234,19 +243,35 @@ const deleteHandler = () => {
 
 
 let ranksID: number = $ref()
+let ranksRewards: any = $ref([])
 const showRangking = (data: any) => {
-  // router.push({path: '/newmatch',query:{type: 2,arenaId: data.arenaId}})
   // eslint-disable-next-line no-useless-return 
-  if( data.status !== 1 ){ // 查看排行榜
+  if( ![-1,1,2].includes(data.status) ){ // 查看排行榜 
     visible = true
     ranksID = data.arenaId
+    ranksRewards = data.rewards
   }else{ // 编辑信息
+    localStorage.setItem('view_arena', JSON.stringify(data))
     router.push({path: '/newmatch',query:{type: 2,arenaId: data.arenaId}})
   }
 }
 const changeRang = (data: boolean) => {
   visible = data
 }
+
+
+let rejectReason: string = $ref('')
+let refuseDialog: boolean = $ref(false)
+const sureHandler = (reason: string) => {
+  rejectReason = reason
+  refuseDialog = true
+}
+const clooseRefusehandler = () => {
+  rejectReason = ''
+  refuseDialog = false
+}
+
+
 onActivated(()=>{
   if( !loading.value ){
     allData = {

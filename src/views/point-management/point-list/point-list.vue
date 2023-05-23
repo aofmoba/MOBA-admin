@@ -49,28 +49,32 @@
             title="报名人数"
             :width="129"
             >
-            <template #cell="{ record }">{{ record.status === 1 ?  '--' : record.joinNum }}</template>
+            <template #cell="{ record }">{{ [-1,1,2].includes(record.status) ?  '--' : record.joinNum }}</template>
           </a-table-column>
           <a-table-column
             title="参赛队伍"
             :width="117"
             >
-            <template #cell="{ record }">{{ record.status === 1 ?  '--' : record.signNum }}</template>
+            <template #cell="{ record }">{{ [-1,1,2].includes(record.status) ?  '--' : record.signNum }}</template>
           </a-table-column>
           <a-table-column title="状态" :width="114">
             <template #cell="{ record }">
               <div v-if="record.status === -1" style="color: #858EBD;">审核中</div>
-              <div v-if="record.status == 1" style="color: #4458FE;">未开始</div>
-              <div v-else-if="record.status == 2" style="color: #FF2855;">进行中</div>
+              <div v-else-if="record.status === 1" class="flex-center" style="color: #FFA925;">
+                已拒绝
+                <img class="cursor-pointer refuse-img" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/question.svg" alt="" @click="sureHandler(record.reject_reason)">
+              </div>
+              <div v-else-if="record.status === 2" style="color: #4458FE;">未开始</div>
+              <div v-else-if="record.status === 3" style="color: #FF2855;">进行中</div>
               <div v-else style="color: #3A3F63;">已结束</div>
             </template>
           </a-table-column>
           <a-table-column title="操作" :width="191">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
-                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="![1,2].includes(record.status)" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
+                <a-button class="active noboxshadow" style="width: 103px; height: 32px;" :disabled="![2,3].includes(record.status)" @click="toRaceOperation(record)"><div style="font-size: 14px;line-height: 32px;">赛程操作</div></a-button>
                 <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="exportXLSX(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;" >导出报名</div></a-button>
-                <a-button class="default" :disabled="record.status == 1 ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;" @click="deletePointFun(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
+                <a-button class="default" :disabled="[-1,1,2].includes(record.status) ? false : true" style="width: 103.5px; height: 32.5px; margin-top: 10px;" @click="deletePointFun(record)"><div style="width: 100px;font-size: 14px;line-height: 28px;">删除</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -98,6 +102,7 @@
       <div class="cancel blue-1 cursor-pointer" @click="sureDelete = false">取消</div>
     </template>
   </a-modal>
+  <RefuseMessage :showbol="refuseDialog" title="拒绝原因" :reason="rejectReason" @cloosehandler="clooseRefusehandler"/>
 </template>
 
 <script lang="ts" setup>
@@ -110,6 +115,7 @@ import { queryCompetitionPointList } from '@/api/competition';
 import type { comPointListRes, competitionPointInfo } from '@/api/competition';
 import { RoleType } from "@/store/modules/user/types";
 import * as XLSX from "xlsx"
+import RefuseMessage from '@/components/little-com/review-message/refuse.vue'
 
 const router = useRouter()
 const userStore = useUserStore();
@@ -137,24 +143,28 @@ const exportXLSX = (teamdata: any) => {
   // XLSX.writeFile(wb,`${teamdata.id }.xlsx`) // test.xlsx 为自定义的文件名
 }
 
+
 // eslint-disable-next-line consistent-return
-const computedStatus = (start: number,end: number) => {
+const computedStatus = (start: number,end: number,rstatus: number) => {
+  if( Number(rstatus) === 0 ) return -1
+  if( Number(rstatus) === 2 ) return 1
   const now = Math.floor(new Date().getTime() / 1000)
-  if( now < start ) return 1
-  if( now >= start && now < end ) return 2
+  if( now < start ) return 2
+  if( now >= start && now < end ) return 3
   if( now >= end ) return 0
 }
+
 
 // eslint-disable-next-line consistent-return
 const getData = async () => {
   // 权限处理：钱包登录用户仅查看自己列表
-  const result: comPointListRes | any = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize,compId}).catch(()=>setLoading(false))
+  const result: comPointListRes | any = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize, compId}).catch(()=>setLoading(false))
   if( result.data.list ){
     pagination.total = result.data.total
     const temp: allPointLists[] = result.data.list.map((item: any) => ({
       ...item,
       validtime: `${vertTime(item.signTime)}-${vertTime(item.fightFinTime)}`,
-      status: computedStatus(item.signTime,item.fightFinTime)
+      status: computedStatus(item.signTime,item.fightFinTime,item.review_status)
     }))
     return {total: result.data.total,list: temp}
   }
@@ -199,7 +209,7 @@ const toRaceOperation = (record: allPointLists) => {
 let sureDelete: boolean = $ref(false)
 let delNum: number = $ref()
 const deletePointFun = (record: allPointLists) => {
-  if( record.status === 1 ){
+  if( [-1,1,2].includes(record.status) ){
     delNum = record.id
     sureDelete = true
   }
@@ -215,6 +225,19 @@ const deleteHandler = () => {
   //   }
   // }).finally(()=>{delLoading = false})
 }
+
+let rejectReason: string = $ref('')
+let refuseDialog: boolean = $ref(false)
+const sureHandler = (reason: string) => {
+  rejectReason = reason
+  refuseDialog = true
+}
+const clooseRefusehandler = () => {
+  rejectReason = ''
+  refuseDialog = false
+}
+
+
 onActivated(()=>{
   if( !loading.value ){
     matchName = String(router.currentRoute.value.query.match)
@@ -233,5 +256,4 @@ onMounted(() => {
 </script>
 
 <style scoped lang="less">
-
 </style>

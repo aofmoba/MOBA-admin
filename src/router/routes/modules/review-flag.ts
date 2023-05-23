@@ -8,7 +8,7 @@ export default {
       order: 13,
       requiresAuth: true,
       hideChildrenInMenu: true,
-      roles: ['admin','*'],
+      roles: ['user','admin'],
     },
   };
   

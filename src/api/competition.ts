@@ -127,10 +127,11 @@ export function createCompetitionPoint(data: createCompetitionPointData) {
 }
 // 查看赛点列表
 export function queryCompetitionPointList(data: comPointListData) {
+    console.log(data)
     if( userStore.permissions[0] !== 'guest' && !data?.isReview ){
         return axios.post<comPointListRes>('/api/competition_point/list',data);
     }
-    return axios.post<comPointListRes>('/api/wallet/point_list',{pageno: data.pageno,pagesize: data.pagesize});
+    return axios.post<comPointListRes>('/api/wallet/point_list',{compId: data.compId, pageno: data.pageno,pagesize: data.pagesize});
 }
 
 export interface comPointCheckinListRes {

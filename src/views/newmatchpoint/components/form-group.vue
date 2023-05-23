@@ -203,7 +203,6 @@ const willCreate = () => {
 
 const axiosCreate = () => {
   createCompetitionPoint(formPoint).then(({data}) => {
-    formPoint.compId = data
     Message.success('success')
   }).finally(()=>{setLoading(false)})
 }

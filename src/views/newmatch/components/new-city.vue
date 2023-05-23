@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, onDeactivated } from 'vue'
 import { Message, ValidatedError } from '@arco-design/web-vue'
 import { LoginData } from '@/api/user'
 import { useRouter } from 'vue-router'
@@ -124,26 +124,29 @@ const changeDate = (date: dateType) => {
 }
 
 const getINfo = async (id: number) => {
-    if(!id) return
-    const { data } = await queryArenaInfo(id)
-    const tempRewards: singleReward[] = data.rewards.map((item)=>({
+    let viewArena = JSON.parse(localStorage.getItem('view_arena') || '{}')
+    if( !Object.keys(viewArena).length ) viewArena = await queryArenaInfo(id)
+    const tempRewards: singleReward[] = viewArena.rewards?.map((item: any)=>({
         startRank: item.startRank,
         endRank: item.endRank,
         name: item.name,
         props: item.propList
     }))
     formCity = {
-        arenaType: data.arenaType,
-        startTime: data.startTime,
-        finishTime: data.finTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        rule: data.rules,
-        arenaName: data.arenaName,
+        arenaType: viewArena.arenaType,
+        startTime: viewArena.startTime,
+        finishTime: viewArena.finTime,
+        latitude: viewArena.latitude,
+        longitude: viewArena.longitude,
+        rule: viewArena.rules,
+        arenaName: viewArena.arenaName,
         rewards: tempRewards,
-        arenaId: data.arenaId,
+        arenaId: viewArena.arenaId,
         cityName: '',
     }
+    if( viewArena.arenaType === 1 ) arenaTypeRadio = 0
+    else if( viewArena.arenaType === 2 ) arenaTypeRadio = 1
+    else arenaTypeRadio = 2
     backRewards = tempRewards
     // eslint-disable-next-line no-use-before-define
     getLocation(formCity.arenaName)
@@ -375,8 +378,12 @@ const handleSubmit = async ({errors, values,}: {
 // }
 
 watch(() => router.currentRoute.value.query,(newQ) => {
-    getINfo(Number(newQ.arenaId))
+    if(newQ.arenaId) getINfo(Number(newQ.arenaId))
 },{immediate: true,deep: true})
+
+onDeactivated(()=>{
+    localStorage.removeItem('view_arena')
+})
 
 onMounted(() => {
     // gettypeone(0)

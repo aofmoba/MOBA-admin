@@ -51,7 +51,10 @@
           <a-table-column title="状态" :width="104">
             <template #cell="{ record }">
               <div v-if="record.status === -1" style="color: #858EBD;">审核中</div>
-              <div v-else-if="record.status === 1" style="color: #FFA925;">已拒绝</div>
+              <div v-else-if="record.status === 1" class="flex-center" style="color: #FFA925;">
+                已拒绝
+                <img class="cursor-pointer refuse-img" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/question.svg" alt="" @click="sureHandler(record, -1)">
+              </div>
               <div v-else-if="record.status === 2" style="color: #4458FE;">待开始</div>
               <div v-else-if="record.status === 3" style="color: #FF2855;">进行中</div>
               <div v-else style="color: #3A3F63;">已结束</div>
@@ -75,7 +78,7 @@
   </div>
   <Ranking :showbol="visible" :arenaid="ranksID" :rewards="ranksRewards" @change-rang="changeRang" />
   <ReviewMessage :showbol="sureDialog" :actiontype="actionType" :sureid="sureNum" @cloosehandler="clooseSurehandler"/>
-  <RefuseMessage :showbol="refuseDialog" :actiontype="actionType" :refuseid="refuseid" @cloosehandler="clooseRefusehandler"/>
+  <RefuseMessage :showbol="refuseDialog" :actiontype="actionType" :refuseid="refuseid" :title="rejectReason?'拒绝原因':'拒绝信息'" :reason="rejectReason" @cloosehandler="clooseRefusehandler"/>
 </template>
 
 <script lang="ts" setup>
@@ -120,7 +123,14 @@ let sureNum: number = $ref()
 let actionType: string = $ref('')
 let refuseid: number = $ref()
 let refuseDialog: boolean = $ref(false)
+let rejectReason: string = $ref('')
 const sureHandler = (record: any,type: number) => {
+  if( type === -1 ) { // 拒绝信息提示
+    actionType = ''
+    rejectReason = record.reject_reason
+    refuseDialog = true
+    return
+  }
   if( record.status === -1 || record.status === 3 ){
     if( type === 0 ){ // 拒绝
       actionType = '擂台'

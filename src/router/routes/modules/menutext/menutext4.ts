@@ -6,7 +6,7 @@ export default {
         order: 11,
         requiresAuth: true,
         hideChildrenInMenu: true,
-        roles: ['admin'],
+        roles: ['user','admin'],
     },
 };
   

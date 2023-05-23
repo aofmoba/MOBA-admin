@@ -48,7 +48,7 @@ const useUserStore = defineStore('user', {
       } catch (err) {
         this.setInfo({
           avatar: '',
-          permissions: ['admin'],
+          permissions: ['user'],
           username: '游戏昵称xx',
         });
         throw err;
