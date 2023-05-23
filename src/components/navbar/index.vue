@@ -11,7 +11,7 @@
     </div>
     <ul class="right-side">
       <li>
-        <div class="line-hidden" style="width: 200px;font-size: 16px; color: #3A3F63; font-weight: bold;text-align: right;">{{ username }}</div>
+        <div class="line-hidden" style="width: 117px;font-size: 16px; color: #3A3F63; font-weight: bold;text-align: right;">{{ username }}</div>
         <a-avatar :size="38" :style="{ marginRight: '8px' ,marginLeft: '10px' }">
           <img
             src="//lf1-xgcdn-tos.pstatp.com/obj/vcloud/vadmin/start.8e0e4855ee346a46ccff8ff3e24db27b.png"

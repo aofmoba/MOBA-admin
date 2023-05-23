@@ -20,6 +20,7 @@
         :bordered="{ cell: false }"
         :data="useData"
         :loading="loading"
+        :scroll="{y:324}"
         row-key="teamId"
         :expanded-keys="expands"
         :pagination="false"
@@ -116,9 +117,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onActivated, computed } from "vue"
+import { onMounted, onActivated, computed, onDeactivated, watch } from "vue"
 import useLoading from '@/hooks/loading'
 import { useRouter } from 'vue-router'
+import { staticData } from '@/store';
+import { storeToRefs } from 'pinia';
 import { getPlayerMainPos } from '@/utils/filterData'
 import { Message, TableData } from "@arco-design/web-vue"
 import {  
@@ -134,6 +137,9 @@ const emit = defineEmits(['on-next','getchecknum'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
+const comStore = staticData();
+const { currentStep } = storeToRefs(comStore);
+let timer: any = null
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
 let useData: TableData[] = $ref([])
@@ -233,11 +239,11 @@ const noFinishFilter = (): boolean => {
   return finloading || checkinsData.length <= 1 || canBol
 }
 
-
 const nextStep = async () => {
   // 完成签到过程，同时签到结束时间修改为点击【完成下一步】按钮的时间，-重新进入需判断是否已结束签到
   const nowTime = new Date().getTime()
   if( nowTime >= queryData.fightTime*1000 ){ // 战斗已经开始或已过签到结束时间 直接进入下一步
+    clearInterval(timer)
     // eslint-disable-next-line vue/custom-event-name-casing
     emit('on-next')
     return
@@ -245,77 +251,100 @@ const nextStep = async () => {
   finloading = true
   await finishCheckStep(queryData?.id).finally(()=>{finloading = false})
   emit('getchecknum',checkinsData.length)
+  clearInterval(timer)
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('on-next')
 }
 
+watch(currentStep,(newV: any)=>{
+  if( newV === 1 ) {
+    queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
+    timer = window.setInterval(()=>{
+      initData(queryData?.id)
+    },15000)
+    initData(queryData?.id)
+  }
+},{immediate: true,deep: true})
+
 onActivated(()=>{
   if( !loading.value ){
     queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
+    timer = window.setInterval(()=>{
+      initData(queryData?.id)
+    },30000)
     initData(queryData?.id)
   }
 })
 
+onDeactivated(()=>{
+  clearInterval(timer)
+})
+
 onMounted(() => {
-    queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
-    initData(queryData?.id)
 })
 
 </script>
   
-  <style scoped lang="less">
-  :deep(.signbtn .arco-spin-icon){
-    color: #4458FE !important;
+<style scoped lang="less">
+.step1{
+  display: flex;
+  flex-direction: column;
+  .race-table{
+    flex: 1;
   }
-  .iconStyle{
-    font-size: 16px;
-    margin-left: 16px;
-    color: #858EBD;
-  }
-  .o-expend{
-    font-weight: 500;
-    .expend-btn,.iconStyle{cursor: pointer;}
-    &:hover{
-      .expend-btn,.iconStyle{
-        color: #4458FE !important;
-      }
+}
+:deep(.signbtn .arco-spin-icon){
+  color: #4458FE !important;
+}
+.iconStyle{
+  font-size: 16px;
+  margin-left: 16px;
+  color: #858EBD;
+}
+.o-expend{
+  font-weight: 500;
+  .expend-btn,.iconStyle{cursor: pointer;}
+  &:hover{
+    .expend-btn,.iconStyle{
+      color: #4458FE !important;
     }
   }
-  :deep(.arco-space){
-    .arco-space-item{
-      margin-right: 20px !important;
-      &:last-child{margin: 0 !important;}
-      .arco-input-outer{position: relative;.arco-input-wrapper{padding-right: 36px;}}
-      .arco-input-append{
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        padding: 0;
-        margin-top: -12px;
-        border: none;
-        background-color: transparent;
-      }
+}
+:deep(.arco-space){
+  .arco-space-item{
+    margin-right: 20px !important;
+    &:last-child{margin: 0 !important;}
+    .arco-input-outer{position: relative;.arco-input-wrapper{padding-right: 36px;}}
+    .arco-input-append{
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      padding: 0;
+      margin-top: -12px;
+      border: none;
+      background-color: transparent;
     }
-    .arco-btn:not(.submit){
+  }
+  .arco-btn:not(.submit){
+    border-radius: 18px;
+    div{
       border-radius: 18px;
-      div{
-        border-radius: 18px;
-      }
-      &::before,&::after{
-        border-radius: 18px;
-      }
+    }
+    &::before,&::after{
+      border-radius: 18px;
     }
   }
-  :deep(.race-table){
-    &>.arco-table,&>.arco-table>.arco-spin{
-        min-height: 324px;
-    }
-    &>.arco-table{
-      thead .arco-table-th:nth-child(4){padding-left: 106px;}
-      tbody>.arco-table-tr:not(.arco-table-tr-expand .arco-table-tr){
-        height: 72px !important;
-      }
+}
+:deep(.race-table){
+  &>.arco-table,&>.arco-table>.arco-spin{
+      // min-height: 324px;
+  }
+  &>.arco-table{
+    thead .arco-table-th:nth-child(4){padding-left: 106px;}
+    tbody>.arco-table-tr:not(.arco-table-tr-expand .arco-table-tr){
+      height: 72px !important;
     }
   }
-  </style>
+}
+</style>
   

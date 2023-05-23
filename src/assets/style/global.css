@@ -44,6 +44,9 @@ input:-internal-autofill-selected {
   width: 100%;
   height: 100%;
 }
+.h-full {
+  height: 100%;
+}
 .overhidden {
   overflow: hidden;
 }

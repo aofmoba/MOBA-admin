@@ -1,9 +1,10 @@
 <template>
-  <div class="other-form" style="padding: 10px 30px 22px;">
+  <div class="first-full" style="padding: 10px 30px 22px;">
     <div ref="tableRef" class="race-table">
       <a-table
         column-resizable
         :bordered="{ cell: false }"
+        :scroll="{y:tableHeight}"
         :data="useData"
         :loading="loading"
         row-key="teamId"
@@ -116,6 +117,7 @@ const emit = defineEmits(['on-next','on-prev'])
 const router = useRouter()
 const { loading, setLoading } = useLoading(true);
 const { loading: inloading, setLoading: inSetLoading } = useLoading(false);
+let tableHeight: number = $ref(0)
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
 let useData: TableData[] = $ref([]);
@@ -241,6 +243,7 @@ onActivated(()=>{
 })
 
 onMounted(() => {
+  setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
   queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
   initData(queryData.id)
 })

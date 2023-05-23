@@ -13,15 +13,15 @@
     <div v-else class="tabs-container">
       <ul class="tabs-nav-list" :class="{'noscroll':tabcards.length <= 2}">
         <li v-for="num in tabcards" :key="num" :class="['flex-center',{'tab-active': winData[winData.length-1][0].teamNum === num}]">{{ num }}晋{{ num / 2 }} <span>{{ num / 2 }}强</span></li>
-        <li :class="['flex-center',{'tab-active': winData[winData.length-1][0].teamNum === tabcards[tabcards.length-1]/2}]">冠亚争夺 <span>冠亚</span></li>
-        <li class="flex-center">季殿争夺 <span>季殿</span></li>
+        <li :class="['flex-center',{'tab-active': winData[winData.length-1][0].teamNum === tabcards[tabcards.length-1]/2 || winData[0][0].teamNum === 2}]">冠亚争夺 <span>冠亚</span></li>
+        <li v-if="winData[0][0].teamNum > 2" class="flex-center">季殿争夺 <span>季殿</span></li>
       </ul>
       <div class="tabs-content">
         <div v-if="contentloading" class="pre100 flex-center">
           <a-spin :size="38" />
         </div>
-        <div v-else class="fight-team">
-          <div class="fight-team-wrap">
+        <div v-else class="fight-team h-full">
+          <div class="fight-team-wrap h-full">
             <div class="winTeam">
               <div class="flex-items"><img style="width: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/loseTeam.svg" alt="">胜者组</div>
               <div class="flex">
@@ -261,7 +261,7 @@ const reGetFightDataFun = async () => {
   await getPointFightDataFun()
   const nowTime = new Date().getTime()
   const temp = allFightData.filter((item: getPointFightRes)=> item.startTime <= nowTime )
-  if( temp.length > 0 ){ Message.error('比赛已经开始，不能进行重新抽签操作') }
+  if( temp.length > 0 ){ Message.error('比赛已开始或结束，不能进行重新抽签操作') }
   else {
     visible = true
   }
@@ -275,7 +275,7 @@ const prevStep = async () => {
   await getPointFightDataFun()
   const nowTime = new Date().getTime()
   const temp = allFightData.filter((item: getPointFightRes)=> item.startTime <= nowTime )
-  if( temp.length > 0 ){ Message.error('比赛已经开始，不能返回上一步') }
+  if( temp.length > 0 ){ Message.error('比赛已开始或结束，不能返回上一步') }
   else {
     // eslint-disable-next-line vue/custom-event-name-casing
     emit('on-prev')
@@ -300,7 +300,7 @@ const intoActive = async () => {
   if( temp.length > 0 ){ showOne = false } // 如果已抽签且比赛已开始直接显示对战表
 }
 
-watch(currentStep,(newV: any,oldV: any)=>{
+watch(currentStep,(newV: any)=>{
   if( newV === 2 ) intoActive()
 },{immediate: true,deep: true})
 
@@ -336,7 +336,7 @@ onMounted(() => {
     background-color: 'transparent';
     transition: background-color .4s;
     -webkit-background-clip: text;
-    &:not(.noscroll):hover{background: rgb(183, 183, 183);}
+    &:not(.noscroll):hover{background: rgb(207, 205, 205);}
     &::-webkit-scrollbar{
         width: 10px;
         height: 8px;
@@ -386,12 +386,26 @@ onMounted(() => {
     }
   }
   .tabs-content{
-    flex: 1;
+    flex-grow: 1;
+    height: 360px;
     padding: 30px 10px;
     background: rgba(218,224,242,0.1);
     .fight-team{
-      overflow-x: auto;
+      overflow: auto;
+      height: 100%;
+      &::-webkit-scrollbar{
+          width: 10px;
+          height: 8px;
+      }
+      &::-webkit-scrollbar-track-piece,&::-webkit-scrollbar-corner{
+          background: transparent;
+      }
+      &::-webkit-scrollbar-thumb{
+          border-radius: 7px;
+          background-color: rgb(207, 205, 205);
+      }
       .fight-team-wrap{
+        height: fit-content;
         width: max-content;
         min-width: 100%;
       }
@@ -411,6 +425,7 @@ onMounted(() => {
       }
       .loseTeam{margin-top: 30px;}
       .winTeam>div:last-child{
+        min-height: 260px;
         padding: 22px 20px;
         background-color: rgba(68, 88, 254, 0.03);
       }
