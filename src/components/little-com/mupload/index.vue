@@ -120,7 +120,17 @@ const beforeUpload = (files: File) => {
 const uploadRequest = (fileItem: any) => {
   return new Promise((resolve, reject) => {
     const formData = new FormData();
-    formData.append("file", fileItem as File);
+    const nowTime = String(Date.now())
+    const metadata = JSON.stringify({
+      name: nowTime,
+    });
+    formData.append('pinataMetadata', metadata);
+    
+    const options = JSON.stringify({
+      cidVersion: 0,
+    })
+    formData.append('pinataOptions', options);
+    formData.append("file", fileItem as File, `${nowTime+fileItem.name.substring(fileItem.name.lastIndexOf("."))}`);
     // eslint-disable-next-line no-use-before-define
     axios.post("/testnode/pinFileToIPFS", formData, {
         headers: {

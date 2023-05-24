@@ -103,12 +103,16 @@ const startDisabledTime = (date: Date) =>{
   // 日期必须大于当前年月日时
   if( date.getFullYear() === newDate.getFullYear() && date.getMonth() === newDate.getMonth() && date.getDate() === newDate.getDate() ){
     tempH = newDate.getHours()
-    tempM = newDate.getMinutes()+1
+    if( date.getHours() <= newDate.getHours() ){ // 确定在当前的小时后的分钟为可选,当前小时及以前的分钟不可选
+      tempM = newDate.getMinutes()+1
+    }
   }
   if( props.interval ){ // 无24小时间隔
     if( dataDuration.end && date.getFullYear() === new Date(dataDuration.end).getFullYear() && date.getMonth() === new Date(dataDuration.end).getMonth() && date.getDate() === new Date(dataDuration.end).getDate() ){
       curH = new Date(dataDuration.end).getHours()+1
-      curM = new Date(dataDuration.end).getMinutes()
+      if( date.getHours() === new Date(dataDuration.end).getHours() ){ // 选择时间hour与结束时间hour相同时 限制minute区段
+        curM = new Date(dataDuration.end).getMinutes()
+      }
     }
   }else{
     // eslint-disable-next-line no-lonely-if
@@ -121,10 +125,7 @@ const startDisabledTime = (date: Date) =>{
         curM = new Date(dataDuration.end).getMinutes()+1
     }
   }
-  // 确定在当前的小时后的分钟为可选
-  if( (date.getHours() > newDate.getHours()) ){
-    tempM = 0
-  }
+  
   // 确定在开始时间的小时后的分钟为可选
   if( dataDuration.end && date.getHours()<new Date(dataDuration.end).getHours() && (date.getDate()===newDate.getDate() ? date.getHours()>newDate.getHours() : true) ){
     tempM = 0

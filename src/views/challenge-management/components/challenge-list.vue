@@ -162,8 +162,11 @@ const computedStatus = (start: number,end: number,rstatus: number) => {
 
 
 // eslint-disable-next-line consistent-return
-const getData = async (type: number) => {
-  const result: ArenaListsRes | any = await queryArenaList({arena_type: type,pageno: pagination.current,pagesize: pagination.pageSize}).catch(()=>setLoading(false))
+const getData = async (index: number) => { // api arena_type: 1-城市 0-地点 2-地标
+  let arenatype = 1 // 默认1为城市擂台
+  // eslint-disable-next-line no-nested-ternary
+  arenatype = index === 2 ? 2 : (index === 0 ? 1:0) // index为按钮下标，按钮1（城市）下标0，按钮2（地点）下标1，按钮3（地标）下标2
+  const result: ArenaListsRes | any = await queryArenaList({arena_type: arenatype,pageno: pagination.current,pagesize: pagination.pageSize}).catch(()=>setLoading(false))
   if( result.data.list ){
     pagination.total = result.data.total
     const temp: ArenaLists[] = result.data.list.map((item: any) => ({
@@ -181,7 +184,7 @@ const onPageChange = async (current: number) => {
   pagination.current = current;
   setLoading(true)
   // eslint-disable-next-line no-nested-ternary
-  const tempData: allDataTypeRes = await getData(activeIndex === 2 ? activeIndex : (activeIndex === 0 ? 1:0) ) || {total: 0,data:[]}
+  const tempData: allDataTypeRes = await getData(activeIndex) || {total: 0,data:[]}
   useData = tempData.data
   pagination.total = tempData.total
   setLoading(false)
@@ -191,7 +194,7 @@ const initData = async() => {
   activeIndex = 0
   pagination.current = 1
   pagination.pageSize = 10
-  const tempData = await getData(1) || {total: 0,data:[]}
+  const tempData = await getData(0) || {total: 0,data:[]}
   allData.cityData = tempData
   useData = allData.cityData.data
   pagination.total = allData.cityData.total
@@ -201,21 +204,23 @@ const changeTable = async (index: number) => {
   activeIndex = index
   pagination.current = 1
   setLoading(true)
-  if( index === 0 && allData.cityData.data.length ) {useData = allData.cityData.data;pagination.total = allData.cityData.total }
-  else if( index === 1 && allData.placeData.data.length ) {useData = allData.placeData.data;pagination.total = allData.placeData.total }
-  else if( index === 2 && allData.markData.data.length ) {useData = allData.markData.data;pagination.total = allData.markData.total }
-  else{
-    // eslint-disable-next-line no-nested-ternary
-    const tempData: allDataTypeRes = await getData(index === 2 ? index : (index === 0 ? 1:0) ) || {total: 0,data:[]}
-    // eslint-disable-next-line no-multi-assign
-    if( index === 1 ) {allData.placeData = tempData;}
-    // eslint-disable-next-line no-multi-assign
-    else if( index === 2 ) {allData.markData = tempData;}
-    // eslint-disable-next-line no-multi-assign
-    else {allData.cityData = tempData;}
-    useData = tempData.data
-    pagination.total = tempData.total
-  }
+  // 直接使用保存的擂台第一页数据
+  // if( index === 0 && allData.cityData.data.length ) {useData = allData.cityData.data;pagination.total = allData.cityData.total }
+  // else if( index === 1 && allData.placeData.data.length ) {useData = allData.placeData.data;pagination.total = allData.placeData.total }
+  // else if( index === 2 && allData.markData.data.length ) {useData = allData.markData.data;pagination.total = allData.markData.total }
+  // else{
+  //    代码同下
+  // }
+  // eslint-disable-next-line no-nested-ternary
+  const tempData: allDataTypeRes = await getData(index) || {total: 0,data:[]}
+  // eslint-disable-next-line no-multi-assign
+  if( index === 1 ) {allData.placeData = tempData;}
+  // eslint-disable-next-line no-multi-assign
+  else if( index === 2 ) {allData.markData = tempData;}
+  // eslint-disable-next-line no-multi-assign
+  else {allData.cityData = tempData;}
+  useData = tempData.data
+  pagination.total = tempData.total
   setLoading(false)
 }
 
