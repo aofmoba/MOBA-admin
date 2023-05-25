@@ -11,7 +11,7 @@
       </div>
     </div>
     <div v-else class="tabs-container">
-      <ul class="tabs-nav-list" :class="{'noscroll':tabcards.length <= 2}">
+      <ul v-if="winData[0]?.length" class="tabs-nav-list" :class="{'noscroll':tabcards.length <= 2}">
         <li v-for="num in tabcards" :key="num" :class="['flex-center',{'tab-active': winData[winData.length-1][0].teamNum === num}]">{{ num }}晋{{ num / 2 }} <span>{{ num / 2 }}强</span></li>
         <li :class="['flex-center',{'tab-active': winData[winData.length-1][0].teamNum === tabcards[tabcards.length-1]/2 || winData[0][0].teamNum === 2}]">冠亚争夺 <span>冠亚</span></li>
         <li v-if="winData[0][0].teamNum > 2" class="flex-center">季殿争夺 <span>季殿</span></li>
@@ -186,7 +186,7 @@ let loseData: getPointFightRes[][] | any[][] = $ref([])
 
 const tabcards = computed(() => {
   const indexArr = [];
-  let { teamNum } = winData[0][0];
+  let { teamNum } = winData[0]?.length ? winData[0][0] : {teamNum: 0};
   while( teamNum >= 4 ){
     indexArr.push(teamNum);
     teamNum /= 2;
