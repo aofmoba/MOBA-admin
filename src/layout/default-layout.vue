@@ -180,7 +180,7 @@
     background-color: var(--color-fill-2);
     transition: padding 0.2s cubic-bezier(0.34, 0.69, 0.1, 1);
     .arco-layout-content{
-      overflow-x: scroll;
+      overflow-x: auto;
       &>div{min-width: 1150px;}
     }
   }

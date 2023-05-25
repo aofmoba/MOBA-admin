@@ -286,6 +286,13 @@ textarea:-ms-input-placeholder {
   background-color: var(--color-bg-1);
   box-shadow: 0px 4px 8px 0px rgba(179, 192, 231, 0.32);
   border-radius: 4px;
+  pointer-events: none;
+}
+.arco-table .arco-table-pagination .left-icon {
+  margin-right: -32px;
+}
+.arco-table .arco-table-pagination .right-icon {
+  margin-left: -44px;
 }
 .arco-table .arco-table-pagination .arco-pagination-item {
   margin-right: 12px;

@@ -60,10 +60,10 @@
             </a-table>
         </template>
         <template #pagination-left>
-          <div class="left-icon flex-center" style="pointer-events: none;margin-right: -32px;"><icon-arrow-left /></div>
+          <div class="left-icon flex-center"><icon-arrow-left /></div>
         </template>
         <template #pagination-right>
-          <div class="right-icon flex-center" style="pointer-events: none;margin-left: -44px;"><icon-arrow-right /></div>
+          <div class="right-icon flex-center"><icon-arrow-right /></div>
         </template>
         <template #columns>
           <a-table-column

@@ -35,7 +35,7 @@ export interface ArenaLists {
     finTime: number;
     rules: string;
     arenaName: string;
-    playerNum: number; // 审核列表不返回
+    playerNum: number; 
     rewards: Array<singleRewardRes>;
     address?: string; // 钱包登录用户 - 创建者钱包地址
     // eslint-disable-next-line camelcase

@@ -37,10 +37,10 @@ export interface competitionInfo {
     id: string; 
     type: number;
     name: number;
-    startTime: number; // 钱包登录不返回
-    finishTime: number; // 钱包登录不返回
-    pointNum: number; // 赛点数量 钱包登录不返回
-    signNum: number; // 报名队伍数 钱包登录不返回
+    startTime: number; 
+    finishTime: number; 
+    pointNum: number; // 赛点数量
+    signNum: number; // 报名队伍数
     detailInfo: Array<detailInfoObject>;
     address?: string; // 钱包登录用户 - 创建者钱包地址
     // eslint-disable-next-line camelcase
@@ -108,8 +108,8 @@ export interface comPointListData extends comListData{
 
 export interface competitionPointInfo extends createCompetitionPointData {
     id: number;
-    joinNum: number; // 报名人数 钱包登录不返回
-    signNum: number; // 参赛人数 钱包登录不返回
+    joinNum: number; // 报名人数
+    signNum: number; // 参赛人数
     detailInfo: detailData; // 钱包登录返回null
 }
 

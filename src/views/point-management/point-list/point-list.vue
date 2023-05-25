@@ -24,10 +24,10 @@
           <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
         </template>
         <template #pagination-left>
-          <div class="left-icon flex-center" style="pointer-events: none;margin-right: -32px;"><icon-arrow-left /></div>
+          <div class="left-icon flex-center"><icon-arrow-left /></div>
         </template>
         <template #pagination-right>
-          <div class="right-icon flex-center" style="pointer-events: none;margin-left: -44px;"><icon-arrow-right /></div>
+          <div class="right-icon flex-center"><icon-arrow-right /></div>
         </template>
         <template #columns>
           <a-table-column
@@ -139,8 +139,8 @@ interface allPointLists extends competitionPointInfo {
 const exportXLSX = (teamdata: any) => {
   // const data = XLSX.utils.json_to_sheet(useData)
   // const wb = XLSX.utils.book_new()
-  // XLSX.utils.book_append_sheet(wb, data, teamdata.name) // test-data 为自定义的sheet表名
-  // XLSX.writeFile(wb,`${teamdata.id }.xlsx`) // test.xlsx 为自定义的文件名
+  // XLSX.utils.book_append_sheet(wb, data, teamdata.name) // sheet表
+  // XLSX.writeFile(wb,`${teamdata.id }.xlsx`) // 自定义文件名
 }
 
 
@@ -159,7 +159,7 @@ const computedStatus = (start: number,end: number,rstatus: number) => {
 const getData = async () => {
   // 权限处理：钱包登录用户仅查看自己列表
   const result: comPointListRes | any = await queryCompetitionPointList({pageno: pagination.current,pagesize: pagination.pageSize, compId}).catch(()=>setLoading(false))
-  if( result.data.list ){
+  if( result?.data.list ){
     pagination.total = result.data.total
     const temp: allPointLists[] = result.data.list.map((item: any) => ({
       ...item,
@@ -248,7 +248,7 @@ onActivated(()=>{
 
 
 onMounted(() => {
-  setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
+  setTimeout(()=>{tableHeight = tableRef.clientHeight - 102.4},0)
   matchName = String(router.currentRoute.value.query.match)
   compId = String(router.currentRoute.value.query.compId)
   initData()

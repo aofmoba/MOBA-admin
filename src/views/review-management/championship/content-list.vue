@@ -3,7 +3,7 @@
     <a-space style="margin-bottom: 40px;flex-wrap: wrap;">
       <div class="flex-items font-md white-nowrap">
         <span class="mcolor-1">所属赛事：</span>
-        <div class="blue-1 ml-30" style="min-width: 227px;margin-right: 80px;font-weight: bold;">{{ '赛事名称18个字' }}</div>
+        <div class="line-hidden blue-1 ml-30" style="width: 227px;margin-right: 80px;font-weight: bold;">{{ '赛事名称' }}</div>
       </div>
       <div>
         <a-input :style="{width:'355px'}" placeholder="输入赛点名称"/>
@@ -24,10 +24,10 @@
           <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
         </template>
         <template #pagination-left>
-          <div class="left-icon flex-center" style="pointer-events: none;margin-right: -32px;"><icon-arrow-left /></div>
+          <div class="left-icon flex-center"><icon-arrow-left /></div>
         </template>
         <template #pagination-right>
-          <div class="right-icon flex-center" style="pointer-events: none;margin-left: -44px;"><icon-arrow-right /></div>
+          <div class="right-icon flex-center"><icon-arrow-right /></div>
         </template>
         <template #columns>
           <a-table-column
@@ -197,7 +197,7 @@ onActivated(()=>{
 })
 
 onMounted(() => {
-  setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
+  setTimeout(()=>{tableHeight = tableRef.clientHeight - 102.4},0)
   initData()
 })
 

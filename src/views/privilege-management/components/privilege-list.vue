@@ -18,10 +18,10 @@
           <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
         </template>
         <template #pagination-left>
-          <div class="left-icon flex-center" style="pointer-events: none;margin-right: -32px;"><icon-arrow-left /></div>
+          <div class="left-icon flex-center"><icon-arrow-left /></div>
         </template>
         <template #pagination-right>
-          <div class="right-icon flex-center" style="pointer-events: none;margin-left: -44px;"><icon-arrow-right /></div>
+          <div class="right-icon flex-center"><icon-arrow-right /></div>
         </template>
         <template #columns>
           <a-table-column
@@ -47,9 +47,9 @@
           <a-table-column
             title="有效期"
             data-index="validtime"
-            :width="326"
+            :width="220"
           />
-          <a-table-column title="操作">
+          <a-table-column title="操作" :width="184">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
                 <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="editInfo(record)"><div style="font-size: 14px;line-height: 32px;">编辑</div></a-button>
@@ -98,7 +98,7 @@ const initData = () => {
 const editInfo = (record: any) => {
 }
 onMounted(() => {
-  setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
+  setTimeout(()=>{tableHeight = tableRef.clientHeight - 102.4},0)
   initData()
 })
 

@@ -18,10 +18,10 @@
           <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
         </template>
         <template #pagination-left>
-          <div class="left-icon flex-center" style="pointer-events: none;margin-right: -32px;"><icon-arrow-left /></div>
+          <div class="left-icon flex-center"><icon-arrow-left /></div>
         </template>
         <template #pagination-right>
-          <div class="right-icon flex-center" style="pointer-events: none;margin-left: -44px;"><icon-arrow-right /></div>
+          <div class="right-icon flex-center"><icon-arrow-right /></div>
         </template>
         <template #columns>
           <a-table-column
@@ -42,7 +42,7 @@
           <a-table-column
             title="赛点数量"
             data-index="pointNum"
-            :width="129"
+            :width="117"
           />
           <a-table-column
             title="报名队伍"
@@ -147,7 +147,7 @@ onActivated(()=>{
 })
 
 onMounted(() => {
-  setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
+  setTimeout(()=>{tableHeight = tableRef.clientHeight - 102.4},0)
   initData()
 })
 

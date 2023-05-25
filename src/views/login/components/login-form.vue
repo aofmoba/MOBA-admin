@@ -29,7 +29,7 @@
           </a-form-item>
         </a-form>
       </a-tab-pane>
-      <a-tab-pane key="2" title="钱包登录" :disabled="false">
+      <a-tab-pane key="2" title="钱包登录" :disabled="true">
         <div class="metamask flex-center">
           <img src="https://moba-project.s3-accelerate.amazonaws.com/admin/metamask.jpg" alt="">
           <div>METAMASK</div>

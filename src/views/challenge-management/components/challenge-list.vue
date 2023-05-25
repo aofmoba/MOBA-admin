@@ -25,10 +25,10 @@
           <div style="margin-top: 75px;"><img v-if="!loading" style="width: 194px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/empty.png" alt=""></div>
         </template>
         <template #pagination-left>
-          <div class="left-icon flex-center" style="pointer-events: none;margin-right: -32px;"><icon-arrow-left /></div>
+          <div class="left-icon flex-center"><icon-arrow-left /></div>
         </template>
         <template #pagination-right>
-          <div class="right-icon flex-center" style="pointer-events: none;margin-left: -44px;"><icon-arrow-right /></div>
+          <div class="right-icon flex-center"><icon-arrow-right /></div>
         </template>
         <template #columns>
           <a-table-column
@@ -39,11 +39,13 @@
           <a-table-column
             title="擂台所在城市"
             data-index="name"
+            :width="171"
           />
           <a-table-column
             v-if="activeIndex !== 0"
             title="擂台所在地点"
             data-index="arenaName"
+            :width="217"
           />
           <a-table-column
             title="有效期"
@@ -68,7 +70,7 @@
               <div v-else style="color: #3A3F63;">已结束</div>
             </template>
           </a-table-column>
-          <a-table-column title="操作">
+          <a-table-column title="操作" :width="184">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
                 <a-button v-if="record" class="active noboxshadow" :disabled="record.status === 1" style="width: 103px; height: 32px;" @click="showRangking(record)">
@@ -167,7 +169,7 @@ const getData = async (index: number) => { // api arena_type: 1-城市 0-地点 
   // eslint-disable-next-line no-nested-ternary
   arenatype = index === 2 ? 2 : (index === 0 ? 1:0) // index为按钮下标，按钮1（城市）下标0，按钮2（地点）下标1，按钮3（地标）下标2
   const result: ArenaListsRes | any = await queryArenaList({arena_type: arenatype,pageno: pagination.current,pagesize: pagination.pageSize}).catch(()=>setLoading(false))
-  if( result.data.list ){
+  if( result?.data.list ){
     pagination.total = result.data.total
     const temp: ArenaLists[] = result.data.list.map((item: any) => ({
       ...item,
@@ -289,7 +291,7 @@ onActivated(()=>{
 })
 
 onMounted(() => {
-  setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)
+  setTimeout(()=>{tableHeight = tableRef.clientHeight - 102.4},0)
   initData()
 })
 
