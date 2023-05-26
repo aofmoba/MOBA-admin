@@ -132,7 +132,7 @@
         const res = await userStore.switchRoles();
         Message.success(res as string);
       };
-      const toggleDrawerMenu = inject('toggleDrawerMenu');
+      const toggleDrawerMenu: any = inject('toggleDrawerMenu');
       onMounted(()=>{
         if( localStorage.getItem('mobaapiurl') === 'null' ){
           (window as any).mobaapiurl = 'api'

@@ -194,7 +194,7 @@ watch(()=>props.showbol, (newV,oldV)=>{
         }
       }
       .rewards{ 
-        ul{ display: flex;flex-wrap: wrap;height: 121px;padding: 0 4px;}
+        ul>.arco-spin{ display: flex;flex-wrap: wrap;height: 121px;padding: 0 4px;}
         li{
           width: 68px;
           padding: 10px 0 9px;
