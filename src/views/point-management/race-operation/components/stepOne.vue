@@ -2,7 +2,7 @@
   <div class="step1 wrapbg mt-20" style="padding: 22px 30px;">
     <a-space class="flex justify-end">
       <a-button class="active noboxshadow" style="width: 145px; height: 36px;"><div style="font-size: 16px;line-height: 36px;">全部确认到场</div></a-button>
-      <a-button class="default" style="width: 145px; height: 36px;"><div style="width: 143px;font-size: 16px;line-height: 33px;margin-top: 1px;">全部取消到场</div></a-button>
+      <a-button class="default" style="width: 145px; height: 36px;"><div style="width: 143px;font-size: 16px;line-height: 32px;">全部取消到场</div></a-button>
       <a-input :style="{width:'180px'}" placeholder="玩家昵称">
         <template #append>
           <img style="width: 24px;height: 24px;" src="https://moba-project.s3-accelerate.amazonaws.com/admin/icons/search.svg" alt="">

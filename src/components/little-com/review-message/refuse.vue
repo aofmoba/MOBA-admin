@@ -23,7 +23,7 @@
 <script lang="ts" setup>
 import { onMounted, watch } from 'vue'
 import { approveArena, approvePoint } from '@/api/review';
-import Message from '@arco-design/web-vue/es/message';
+import { Message } from '@arco-design/web-vue';
 
 const emit = defineEmits(['cloosehandler'])
 const props = defineProps({

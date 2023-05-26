@@ -61,7 +61,7 @@
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
                 <a-button class="active noboxshadow" style="width: 103px; height: 32px;" @click="toPointList(record)"><div style="font-size: 14px;line-height: 32px;">赛点列表</div></a-button>
-                <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="toPoint(record)"><div style="width: 100px;font-size: 14px;line-height: 29px;">添加赛点</div></a-button>
+                <a-button class="default" style="width: 103px; height: 32px; margin-top: 10px;" @click="toPoint(record)"><div style="width: 99px;font-size: 14px;line-height: 29px;">添加赛点</div></a-button>
               </a-space>
             </template>
           </a-table-column>
