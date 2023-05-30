@@ -230,9 +230,12 @@ textarea:-ms-input-placeholder {
   flex: 1;
 }
 .arco-table .arco-table-container {
-  overflow: auto !important;
   flex: 1;
   border: none !important;
+}
+.arco-table .arco-table-body {
+  min-width: calc(100% - 6px);
+  padding: 0 3px;
 }
 .arco-table thead > .arco-table-tr {
   height: 58px;
@@ -259,16 +262,19 @@ textarea:-ms-input-placeholder {
 .arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand) .arco-table-td {
   border-bottom: 1px solid #DAE0F2 !important;
 }
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand) .arco-table-td.arco-table-col-sorted {
+  background-color: transparent;
+}
 .arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand) .arco-table-cell {
   text-align: center;
   font-size: 16px;
   color: #3A3F63;
 }
-.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand):hover {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand):not(.arco-table-tr-empty):hover {
   position: relative;
   box-shadow: 0px 0px 8px 0px rgba(179, 192, 231, 0.6) !important;
 }
-.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand):hover .arco-table-td {
+.arco-table tbody > .arco-table-tr:not(.arco-table-tr-expand):not(.arco-table-tr-empty):hover .arco-table-td {
   background: var(--color-bg-1) !important;
 }
 .arco-table .arco-space .arco-space-item {

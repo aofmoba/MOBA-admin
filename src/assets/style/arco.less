@@ -212,7 +212,14 @@ textarea:-ms-input-placeholder {  /* Internet Explorer 10-11 */
       flex: 1;
     }
   }
-  .arco-table-container{overflow: auto !important;flex: 1;border: none !important;}
+  .arco-table-container{
+    flex: 1;
+    border: none !important;
+  }
+  .arco-table-body{
+    min-width: calc(100% - 6px);
+    padding: 0 3px;
+  }
   thead>.arco-table-tr{
     height: 58px;
     .arco-table-th{
@@ -233,8 +240,9 @@ textarea:-ms-input-placeholder {  /* Internet Explorer 10-11 */
       .arco-table-td{border-bottom: none !important;}
     }
     .arco-table-td{border-bottom: 1px solid #DAE0F2 !important;}
+    .arco-table-td.arco-table-col-sorted{background-color: transparent;}
     .arco-table-cell{text-align: center;font-size: 16px;color: #3A3F63;}
-    &:hover{
+    &:not(.arco-table-tr-empty):hover{
       position: relative;
       box-shadow: 0px 0px 8px 0px rgba(179,192,231,0.6) !important;
       .arco-table-td{background: var(--color-bg-1) !important;}

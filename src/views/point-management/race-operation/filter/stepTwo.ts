@@ -54,21 +54,18 @@ const getWinBinaryArr = (data: any): getPointFightRes[][] => {
             if( item.teamNum !== winArrRes[0][0].teamNum ){
                 // 找到当前队伍 在第一列中为胜者的数组下标
                 const oneIndex = winArrRes[0].findIndex((one: any) => one.winTeamId === item.redTeamId || one.winTeamId === item.blueTeamId )
-                if( oneIndex >= 0 ){
-                    if( item.group !== 3 ){ // 第三、四名的item数据不进入计算 直接替换最后一列最后一个
-                        // 根据当前处的列数 将队伍在第一轮的下标进行2的开方 获得所在列下标
-                        // eslint-disable-next-line no-restricted-properties
-                        winArrRes[tempIndex].splice(Math.floor(oneIndex/Math.pow(2,tempIndex)),1,item)
-                    }else{
-                        group3 = item
-                    }
+                if( item.group === 3 ) group3 = item // 第三、四名的item数据不进入计算 直接替换最后一列最后一个
+                if( oneIndex >= 0 && item.group !== 3 ){
+                    // 根据当前处的列数 将队伍在第一轮的下标进行2的开方 获得所在列下标
+                    // eslint-disable-next-line no-restricted-properties
+                    winArrRes[tempIndex].splice(Math.floor(oneIndex/Math.pow(2,tempIndex)),1,item)
                 }
             }else{
                 winArrRes[tempIndex].splice(i,1,item)
             }
         }
     })
-    winArrRes[winArrRes.length-1][1] = group3 
+    if( winArrRes[winArrRes.length-1].length === 2 && winArrRes[winArrRes.length-1][0].teamNum === 2 ) winArrRes[winArrRes.length-1][1] = group3 
     return winArrRes
 
     // 2 直接根据teamNum将数组分为二维数组（需保证接口返回数据顺序正确）

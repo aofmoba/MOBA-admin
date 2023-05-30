@@ -223,8 +223,8 @@ let allFightData: Array<getPointFightRes> | Array<any> = []
 const getTeamIndex = (signData: any,fightData: Array<getPointFightRes> | any) => {
   allFightData = fightData.map((ele: getPointFightRes) => ({
     ...ele,
-    blueIndex: Number(ele.blueTeamId) ? signData.filter((item:any)=> item.teamId === ele.blueTeamId)[0].indexId : -1,
-    redIndex: Number(ele.redTeamId) ? signData.filter((item:any)=> item.teamId === ele.redTeamId)[0].indexId : -1
+    blueIndex: Number(ele.blueTeamId) ? signData.filter((item:any)=> item.teamId === ele.blueTeamId)[0]?.indexId : -1,
+    redIndex: Number(ele.redTeamId) ? signData.filter((item:any)=> item.teamId === ele.redTeamId)[0]?.indexId : -1
   }))
 }
 

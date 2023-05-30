@@ -95,7 +95,7 @@
           >
             <template #cell="{ record }">
               <div class="o-expend white-nowrap" @click="expandRow(record)">
-                <span class="expend-btn" style="color: #858EBD;">展开</span>
+                <span class="expend-btn" style="color: #858EBD;">{{ expands.indexOf(String(record.teamId)) < 0 ? '展开' : '收起' }}</span>
                 <icon-down v-if="expands.indexOf(String(record.teamId)) < 0" class="iconStyle" />
                 <icon-up v-else class="iconStyle" />
               </div>
@@ -198,6 +198,8 @@ const querySingalTeam = (data: object[]) =>{
 }
 
 const initData = async (id: string) => {
+  useData = []
+  checkinsData = []
   localStorage.removeItem('signTeamNum')
   if( !id ) {setLoading(false); return;}
   queryComPointCheckinList(id).then((res: any) => {
@@ -209,7 +211,6 @@ const initData = async (id: string) => {
       checkinsData = res.data.checkins
       useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
       localStorage.setItem('signTeamNum',JSON.stringify(useData))
-      // eslint-disable-next-line no-use-before-define
       querySingalTeam( useData )
     }
   }).catch(()=>{setLoading(false)})
@@ -277,6 +278,7 @@ onActivated(()=>{
 })
 
 onDeactivated(()=>{
+  localStorage.removeItem('signTeamNum')
   clearInterval(timer)
 })
 

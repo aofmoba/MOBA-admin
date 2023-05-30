@@ -53,13 +53,14 @@
         </template>
         <template #columns>
           <a-table-column
+            :sortable="{sortDirections: [],defaultSortOrder: 'ascend'}"
             title="名次"
             data-index="rank"
             :width="104"
           />
           <a-table-column
             title="队伍编号"
-            data-index="id"
+            data-index="indexId"
             :width="211"
           />
           <a-table-column
@@ -84,9 +85,9 @@
             title=""
           >
             <template #cell="{ record }">
-              <div class="o-expend white-nowrap" @click="expandRow(record.id)">
-                <span class="expend-btn" style="color: #858EBD;">展开</span>
-                <icon-down v-if="expands.indexOf(record.id) < 0" class="iconStyle" />
+              <div class="o-expend white-nowrap" @click="expandRow(record)">
+                <span class="expend-btn" style="color: #858EBD;">{{ expands.indexOf(String(record.teamId)) < 0 ? '展开' : '收起' }}</span>
+                <icon-down v-if="expands.indexOf(String(record.teamId)) < 0" class="iconStyle" />
                 <icon-up v-else class="iconStyle" />
               </div>
             </template>
@@ -103,12 +104,12 @@
 
 <script lang="ts" setup>
 import { TableData } from "@arco-design/web-vue";
-import { onMounted, reactive, onActivated } from "vue"
+import { onMounted } from "vue"
 import { useRouter } from 'vue-router'
 import { getPlayerMainPos } from '@/utils/filterData'
 import useLoading from '@/hooks/loading'
 import {  
-  queryComPointCheckinList,
+  queryCompTeamRank,
   queryPointTeamInfo,
   queryPlayerInfo,
 } from '@/api/competition';
@@ -121,35 +122,7 @@ let tableHeight: number = $ref(0)
 const tableRef: any = $ref(null)
 let queryData: any = $ref()
 let useData: TableData[] = $ref([]);
-const datas: TableData[] = reactive([{
-    id: 12345,
-    rank: 1,
-    name: '超级无敌战队',
-    person: 5,
-    info:[{
-        playerID: 12345678,
-        playerNickname: '嘻嘻哈哈嘻皮狗',
-        mainPlay: '发育路'
-    },{
-        playerID: 12345679,
-        playerNickname: '嘻嘻哈哈嘻皮狗',
-        mainPlay: '发育路'
-    }]
-    }, {
-    id: 12346,
-    rank: 2,
-    name: '超级无敌战队',
-    person: 5,
-    info:[{
-        playerID: 1223344,
-        playerNickname: '嘻嘻哈哈嘻皮狗',
-        mainPlay: '发育路'
-    },{
-        playerID: 1223345,
-        playerNickname: '嘻嘻哈哈嘻皮狗',
-        mainPlay: '发育路'
-    }]
-}])
+
 
 const allExpandData: any = $ref([]) // 保存查看的所有队伍成员
 let expandData: any = $ref([]) // 队伍选手
@@ -196,30 +169,21 @@ const querySingalTeam = (data: object[]) =>{
 
 
 
-const getTeamIndex = (signData: any,resData: any) => {
-  useData = resData.map((ele: any) => ({
-    ...ele,
-    blueIndex: Number(ele.blueTeamId) ? signData.filter((item:any)=> item.teamId === ele.blueTeamId)[0].indexId : -1,
-    redIndex: Number(ele.redTeamId) ? signData.filter((item:any)=> item.teamId === ele.redTeamId)[0].indexId : -1
-  }))
-}
-
-
-
-const signTeamNum: Array<{teamId: string;indexId: string}> = []
+let signTeamNum: Array<{teamId: string;indexId: string}> = []
 const initData = (id: string) => {
   setLoading(false)
-  // if( !id ) return
-  // queryComPointCheckinList(id).then((res: any) => {
-  //   if( res.error_code === 0 ) {
-  //     signTeamNum = JSON.parse(localStorage.getItem('signTeamNum') || '[]')
-  //     getTeamIndex(signTeamNum, res.data)
-  //     if( !useData.length ) { setLoading(false); return}
-  //     useData = useData.map((item: any,i: number)=>({teamId:item,indexId: i+1}))
-  //     // eslint-disable-next-line no-use-before-define
-  //     querySingalTeam( useData )
-  //   }
-  // }).catch(()=>{setLoading(false)})
+  if( !id ) return
+  queryCompTeamRank(id).then((res: any) => {
+    if( res.error_code === 0 ) {
+      if( !res.data ) { setLoading(false); return}
+      signTeamNum = JSON.parse(localStorage.getItem('signTeamNum') || '[]')
+      useData = res.data.map((ele: any) => ({
+        ...ele,
+        indexId: Number(ele.teamId) ? signTeamNum.filter((item:any)=> item.teamId === ele.teamId)[0].indexId : -1,
+      }))
+      querySingalTeam( useData )
+    }
+  }).catch(()=>{setLoading(false)})
 }
 
 const celloading: boolean = $ref(false)
@@ -233,14 +197,6 @@ const prevStep = () => {
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('on-prev')
 }
-
-
-onActivated(()=>{
-  if( !loading.value ){
-    queryData = JSON.parse(localStorage.getItem('matchinfo') || '{}')
-    initData(queryData.id)
-  }
-})
 
 onMounted(() => {
   setTimeout(()=>{tableHeight = tableRef.clientHeight - 58},0)

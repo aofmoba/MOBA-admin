@@ -237,3 +237,8 @@ export function queryPointTeamCheckin(teamId: string,pointId: string) {
 export function finishCheckStep(id: string) {
     return axios.post('/api/competition_point/finish_checkin',{point_id: id});
 }
+
+// 查看赛点队伍排名
+export function queryCompTeamRank(id: string) {
+    return axios.post('/api/competition_poing/get_fight_rank',{point_id: id});
+}
