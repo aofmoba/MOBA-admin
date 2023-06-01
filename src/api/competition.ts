@@ -221,7 +221,7 @@ export function queryPointTeamInfo(id: string) {
  * GROW：   2 发育
  * MONSTER：3 打野
  * WALKER： 4 游走
- * */ 
+ */ 
 
 // 查看赛事队伍详情
 export function queryPlayerInfo(id: string) {

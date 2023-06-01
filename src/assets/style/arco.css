@@ -132,6 +132,7 @@ textarea:-ms-input-placeholder {
 .arco-form .arco-input-wrapper input,
 .arco-space .arco-input-wrapper input {
   color: #3A3F63 !important;
+  caret-color: #3A3F63;
   height: 100%;
   transition: all 0.2s ease;
 }
@@ -236,6 +237,9 @@ textarea:-ms-input-placeholder {
 .arco-table .arco-table-body {
   min-width: calc(100% - 6px);
   padding: 0 3px;
+}
+.arco-table .arco-table-header {
+  background-color: transparent;
 }
 .arco-table thead > .arco-table-tr {
   height: 58px;

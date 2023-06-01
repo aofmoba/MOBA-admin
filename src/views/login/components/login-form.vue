@@ -10,7 +10,7 @@
             :validate-trigger="['change', 'blur']" 
             label="账号："
           >
-            <a-input v-model="formLogin.user_name" placeholder="输入登录账号" />
+            <a-input v-model="formLogin.user_name" autofocus placeholder="输入登录账号" />
           </a-form-item>
           <a-form-item 
             field="password" 
@@ -135,7 +135,6 @@
       color: #4458FE;
       line-height: 56px;
       white-space: nowrap;
-
       // margin-bottom: 40px;
     }
     :deep(.arco-form){
@@ -159,7 +158,6 @@
           margin-left: 10px;
           .arco-input{
             font-size: 16px;
-            color: #858EBD;
           }
           .arco-form-item-message{
             position: absolute;
