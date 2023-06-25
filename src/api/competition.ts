@@ -22,6 +22,15 @@ export interface createCompetitionData {
     rewards: Array<singleComRewardRes>;
 }
 
+export interface newcreateCompetitionData {
+    name: string // 赛事名，4到100字节
+    fightNum: number // 目前只能填5，表示5V5
+    startTime: number // 开始时间戳
+    finishTime: number // 用于显示的预计结束时间
+    rankNum: number // 目前只能填1，表示选出冠亚军
+    maxTroopNum: number // 最大报名队伍数，目前只能为8
+}
+
 export interface comListData {
     pageno: number; // 从1开始
     pagesize: number; // 10, 20, 30，最多100
@@ -49,24 +58,63 @@ export interface competitionInfo {
     reject_reason?: string; // 钱包登录用户 - 审核不通过原因
 }
 
+export interface newfightinfo {
+    totalTroopNum: number // 当前总共参赛队伍数
+    redTroop: number // 红方队伍
+    blueTroop: number // 蓝方队伍
+    redScore: number // 红方得分
+    blueScore: number // 蓝方得分
+    winTroop: number // 获胜方队伍
+    finishTime: number // 结束时间
+    group: number // 0，暂时不用
+}
+export interface newcompetitionInfo {
+    warId: number // 赛事id
+    name: string // 赛事名
+    maxTroopNum: number // 最大参赛队伍数
+    startTime: number // 开始时间
+    finishTime: number // 结束时间
+    status: number // 0未开始，1进行中，2已结束
+    fightNum: number // 5v5
+    rankNum: number // 1
+    troopList: Array<number> // 参赛的队伍id列表
+    rankList: Array<number> // 队伍排名
+    fightInfo: Array<newfightinfo> // 对局信息，见下定义
+}
+
 export interface comListRes {
     total: number;
     list: Array<competitionInfo>;
 }
-// 创建赛事
-export function createCompetition(data: createCompetitionData) {
+export interface newcomListRes {
+    total: number;
+    list: Array<newcompetitionInfo>;
+}
+
+// 创建赛事 -old
+export function createCompetitionOld(data: createCompetitionData) {
     if( userStore.permissions[0] !== 'guest' ){
         return axios.post('/api/competition/create',data);
     }
     return axios.post('/api/wallet/create_competition',data);
 }
-// 查看赛事列表
-export function queryCompetitionList(data: comListData) {
+// 创建赛事 -new
+export function createCompetition(data: newcreateCompetitionData) {
+    return axios.post('/api/war/create',data);
+}
+
+// 查看赛事列表 -old
+export function queryCompetitionListOld(data: comListData) {
     // if( userStore.permissions[0] !== 'guest' ){
         return axios.post<comListRes>('/api/competition/list',data);
     // }
     // return axios.post<comListRes>('/api/wallet/competition_list',data);
 }
+// 查看赛事列表 -new
+export function queryCompetitionList(data: comListData) {
+    return axios.post<newcomListRes>('/api/war/list',data);
+}
+
 
 export interface stepsData {
     name: string,
@@ -208,9 +256,22 @@ export interface queryPointTeamInfoRes {
     stats: object;
 }
 
-// 查看赛事队伍详情
-export function queryPointTeamInfo(id: string) {
+// 查看赛事队伍详情 -old
+export function queryPointTeamInfoOld(id: string) {
     return axios.post<queryPointTeamInfoRes>('/api/competition_team/info',{team_id: id});
+}
+
+export interface newqueryPointTeamInfoRes{
+    troopId: number // 队伍id
+    name: string // 队伍名
+    leader: number // 队长id
+    createTime: number // 创建时间
+    members: Array<object> // 成员列表，如 [{"playerId":123,"joinTime":123}]
+}
+
+// 查看赛事队伍详情 -new
+export function queryPointTeamInfo(id: number) {
+    return axios.post<newqueryPointTeamInfoRes>('/api/war/troop/info',{troopId: id});
 }
 
 

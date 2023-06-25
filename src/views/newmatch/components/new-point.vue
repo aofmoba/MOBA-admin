@@ -3,46 +3,41 @@
         <a-form :model="form" @submit="handleSubmit">
             <a-form-item
               field="name" label="赛事名称："
-              :rules="[{ required: true, message:'name is required' },{maxLength:18,message:'最多可填写18个字'}]"
+              :rules="[{ required: true, message:'name is required' },{maxLength:100,message:'最多可填写100个字'}]"
               :validate-trigger="['blur']"
             >
               <a-input v-model="form.name" placeholder="请输入您的赛事名称" />
             </a-form-item>
-            <a-form-item
-              field="banner" label="赛事banner："
-            >
-              <div class="flex-col">
-                <Mupload ref="uploadComRef" :width="335" :height="120" :uwidth="670" :uheight="240" @change-banner="changeBanner" />
-                <div class="mt-10 mtext-gray font-sm">尺寸（670*240px），仅限JPG和PNG格式</div>
-              </div>
+            <a-form-item field="victoryMode" label="对战方式：">
+              <Mradio :radioarr="['5V5']" defaultvalue="5V5" />
             </a-form-item>
-            <a-form-item field="reward">
-              <template #label>
-                <div>赛事奖励 :</div>
-                <div>（设置第0-0名为签到奖励）</div>
-              </template>
-              <RewardCard :backrew="backRewards" @change-reward="changeReward"/>
+            <a-form-item :key="form.startTime" field="viewTime" label="赛事时间：">
+                <DatePicker :starttime="form.startTime" :finishtime="form.finishTime" @change-date="changeDate"/>
             </a-form-item>
-            <a-form-item field="rules">
-              <template #label>
-                <div>赛事规则 :</div>
-                <div>（支持图片和文字单独两种模式）</div>
-              </template>
-              <div class="flex-col">
-                <div>
-                    <Mupload ref="uploadComRef2" :width="335" :height="120" :uwidth="670" @change-banner="changeRules"/>
-                    <div class="mt-10 mtext-gray font-sm">图片宽度尺寸仅限670px，仅限JPG和PNG格式</div>
-                </div>
-                <div class="text-rule mt-30">
-                    <div class="font-md mb-14">填写规则</div>
-                    <a-textarea v-model="form.rule" class="rounded" :max-length="{length:10000,errorOnly:true}" placeholder="请输入您的赛事规则" style="width: 758px;height: 120px;background-color: var(--color-bg-1);"/>
-                </div>
-              </div>
+            <a-form-item field="rankNum" label="队伍排名数量：" :rules="[{type:'number', min: 1,max:1,message:'目前仅支持数量1(选出冠亚军)'}]">
+              <a-input-number 
+                v-model="form.rankNum" 
+                :hide-button="true" 
+                :min="1" 
+                :max="1" 
+                style="height: 40px;" 
+                placeholder="目前仅支持数量1(选出冠亚军)"
+              />
+            </a-form-item>
+            <a-form-item field="teamNum" label="报名队伍数量限制：" :rules="[{type:'number', min:8,max:8,message:'目前仅支持8个队伍报名'}]">
+              <a-input-number 
+                v-model="form.maxTroopNum" 
+                :hide-button="true" 
+                :min="8" 
+                :max="8" 
+                style="height: 40px;" 
+                placeholder="目前仅支持8个队伍报名"
+              />
             </a-form-item>
             <a-form-item>
               <div class="flex-center" style="width: 758px;margin-bottom: 20px;">
                 <a-button class="active " html-type="submit" :disabled="loading"><div><a-spin v-if="loading"/> 保存并确认</div></a-button>
-                <a-button class="default" style="margin-left: 64px;" @click="toPoint"><div>添加赛点</div></a-button>
+                <a-button class="default" style="margin-left: 64px;" :disabled="true" @click="toPoint"><div>添加赛点</div></a-button>
               </div>
             </a-form-item>
         </a-form>
@@ -55,8 +50,10 @@ import { FileItem, Message, ValidatedError } from '@arco-design/web-vue';
 import { LoginData } from '@/api/user';
 import { useRouter } from 'vue-router';
 import useLoading from '@/hooks/loading'
-import { createCompetition } from '@/api/competition';
-  
+import { createCompetition , queryCompetitionList} from '@/api/competition';
+import type { newcomListRes } from '@/api/competition';
+import type { dateType } from '@/types/global'
+
 const router = useRouter();
 const { loading, setLoading } = useLoading(false);
 const props = defineProps({
@@ -65,101 +62,76 @@ const props = defineProps({
         default: '主题赛'
     }
 })
-const backRewards: any = $ref([])
-let banneFile: FileItem | any = $ref()
-let rulePicFile: FileItem | any = $ref()
 const form:any = reactive({
-    type: 0, // 0: 主题赛 1: 俱乐部
     name: '',
-    banner: '',
-    rule: '',
-    rulePic: '',
-    rewards: [],
+    fightNum: 5, // 目前只能填5: 5V5
+    startTime: 0,
+    finishTime: 0,
+    rankNum: 1, // 目前只能填1: 选出冠亚军
+    maxTroopNum: 8, // 最大报名队伍数，目前只能为8
 });
+let creatType = 0
 watch(()=>props.type,(newV: any, oldV: any) => {
-  if( newV === '主题赛' )form.type = 0
-  if( newV === '俱乐部联赛(仅限俱乐部参与)' )form.type = 1
+  if( newV === '主题赛' ) creatType = 0
+  if( newV === '俱乐部联赛(仅限俱乐部参与)' ) creatType = 1
 },{immediate: true})
-const changeBanner = (ipfs: any) => {
-  // eslint-disable-next-line no-multi-assign
-  form.banner = banneFile = ipfs
-}
-const changeRules = (ipfs: any) => {
-  // eslint-disable-next-line no-multi-assign
-  form.rulePic = rulePicFile = ipfs
-}
-const changeReward = (data: any) => {
-  form.rewards = data.map((item: any) =>({
-    name: item.name,
-    startRank: item.startRank,
-    finishRank: item.endRank,
-    itemList: item.props.map((list: any)=>({ itemId: list.id,itemCount: list.count }))
-  }))
-}
 
 const getNameLeng = (str: string) => {
   return str.replace(/[\u0391-\uFFE5]/g, 'aa').length;
 }
 
-let compId: string = $ref('')
-const axiosCreate = () => {
-  createCompetition(form).then(({data}) => {
-      compId = data
-      Message.success('success')
-  }).finally(()=>setLoading(false))
+const changeDate = (date: dateType) => {
+    form.startTime = Math.floor(Number(date.start) / 1000)
+    form.finishTime = Math.floor(Number(date.end) / 1000)
 }
 
+// let compId: string = $ref('')
 
-const uploadComRef: any = $ref()
-const uploadComRef2: any = $ref()
-let countUpload: number = $ref(0)
-const handleSubmit = ({errors, values}: {
+const queryAllreadyCom = async () => {
+  let result: newcomListRes | any = await queryCompetitionList({pageno: 1,pagesize: 100}).catch(()=>setLoading(false))
+  if( result.data?.total > 100 ){
+    result = await queryCompetitionList({pageno: Math.floor(result.data.total / 100) + 1 ,pagesize: 100}).catch(()=>setLoading(false))
+  }
+  if( result.data?.list.length && result.data?.list[result.data?.total - 1].status !== 2 ) {
+    Message.error('当前存在未结束的赛事，不允许再新建赛事')
+    return true
+  }
+  return false
+}
+
+const handleSubmit = async ({errors, values}: {
     values: Record<string, LoginData>,
     errors: Record<string, ValidatedError> | undefined
   }) => {
-    countUpload = 0
+    if( await queryAllreadyCom() ) return
     // console.log('values:', values, '\nerrors:', errors)
     const nameLen = getNameLeng(form.name)
-    const ruleLen = getNameLeng(form.rule)
-    if( !errors && nameLen >= 4 && nameLen <= 18 && form.banner && form.rewards.length && ((form.rule && ruleLen >= 8) || form.rulePic) ){
+    if( form.rankNum !== 1 ) form.rankNum = 1
+    if( form.maxTroopNum !== 8 ) form.maxTroopNum = 8
+    if( !errors && nameLen >= 4 && nameLen <= 100 && form.startTime && form.finishTime ){
       setLoading(true)
       try {
-          uploadComRef.uploadRequest(banneFile.file).then((result: any) => { // banner图片上传之后
-            form.banner = result;
-            countUpload +=1
-            if( !form.rulePic || (form.rulePic && countUpload === 2) ) {
-              axiosCreate()
-            }
-          }).catch(()=>{ Message.error('图片上传失败,请重试');setLoading(false)})
-
-          if( form.rulePic ) uploadComRef2.uploadRequest(rulePicFile.file).then((result: any) => { // 规则图片上传之后
-            form.rulePic = result;
-            countUpload +=1
-            if( countUpload === 2 ){
-              axiosCreate()
-            }
-          }).catch(()=>{ Message.error('图片上传失败,请重试');setLoading(false)})
-
+          createCompetition(form).then(({data}) => {
+              Message.success('success')
+          }).finally(()=>setLoading(false))
         } catch (error) {
           setLoading(false)
         }
     }else{
       if( !form.name ) {Message.error('赛事名称不能为空'); return}
-      if( nameLen < 4 || nameLen > 18 ) {Message.error('赛事名称最少填写2个字，最多可填写18个字');return}
-      if( !form.banner ) {Message.error('赛事banner不能为空');return}
-      if( !form.rewards.length ) {Message.error('赛事奖励不能为空');return}
-      if( !form.rule && !form.rulePic ) {Message.error('赛事规则不能为空');return}
-      if( form.rule && ruleLen < 8 ) Message.error('赛事规则文字过短')
+      if( nameLen < 4 || nameLen > 100 ) {Message.error('赛事名称最少填写2个字，最多可填写100个字');return}
+      if( !form.startTime ) {Message.error('赛事开始时间不能为空');return}
+      if( !form.finishTime ) {Message.error('赛事结束时间不能为空');}
     }
 }
 
 
 const toPoint = () => {
-  if( compId ){
-    router.push({ path: '/newpoint', query: { compId,name: form.name,url:form.banner } });
-  }else{
-    Message.info('请先创建赛事')
-  }
+  // if( compId ){
+  //   router.push({ path: '/newpoint', query: { compId,name: form.name,url:form.banner } });
+  // }else{
+  //   Message.info('请先创建赛事')
+  // }
 }
 
 onMounted(() => {
@@ -172,11 +144,6 @@ onMounted(() => {
       .arco-row:nth-child(2)>.arco-form-item-label-col{
         height: 40px;
         line-height: 40px;
-      }
-      .arco-row:nth-child(3)>.arco-form-item-label-col,
-      .arco-row:nth-child(4)>.arco-form-item-label-col,
-      .arco-row:nth-child(5)>.arco-form-item-label-col{
-        margin-top: 9px;
       }
       .text-rule>div:last-child{
         &:hover{

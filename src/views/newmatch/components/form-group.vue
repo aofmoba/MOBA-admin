@@ -9,7 +9,7 @@
     <NewPoint v-if="form.type !== '擂台' && !(permissions[0] === 'guest')" :type="form.type" />
     <!-- <NewPoint v-if="form.type !== '擂台'" :type="form.type" /> -->
     <NewCity v-else :type="form.type"/>
-</div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -22,7 +22,8 @@ import NewCity from './new-city.vue';
 
 const userStore = useUserStore();
 const router = useRouter()
-const createType = ['主题赛','俱乐部联赛(仅限俱乐部参与)','擂台']
+// const createType = ['主题赛','俱乐部联赛(仅限俱乐部参与)','擂台']
+const createType = ['主题赛','擂台']
 const form:any = reactive({
     type: '主题赛',
 });
@@ -39,6 +40,15 @@ onMounted(()=>{
 </script>
 
 <style lang="less" scoped>
+  :deep(.arco-form){
+    .arco-form-item-label-col{
+      min-width: 146px !important;
+      max-width: 146px !important;
+    }
+    .arco-picker-suffix-icon{
+      height: 100%;
+    }
+  }
 .arco-form{
   .arco-row{
     margin-bottom: 15px;
