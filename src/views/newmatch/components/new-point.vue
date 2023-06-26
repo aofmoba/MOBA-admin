@@ -9,7 +9,7 @@
               <a-input v-model="form.name" placeholder="请输入您的赛事名称" />
             </a-form-item>
             <a-form-item field="victoryMode" label="对战方式：">
-              <Mradio :radioarr="['5V5']" defaultvalue="5V5" />
+              <Mradio :radioarr="['1V1','5V5']" defaultvalue="5V5" @change-radio="changeRadio"/>
             </a-form-item>
             <a-form-item :key="form.startTime" field="viewTime" label="赛事时间：">
                 <DatePicker :starttime="form.startTime" :finishtime="form.finishTime" @change-date="changeDate"/>
@@ -64,7 +64,7 @@ const props = defineProps({
 })
 const form:any = reactive({
     name: '',
-    fightNum: 5, // 目前只能填5: 5V5
+    fightNum: 5, // 目前只能填1-1V1,5-5V5
     startTime: 0,
     finishTime: 0,
     rankNum: 1, // 目前只能填1: 选出冠亚军
@@ -84,6 +84,12 @@ const changeDate = (date: dateType) => {
     form.startTime = Math.floor(Number(date.start) / 1000)
     form.finishTime = Math.floor(Number(date.end) / 1000)
 }
+
+const changeRadio = (radio: string) => {
+  console.log(radio)
+  form.fightNum = radio === '1V1' ? 1 : 5
+}
+
 
 // let compId: string = $ref('')
 
