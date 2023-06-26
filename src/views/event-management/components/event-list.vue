@@ -67,7 +67,7 @@
       </a-table>
     </div>
   </div>
-  <Ranking :showbol="visible" :rankList="rankList" @change-rang="changeRang" />
+  <Ranking :showbol="visible" :ranklist="rankList" @close-ranking="closeRanking" />
 </template>
 
 <script lang="ts" setup>
@@ -126,14 +126,14 @@ const initData = async () => {
 
 let visible: boolean = $ref(false)
 let rankList: Array<number> = $ref([])
-const showRangking = (data: any) => {
-  if( ![0].includes(data.status) ){ // 查看排行榜 
+const showRangking = (record: any) => {
+  if( ![0].includes(record.status) ){ // 查看排行榜 
     visible = true
-    rankList = data.rankList
+    rankList = record.rankList
   }
 }
-const changeRang = (data: boolean) => {
-  visible = data
+const closeRanking = () => {
+  visible = false
 }
 
 onActivated(()=>{

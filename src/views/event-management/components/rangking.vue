@@ -40,28 +40,34 @@ import {
 } from '@/api/competition';
 
 const { loading, setLoading } = useLoading(true);
-const emit = defineEmits(['change-rang'])
+const emit = defineEmits(['close-ranking'])
 const props = defineProps({
   showbol: {
     type: Boolean,
     default: false
   },
-  rankList: Array,
+  ranklist: {
+    type: Array,
+    default() {
+      return []
+    }
+  },
 })
 const dialogTableVisible = ref(false)
 let rankingList: any = $ref([])
 
 
 const cancelHandle = () => {
+  rankingList = []
   // eslint-disable-next-line vue/custom-event-name-casing
-  emit('change-rang',false)
+  emit('close-ranking')
 }
 
 const getRewards = async() => {
-  rankingList = props.rankList
+  rankingList = JSON.parse(JSON.stringify(props.ranklist))
   setLoading(true)
   // eslint-disable-next-line no-use-before-define
-  queryPlayer( props.rankList )
+  queryPlayer( props.ranklist )
 }
 const queryPlayer = (data: any) =>{
   if( !data?.length ) setLoading(false)

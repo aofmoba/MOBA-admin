@@ -86,7 +86,6 @@ const changeDate = (date: dateType) => {
 }
 
 const changeRadio = (radio: string) => {
-  console.log(radio)
   form.fightNum = radio === '1V1' ? 1 : 5
 }
 
