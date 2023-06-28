@@ -97,7 +97,7 @@ const queryAllreadyCom = async () => {
   if( result.data?.total > 100 ){
     result = await queryCompetitionList({pageno: Math.floor(result.data.total / 100) + 1 ,pagesize: 100}).catch(()=>setLoading(false))
   }
-  if( result.data?.list.length && result.data?.list[result.data?.total - 1].status !== 2 ) {
+  if( result.data?.list?.length && result.data?.list[result.data?.total - 1]?.status !== 2 ) {
     Message.error('当前存在未结束的赛事，不允许再新建赛事')
     return true
   }
@@ -108,13 +108,13 @@ const handleSubmit = async ({errors, values}: {
     values: Record<string, LoginData>,
     errors: Record<string, ValidatedError> | undefined
   }) => {
-    if( await queryAllreadyCom() ) return
     // console.log('values:', values, '\nerrors:', errors)
     const nameLen = getNameLeng(form.name)
     if( form.rankNum !== 1 ) form.rankNum = 1
     if( form.maxTroopNum !== 8 ) form.maxTroopNum = 8
     if( !errors && nameLen >= 4 && nameLen <= 100 && form.startTime && form.finishTime ){
       setLoading(true)
+      if( await queryAllreadyCom() ) {setLoading(false);return;}
       try {
           createCompetition(form).then(({data}) => {
               Message.success('success')
