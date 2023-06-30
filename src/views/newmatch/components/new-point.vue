@@ -11,8 +11,14 @@
             <a-form-item field="victoryMode" label="对战方式：">
               <Mradio :radioarr="['1V1','5V5']" defaultvalue="5V5" @change-radio="changeRadio"/>
             </a-form-item>
-            <a-form-item :key="form.startTime" field="viewTime" label="赛事时间：">
-                <DatePicker :starttime="form.startTime" :finishtime="form.finishTime" @change-date="changeDate"/>
+            <a-form-item :key="form.signTime+form.signFinTime" field="signupDate" label="报名时间：">
+              <DatePicker :starttime="form.signTime" :finishtime="form.signFinTime" :types="0" :interval="true" @change-date="changeDate"/>
+            </a-form-item>
+            <a-form-item :key="form.checkInTime+form.checkInFinTime" field="checkInDate" label="入选时间：">
+              <DatePicker :starttime="form.checkInTime" :finishtime="form.checkInFinTime" :types="1" :interval="true" @change-date="changeDate"/>
+            </a-form-item>
+            <a-form-item :key="form.startTime+form.finishTime" field="viewTime" label="赛事时间：">
+                <DatePicker :starttime="form.startTime" :finishtime="form.finishTime" :types="2" :interval="true" @change-date="changeDate"/>
             </a-form-item>
             <a-form-item field="rankNum" label="队伍排名数量：" :rules="[{type:'number', min: 1,max:1,message:'目前仅支持数量1(选出冠亚军)'}]">
               <a-input-number 
@@ -65,6 +71,10 @@ const props = defineProps({
 const form:any = reactive({
     name: '',
     fightNum: 5, // 目前只能填1-1V1,5-5V5
+    signTime: 0,
+    signFinTime: 0,
+    checkInTime: 0,
+    checkInFinTime: 0,
     startTime: 0,
     finishTime: 0,
     rankNum: 1, // 目前只能填1: 选出冠亚军
@@ -80,9 +90,20 @@ const getNameLeng = (str: string) => {
   return str.replace(/[\u0391-\uFFE5]/g, 'aa').length;
 }
 
-const changeDate = (date: dateType) => {
+
+const changeDate = (date: dateType, types: number) => {
+  if( types === 0 ) {
+    form.signTime = Math.floor(Number(date.start) / 1000)
+    form.signFinTime = Math.floor(Number(date.end) / 1000)
+  }
+  if( types === 1 ) {
+    form.checkInTime = Math.floor(Number(date.start) / 1000)
+    form.checkInFinTime = Math.floor(Number(date.end) / 1000)
+  }
+  if( types === 2 ) {
     form.startTime = Math.floor(Number(date.start) / 1000)
     form.finishTime = Math.floor(Number(date.end) / 1000)
+  }
 }
 
 const changeRadio = (radio: string) => {
@@ -112,7 +133,25 @@ const handleSubmit = async ({errors, values}: {
     const nameLen = getNameLeng(form.name)
     if( form.rankNum !== 1 ) form.rankNum = 1
     if( form.maxTroopNum !== 8 ) form.maxTroopNum = 8
-    if( !errors && nameLen >= 4 && nameLen <= 100 && form.startTime && form.finishTime ){
+    if( !errors && nameLen >= 4 && nameLen <= 100 && form.startTime && form.finishTime && form.signTime && form.signFinTime && form.checkInTime && form.checkInFinTime ){
+      if( form.checkInTime <= form.signFinTime ){
+        Message.error({
+          content: '入选开始时间不能早于报名结束时间',
+          duration: 5000
+        })
+        form.checkInTime = 0
+        form.checkInFinTime = 0
+        return
+      }
+      if( form.startTime <= form.checkInFinTime ){
+        Message.error({
+          content: '赛事开始时间不能早于入选结束时间',
+          duration: 5000
+        })
+        form.startTime = 0
+        form.finishTime = 0
+        return
+      }
       setLoading(true)
       if( await queryAllreadyCom() ) {setLoading(false);return;}
       try {
@@ -123,10 +162,16 @@ const handleSubmit = async ({errors, values}: {
           setLoading(false)
         }
     }else{
-      if( !form.name ) {Message.error('赛事名称不能为空'); return}
-      if( nameLen < 4 || nameLen > 100 ) {Message.error('赛事名称最少填写2个字，最多可填写100个字');return}
-      if( !form.startTime ) {Message.error('赛事开始时间不能为空');return}
-      if( !form.finishTime ) {Message.error('赛事结束时间不能为空');}
+      let message = ''
+      if( !form.finishTime ) message = '赛事结束时间不能为空'
+      if( !form.startTime ) message = '赛事开始时间不能为空'
+      if( !form.checkInFinTime ) message = '入选结束时间不能为空'
+      if( !form.checkInTime ) message = '入选开始时间不能为空'
+      if( !form.signFinTime ) message = '报名结束时间不能为空'
+      if( !form.signTime ) message = '报名开始时间不能为空'
+      if( nameLen < 4 || nameLen > 100 ) message = '赛事名称最少填写2个字，最多可填写100个字'
+      if( !form.name ) message = '赛事名称不能为空'
+      Message.error(message)
     }
 }
 

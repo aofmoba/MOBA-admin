@@ -17,7 +17,7 @@ export default mergeConfig(
       configImageminPlugin(),
     ],
     build: {
-      // minify : 'terser' , // npm add -D terser 去掉console.log
+      // minify : 'terser' ,
       // terserOptions : {
       //     compress : {
       //         drop_console : true ,

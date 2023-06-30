@@ -15,8 +15,8 @@ export default mergeConfig(
         '/api': {
           // target: 'http://192.168.0.109:5679/api/',
           // target: 'http://161.189.70.95:5679/api/', // main
-          // target: 'http://42.193.248.146:5679/api/', // main2 api
-          target: 'http://81.70.56.152:5679/api/', // 北京
+          target: 'http://42.193.248.146:5679/api/', // main2 api
+          // target: 'http://81.70.56.152:5679/api/', // 北京
           // target: 'http://192.168.130.13/api/', // 赛程测试 钱包登录
           // target: 'http://192.168.0.134/api/', // han   
           // target: 'http://192.168.130.13/api/', // han2  
