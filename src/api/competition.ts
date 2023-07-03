@@ -25,6 +25,8 @@ export interface createCompetitionData {
 export interface newcreateCompetitionData {
     name: string // 赛事名，4到100字节
     fightNum: number // 目前只能填5，表示5V5
+    signTime: number, // 报名开始时间
+    signFinTime: number, // 报名结束时间
     startTime: number // 开始时间戳
     finishTime: number // 用于显示的预计结束时间
     rankNum: number // 目前只能填1，表示选出冠亚军
