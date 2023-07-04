@@ -52,14 +52,15 @@
           <a-table-column title="状态" :width="114">
             <template #cell="{ record }">
               <div v-if="record.status == 0" style="color: #4458FE;">未开始</div>
-              <div v-else-if="record.status == 1" style="color: #FF2855;">进行中</div>
+              <div v-else-if="record.status == 1" style="color: #FFA925;">报名中</div>
+              <div v-else-if="record.status == 2" style="color: #FF2855;">战斗中</div>
               <div v-else style="color: #3A3F63;">已结束</div>
             </template>
           </a-table-column>
           <a-table-column title="操作" :width="191">
             <template #cell="{ record }">
               <a-space style="display: flex; flex-direction: column;">
-                <a-button v-if="record.status != 0" class="active noboxshadow" style="width: 103px; height: 32px;" @click="showRangking(record)"><div style="font-size: 14px;line-height: 32px;">查看排行榜</div></a-button>
+                <a-button v-if="![0,1].includes( record.status )" class="active noboxshadow" style="width: 103px; height: 32px;" @click="showRangking(record)"><div style="font-size: 14px;line-height: 32px;">查看排行榜</div></a-button>
               </a-space>
             </template>
           </a-table-column>
@@ -127,7 +128,7 @@ const initData = async () => {
 let visible: boolean = $ref(false)
 let rankList: Array<number> = $ref([])
 const showRangking = (record: any) => {
-  if( ![0].includes(record.status) ){ // 查看排行榜 
+  if( ![0,1].includes(record.status) ){ // 查看排行榜 
     visible = true
     rankList = record.rankList
   }

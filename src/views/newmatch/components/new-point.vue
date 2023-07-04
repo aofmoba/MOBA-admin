@@ -109,7 +109,7 @@ const queryAllreadyCom = async () => {
   if( result.data?.total > 100 ){
     result = await queryCompetitionList({pageno: Math.floor(result.data.total / 100) + 1 ,pagesize: 100}).catch(()=>setLoading(false))
   }
-  if( result.data?.list?.length && result.data?.list[result.data?.total - 1]?.status !== 2 ) {
+  if( result.data?.list?.length && result.data?.list[result.data?.total - 1]?.status !== 3 ) {
     Message.error('当前存在未结束的赛事，不允许再新建赛事')
     return true
   }

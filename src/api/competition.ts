@@ -76,7 +76,7 @@ export interface newcompetitionInfo {
     maxTroopNum: number // 最大参赛队伍数
     startTime: number // 开始时间
     finishTime: number // 结束时间
-    status: number // 0未开始，1进行中，2已结束
+    status: number // 0未开始，1报名，2战斗中，3结束
     fightNum: number // 5v5
     rankNum: number // 1
     troopList: Array<number> // 参赛的队伍id列表
