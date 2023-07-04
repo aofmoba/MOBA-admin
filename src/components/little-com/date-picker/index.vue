@@ -42,6 +42,7 @@
 <script lang="ts" setup>
 import { watch } from "vue";
 import { $ref } from "vue/macros"
+import { getIntTime } from '@/utils/computed'
 
 const emit = defineEmits(['change-date'])
 const props = defineProps({
@@ -188,12 +189,12 @@ const endDisabledTime = (date: Date) =>{
 }
 
 const onStart = (dateString: string, date: Date) => {
-  dataDuration.start = date.getTime()
+  dataDuration.start = getIntTime(date)
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('change-date',dataDuration,props.types)
 }
 const onEnd = (dateString: string, date: Date) => {
-  dataDuration.end = date.getTime()
+  dataDuration.end = getIntTime(date)
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('change-date',dataDuration, props.types)
 }

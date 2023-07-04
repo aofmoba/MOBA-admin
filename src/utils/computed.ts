@@ -48,3 +48,12 @@ export function vertTime(obj: any){
   const s = `0${  date.getSeconds()}`
   return `${y}-${  m.substring(m.length - 2, m.length)  }-${  d.substring(d.length - 2, d.length)} ${  h.substring(h.length - 2, h.length)}:${  mt.substring(mt.length - 2, mt.length)}`
 }
+
+export function getIntTime(date: any){
+  const y = date.getFullYear()
+  const m = date.getMonth() 
+  const d = date.getDate()
+  const h = date.getHours()
+  const mt = date.getMinutes()
+  return new Date(y,m,d,h,mt,0).getTime()
+}
