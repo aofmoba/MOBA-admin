@@ -21,21 +21,21 @@
         <a-dropdown class="exit-doption" trigger="click">
           <icon-down style="font-size: 24px; color: RGBA(100, 116, 254, 1);" />
           <template #content>
-            <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('api')">
+            <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('main')">
               <a-space>
                 <span class="mtext-1 font-md" style="margin-left: 2px;">
                   81.*.*.152
                 </span>
-                <icon-check-circle-fill v-if="apiActive === 'api'" style="color: green;opacity: .6"/>
+                <icon-check-circle-fill v-if="apiActive === 'main'" style="color: green;opacity: .6"/>
               </a-space>
             </a-doption>
-            <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('main')">
+            <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('api')">
               <a-space>
                 <span class="mtext-1 font-md" style="margin-left: 2px;">
                   <!-- 161.*.*.95 -->
                   42.*.*.146
                 </span>
-                <icon-check-circle-fill v-if="apiActive === 'main'" style="color: green;opacity: .6"/>
+                <icon-check-circle-fill v-if="apiActive === 'api'" style="color: green;opacity: .6"/>
               </a-space>
             </a-doption>
             <!-- <a-doption style="width: 224px;height: 60px; padding: 20px 30px;line-height: 0;" @click="setApiurl('han')">

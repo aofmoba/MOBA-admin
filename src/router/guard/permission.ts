@@ -2,7 +2,7 @@ import type { LocationQueryRaw, Router } from 'vue-router';
 import NProgress from 'nprogress'; // progress bar
 import usePermission from '@/hooks/permission';
 import { useUserStore } from '@/store';
-import { isLogin, getToken } from '@/utils/auth';
+import { isLogin } from '@/utils/auth';
 import appRoutes from '../routes';
 
 export default function setupPermissionGuard(router: Router) {
@@ -24,16 +24,11 @@ export default function setupPermissionGuard(router: Router) {
       }
       NProgress.done();
     }
-    if (isLogin() && getToken()) {
+    if (isLogin()) {
       if (userStore.permissions[0]) {
         crossroads();
       } else {
         try {
-          if( to.name === 'login' ){
-            next();
-            NProgress.done();
-            return;
-          }
           await userStore.info();
           crossroads();
         } catch (error) {
